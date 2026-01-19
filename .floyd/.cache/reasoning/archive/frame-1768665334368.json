@@ -1,0 +1,11 @@
+{
+  "frame_id": "to-archive",
+  "task_id": "t1",
+  "start_time": "2026-01-17T15:55:34.365Z",
+  "cog_steps": [],
+  "glm_context": {
+    "thinking_mode": "preserved",
+    "last_cog_step_hash": 0,
+    "session_continuity_token": "1768665334365-c2mwru"
+  }
+}

@@ -1,0 +1,54 @@
+# MCP Server Configuration
+# Copy this file to `.floyd/mcp.json` and customize for your needs
+
+{
+  "version": "1.0",
+  "servers": [
+    {
+      "name": "filesystem",
+      "enabled": false,
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp/allowed"],
+        "env": {}
+      }
+    },
+    {
+      "name": "github",
+      "enabled": false,
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-github"],
+        "env": {
+          "GITHUB_TOKEN": "your-github-token-here"
+        }
+      }
+    },
+    {
+      "name": "postgres",
+      "enabled": false,
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-postgres"],
+        "env": {
+          "PG_CONNECTION_STRING": "postgresql://user:password@localhost:5432/dbname"
+        }
+      }
+    },
+    {
+      "name": "slack",
+      "enabled": false,
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-slack"],
+        "env": {
+          "SLACK_TOKEN": "your-slack-token-here"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "key": "p1",
+  "value": "project data (24hr TTL)",
+  "timestamp": 1768665334346,
+  "ttl": 86400000,
+  "tier": "project"
+}

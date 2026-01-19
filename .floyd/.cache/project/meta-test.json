@@ -1,0 +1,16 @@
+{
+  "key": "meta-test",
+  "value": "value",
+  "timestamp": 1768665334368,
+  "ttl": 86400000,
+  "tier": "project",
+  "metadata": {
+    "complex": {
+      "nested": [
+        1,
+        2,
+        3
+      ]
+    }
+  }
+}

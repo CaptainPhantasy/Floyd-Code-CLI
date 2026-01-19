@@ -1,0 +1,16 @@
+{
+	"name": "doc-parity",
+	"version": "0.1.0",
+	"description": "Code-documentation parity validator using tree-sitter static analysis",
+	"author": {
+		"name": "FLOYD Project"
+	},
+	"keywords": [
+		"documentation",
+		"validation",
+		"parity",
+		"static-analysis",
+		"tree-sitter"
+	],
+	"hooks": "./hooks/hooks.json"
+}

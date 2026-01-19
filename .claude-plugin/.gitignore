@@ -1,0 +1,6 @@
+# Local configuration (user-specific)
+.claude/doc-parity.local.md
+
+# Temporary files
+*.tmp
+.DS_Store

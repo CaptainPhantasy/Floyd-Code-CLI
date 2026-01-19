@@ -1,0 +1,8 @@
+install-host.js
+test-bridge.js
+bin/
+source/
+.floyd/
+com.floyd.chrome.json
+
+

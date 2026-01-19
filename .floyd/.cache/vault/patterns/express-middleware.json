@@ -1,0 +1,13 @@
+{
+  "key": "express-middleware",
+  "value": "async (req, res, next) => { ... }",
+  "timestamp": 1768665334349,
+  "ttl": 604800000,
+  "tier": "vault",
+  "metadata": {
+    "tags": [
+      "express",
+      "middleware"
+    ]
+  }
+}

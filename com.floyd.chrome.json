@@ -1,9 +1,7 @@
 {
-  "name": "com.floyd.chrome",
-  "description": "FLOYD CLI Native Messaging Host",
-  "path": "/Volumes/Storage/FLOYD_CLI/INK/floyd-cli/bin/chrome-bridge.sh",
-  "type": "stdio",
-  "allowed_origins": [
-    "chrome-extension://cgoejdaeihcgfbdghpcaifocloaoofpj/"
-  ]
+	"name": "com.floyd.chrome",
+	"description": "FLOYD CLI Native Messaging Host",
+	"path": "/Volumes/Storage/FLOYD_CLI/INK/floyd-cli/bin/chrome-bridge.sh",
+	"type": "stdio",
+	"allowed_origins": ["chrome-extension://cgoejdaeihcgfbdghpcaifocloaoofpj/"]
 }

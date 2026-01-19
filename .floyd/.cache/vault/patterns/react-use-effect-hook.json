@@ -1,0 +1,14 @@
+{
+  "key": "react-use-effect-hook",
+  "value": "useEffect(() => { ... }, [deps]);",
+  "timestamp": 1768665286325,
+  "ttl": 604800000,
+  "tier": "vault",
+  "metadata": {
+    "tags": [
+      "react",
+      "hooks",
+      "side-effects"
+    ]
+  }
+}
