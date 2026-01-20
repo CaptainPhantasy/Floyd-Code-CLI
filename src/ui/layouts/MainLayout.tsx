@@ -100,6 +100,9 @@ export interface MainLayoutProps {
 	/** Active mode indicator */
 	mode?: 'chat' | 'code' | 'browse' | 'swarm';
 
+	/** Callback when safety mode is toggled */
+	onSafetyModeChange?: (mode: 'yolo' | 'ask' | 'plan') => void;
+
 	/** Messages to display */
 	messages?: ChatMessage[];
 
@@ -180,7 +183,7 @@ export interface MainLayoutProps {
 	fileCount?: number;
 
 	/** Safety mode setting */
-	safetyMode?: 'yolo' | 'safe';
+	safetyMode?: 'yolo' | 'ask' | 'plan';
 
 	/** Tool toggle states */
 	toolStates?: ToolToggle[];
@@ -634,6 +637,8 @@ export function MainLayout({
 	cwd = process.cwd() || '~',
 	connectionStatus = 'connected',
 	mode = 'chat',
+	safetyMode = 'ask', // Default to ASK mode for safety
+	onSafetyModeChange,
 	messages: propMessages = [],
 	agentStatus = 'idle',
 	tasks: propTasks = [],
@@ -659,7 +664,6 @@ export function MainLayout({
 	gitBranch = 'main',
 	gitStatus = 'clean',
 	fileCount,
-	safetyMode = 'safe',
 	toolStates = [],
 	workerStates = [],
 	// CONTEXT panel props
@@ -673,6 +677,7 @@ export function MainLayout({
 	const [showHelp, setShowHelp] = useState(showHelpProp);
 	const [showPromptLibrary, setShowPromptLibrary] = useState(showPromptLibraryProp);
 	const [showAgentBuilder, setShowAgentBuilder] = useState(false);
+	const [currentSafetyMode, setCurrentSafetyMode] = useState<'yolo' | 'ask' | 'plan'>(safetyMode || 'ask');
 	const {exit: inkExit} = useApp();
 
 	// Use ref to track input state for hotkey checks (prevents race conditions)
@@ -801,11 +806,11 @@ export function MainLayout({
 			},
 		},
 		{
-			keys: 'Ctrl+Y',
-			description: 'Toggle YOLO mode (safety on/off)',
+			keys: 'Shift+Tab',
+			description: 'Cycle safety mode (YOLO → ASK → PLAN)',
 			category: 'System',
 			action: () => {
-				onCommand?.('toggle-yolo');
+				// Handled by useInput handler
 				setShowHelp(false);
 			},
 		},
@@ -855,9 +860,16 @@ export function MainLayout({
 			return;
 		}
 
-		// Ctrl+Y to toggle YOLO mode
-		if (key.ctrl && _inputKey === 'y') {
-			onCommand?.('toggle-yolo');
+		// Shift+Tab to cycle through safety modes: YOLO → ASK → PLAN → YOLO
+		if (key.tab && key.shift) {
+			const modes: Array<'yolo' | 'ask' | 'plan'> = ['yolo', 'ask', 'plan'];
+			const currentIndex = modes.indexOf(currentSafetyMode);
+			const nextIndex = (currentIndex + 1) % modes.length;
+			const newMode = modes[nextIndex];
+			
+			setCurrentSafetyMode(newMode);
+			onSafetyModeChange?.(newMode);
+			onCommand?.('safety-mode-changed');
 			return;
 		}
 

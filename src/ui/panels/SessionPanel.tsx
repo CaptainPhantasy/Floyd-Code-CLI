@@ -45,7 +45,7 @@ export interface SessionPanelProps {
 	fileCount?: number;
 
 	/** Safety mode setting */
-	safetyMode: 'yolo' | 'safe';
+	safetyMode: 'yolo' | 'ask' | 'plan';
 
 	/** Tool toggle states */
 	tools: ToolToggle[];
@@ -169,11 +169,26 @@ export function SessionPanel({
 						<Text color={floydTheme.colors.fgBase}>Safety: </Text>
 						<Box
 							borderStyle="single"
-							borderColor={safetyColor}
+							borderColor={
+								safetyMode === 'yolo'
+									? statusColors.error
+									: safetyMode === 'plan'
+									? statusColors.warning
+									: statusColors.ready
+							}
 							paddingX={1}
 						>
-							<Text color={safetyColor} bold>
-								{safetyLabel}
+							<Text
+								color={
+									safetyMode === 'yolo'
+										? statusColors.error
+										: safetyMode === 'plan'
+										? statusColors.warning
+										: statusColors.ready
+								}
+								bold
+							>
+								{safetyMode === 'yolo' ? 'YOLO' : safetyMode === 'plan' ? 'PLAN' : 'ASK'}
 							</Text>
 						</Box>
 					</Box>

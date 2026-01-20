@@ -262,11 +262,11 @@ interface SessionSlice {
  */
 interface ConfigSlice {
 	/** Safety mode setting */
-	safetyMode: 'yolo' | 'safe';
+	safetyMode: 'yolo' | 'ask' | 'plan';
 	/** Toggle safety mode */
 	toggleSafetyMode: () => void;
 	/** Set safety mode */
-	setSafetyMode: (mode: 'yolo' | 'safe') => void;
+	setSafetyMode: (mode: 'yolo' | 'ask' | 'plan') => void;
 }
 
 /**
@@ -350,7 +350,7 @@ const initialSessionState: SessionState = {
 };
 
 const initialConfigState: Omit<ConfigSlice, 'toggleSafetyMode' | 'setSafetyMode'> = {
-	safetyMode: 'safe',
+	safetyMode: 'ask', // Default to ASK mode for safety
 };
 
 // ============================================================================
@@ -392,12 +392,11 @@ export const useFloydStore = create<FloydStore>()(
 			...initialConfigState,
 
 			toggleSafetyMode: () =>
-				set(state => ({
-					safetyMode: state.safetyMode === 'yolo' ? 'safe' : 'yolo',
-				})),
+			set(state => ({
+				safetyMode: state.safetyMode === 'yolo' ? 'ask' : state.safetyMode === 'ask' ? 'plan' : 'yolo',
+			})),
 
-			setSafetyMode: (mode: 'yolo' | 'safe') =>
-				set({safetyMode: mode}),
+			setSafetyMode: (mode: 'yolo' | 'ask' | 'plan') => set({safetyMode: mode}),
 
 			addMessage: message =>
 				set(state => {

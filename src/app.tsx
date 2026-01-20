@@ -108,7 +108,7 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 	const setAgentStoreStatus = useFloydStore(state => state.setStatus);
 	const safetyMode = useFloydStore(state => state.safetyMode);
 	const toggleSafetyMode = useFloydStore(state => state.toggleSafetyMode);
-
+	
 	const {exit} = useApp();
 
 	// ============================================================================
@@ -444,16 +444,21 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 				case 'toggle-agent-viz':
 					setShowAgentViz(v => !v);
 					break;
-				case 'toggle-yolo':
-					toggleSafetyMode();
+				case 'safety-mode-changed':
+					// Safety mode changed via Shift+Tab in MainLayout
 					break;
 				case 'dock':
 					// Dock command - handled separately via input parsing
 					break;
 			}
 		},
-		[exit, toggleSafetyMode], // setTasks, setToolExecutions, setEvents are stable setters from useState
+		[exit],
 	);
+
+	// Handle safety mode changes from MainLayout
+	const handleSafetyModeChange = useCallback((mode: 'yolo' | 'ask' | 'plan') => {
+		useFloydStore.getState().setSafetyMode(mode);
+	}, []);
 
 	// Augment common commands with additional Floyd-specific commands
 	const augmentedCommands: CommandItem[] = [
@@ -606,6 +611,7 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 				onCommand={handleCommand}
 				onExit={exit}
 				safetyMode={safetyMode}
+				onSafetyModeChange={handleSafetyModeChange}
 				showAgentViz={showAgentViz || (hasActivity && tasks.length > 0)}
 				showToolTimeline={
 					showAgentViz || (hasActivity && toolExecutions.length > 0)
