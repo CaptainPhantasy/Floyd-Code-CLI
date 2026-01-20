@@ -821,6 +821,10 @@ export function MainLayout({
 		if (key.escape) {
 			if (showHelp) {
 				setShowHelp(false);
+			} else if (showPromptLibrary) {
+				setShowPromptLibrary(false);
+			} else if (showAgentBuilder) {
+				setShowAgentBuilder(false);
 			} else {
 				onExit?.();
 				inkExit();
@@ -831,6 +835,15 @@ export function MainLayout({
 		// Ctrl+/ always triggers help overlay (modifier key, safe to trigger anytime)
 		if (key.ctrl && _inputKey === '/') {
 			setShowHelp(v => !v);
+			return;
+		}
+
+		// Ctrl+P opens command palette (handled by CommandPaletteTrigger, but we can also trigger it manually)
+		if (key.ctrl && _inputKey === 'p') {
+			// CommandPaletteTrigger handles this, but we close help if it's open
+			if (showHelp) {
+				setShowHelp(false);
+			}
 			return;
 		}
 
@@ -845,6 +858,24 @@ export function MainLayout({
 		// Ctrl+Y to toggle YOLO mode
 		if (key.ctrl && _inputKey === 'y') {
 			onCommand?.('toggle-yolo');
+			return;
+		}
+
+		// Ctrl+M to toggle monitor dashboard
+		if (key.ctrl && _inputKey === 'm') {
+			onCommand?.('toggle-monitor');
+			return;
+		}
+
+		// Ctrl+T to toggle agent visualization
+		if (key.ctrl && _inputKey === 't') {
+			onCommand?.('toggle-agent-viz');
+			return;
+		}
+
+		// Ctrl+Shift+P to open prompt library
+		if (key.ctrl && key.shift && _inputKey === 'p') {
+			setShowPromptLibrary(v => !v);
 			return;
 		}
 	});
