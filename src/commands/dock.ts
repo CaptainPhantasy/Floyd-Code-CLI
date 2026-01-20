@@ -114,6 +114,16 @@ export function parseDockArgs(args: string[]): DockCommandOptions | null {
 	const input = args.join(' ').trim();
 	if (!input) return null;
 
+	// IMPORTANT: Only return valid dock options for explicit dock commands
+	// This ensures dock commands are opt-in, matching Claude Code's UX pattern
+	// Dock commands must start with ':' or 'dock ' prefix
+	const firstArg = args[0];
+	const isDockCommand = firstArg && (firstArg.startsWith(':') || firstArg === 'dock');
+	
+	if (!isDockCommand) {
+		return null;
+	}
+
 	let createNewPane = false;
 	let splitDirection: 'v' | 'h' = 'v';
 
