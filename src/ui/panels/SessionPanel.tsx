@@ -202,11 +202,11 @@ export function SessionPanel({
 						</Text>
 					</Box>
 					{tools.map((tool, index) => (
-						<Box key={index} flexDirection="row" gap={1}>
+						<Box key={index} flexDirection="row" gap={1} width="100%">
 							<Text color={tool.enabled ? statusColors.ready : statusColors.error}>
 								{tool.enabled ? '[✓]' : '[x]'}
 							</Text>
-							<Text color={floydTheme.colors.fgBase}>
+							<Text color={floydTheme.colors.fgBase} wrap="truncate">
 								{tool.icon && `${tool.icon} `}
 								{tool.name}
 							</Text>
@@ -232,9 +232,9 @@ export function SessionPanel({
 						const statusColor = getWorkerStatusColor(worker.status);
 						const indicator = getWorkerStatusIndicator(worker.status);
 						return (
-							<Box key={index} flexDirection="row" gap={1}>
+							<Box key={index} flexDirection="row" gap={1} width="100%">
 								<Text color={statusColor}>{indicator}</Text>
-								<Text color={floydTheme.colors.fgBase}>{worker.name}</Text>
+								<Text color={floydTheme.colors.fgBase} wrap="truncate">{worker.name}</Text>
 								<Box
 									borderStyle="single"
 									borderColor={statusColor}

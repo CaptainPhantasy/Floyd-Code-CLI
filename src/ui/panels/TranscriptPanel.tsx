@@ -90,12 +90,12 @@ export function TranscriptPanel({
 	const displayMessages = messages.slice(-maxMessages);
 
 	return (
-		<Frame title=" TRANSCRIPT " borderStyle="round" borderVariant="focus" padding={1}>
+		<Frame title=" TRANSCRIPT " borderStyle="round" borderVariant="focus" padding={2}>
 			<Viewport height={height} showScrollbar>
-				<Box flexDirection="column" gap={1}>
+				<Box flexDirection="column" gap={1} width="100%">
 					{/* Messages */}
 					{displayMessages.length === 0 && !streamingContent && (
-						<Box paddingY={1}>
+						<Box paddingY={1} width="100%">
 							<Text color={floydTheme.colors.fgMuted} dimColor italic>
 								No messages yet. Start a conversation!
 							</Text>
@@ -105,7 +105,7 @@ export function TranscriptPanel({
 					{displayMessages.map(msg => (
 						<Box key={msg.id} flexDirection="column" marginBottom={1} width="100%">
 							{/* Message header */}
-							<Box flexDirection="row" gap={1}>
+							<Box flexDirection="row" gap={2}>
 								<Text color={getMessageColor(msg.role)}>
 									{msg.role === 'user' ? '>' : '<'} {getLabel(msg.role)}:
 								</Text>
@@ -115,7 +115,7 @@ export function TranscriptPanel({
 							</Box>
 
 							{/* Message content */}
-							<Box marginLeft={2} flexDirection="column" width="100%">
+							<Box marginLeft={3} flexDirection="column" width="100%">
 								{typeof msg.content === 'string' ? (
 									<Text color={floydTheme.colors.fgBase} wrap="wrap">{msg.content}</Text>
 								) : (
@@ -124,7 +124,7 @@ export function TranscriptPanel({
 
 								{/* Tool calls in message */}
 								{msg.toolCalls && msg.toolCalls.length > 0 && (
-									<Box flexDirection="column" marginTop={1} gap={0}>
+									<Box flexDirection="column" marginTop={1} gap={1} width="100%">
 										{msg.toolCalls.map((tool, idx) => (
 											<ToolCard
 												key={`${msg.id}-tool-${tool.name}-${idx}`}
@@ -165,7 +165,7 @@ export function TranscriptPanel({
 					{/* Streaming content */}
 					{streamingContent && (
 						<Box flexDirection="column" marginBottom={1} width="100%">
-							<Box flexDirection="row" gap={1}>
+							<Box flexDirection="row" gap={2}>
 								<Text bold color={roleColors.assistantLabel}>
 									&lt; Assistant:
 								</Text>
@@ -175,7 +175,7 @@ export function TranscriptPanel({
 									</Text>
 								)}
 							</Box>
-							<Box marginLeft={2} width="100%">
+							<Box marginLeft={3} width="100%">
 								<Text color={floydTheme.colors.fgBase} wrap="wrap">
 									{streamingContent}
 									<Text color={roleColors.thinking}>▋</Text>

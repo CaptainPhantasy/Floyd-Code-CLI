@@ -9,9 +9,8 @@
 	},
 	"scripts": {
 		"build": "tsc",
-		"dev": "tsc --watch",
-		"start": "node dist/cli.js",
 		"dev": "tsc --watch & sleep 2 && node dist/cli.js",
+		"start": "node dist/cli.js",
 		"lint": "prettier --check .",
 		"test": "ava",
 		"test:watch": "ava --watch",
@@ -24,9 +23,9 @@
 		"dist"
 	],
 	"dependencies": {
-		"floyd-agent-core": "file:../../packages/floyd-agent-core",
 		"@anthropic-ai/sdk": "^0.71.2",
 		"@modelcontextprotocol/sdk": "^1.25.2",
+		"@napi-rs/whisper": "^0.0.4",
 		"@types/uuid": "^10.0.0",
 		"@types/ws": "^8.18.1",
 		"chokidar": "^3.6.0",
@@ -35,6 +34,7 @@
 		"dotenv": "^17.2.3",
 		"execa": "^9.5.2",
 		"fast-glob": "^3.3.3",
+		"floyd-agent-core": "file:../../packages/floyd-agent-core",
 		"fs-extra": "^11.3.3",
 		"fuzzysort": "^2.0.4",
 		"gray-matter": "^4.0.3",
@@ -68,6 +68,7 @@
 		"marked": "^12.0.2",
 		"meow": "^11.0.0",
 		"node-pty": "^1.0.0",
+		"node-record-lpcm16": "^1.0.1",
 		"node-tmux": "^1.0.2",
 		"openai": "^6.16.0",
 		"os-paths": "^7.4.0",

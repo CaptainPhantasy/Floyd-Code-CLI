@@ -77,17 +77,17 @@ export function ContextPanel({
 			width="100%"
 			height="100%"
 		>
-			<Box flexDirection="column" gap={1}>
+			<Box flexDirection="column" gap={1} width="100%">
 				{/* Current Plan */}
 				{currentPlan.length > 0 && (
-					<Box flexDirection="column" marginBottom={1}>
+					<Box flexDirection="column" marginBottom={1} width="100%">
 						<Box marginBottom={0}>
 							<Text bold color={crushTheme.accent.primary}>
 								CURRENT PLAN
 							</Text>
 						</Box>
 						{currentPlan.map((item, index) => (
-							<Box key={index} flexDirection="row" gap={1}>
+							<Box key={index} flexDirection="row" gap={1} width="100%">
 								<Text
 									color={
 										item.done ? statusColors.ready : floydTheme.colors.fgMuted
@@ -102,6 +102,7 @@ export function ContextPanel({
 											: floydTheme.colors.fgBase
 									}
 									dimColor={item.done}
+									wrap="truncate"
 								>
 									{item.label}
 								</Text>
@@ -112,7 +113,7 @@ export function ContextPanel({
 
 				{/* Files Touched */}
 				{filesTouched.length > 0 && (
-					<Box flexDirection="column" marginBottom={1}>
+					<Box flexDirection="column" marginBottom={1} width="100%">
 						<Box marginBottom={0}>
 							<Text bold color={crushTheme.accent.secondary}>
 								FILES TOUCHED
@@ -123,6 +124,7 @@ export function ContextPanel({
 								key={index}
 								color={floydTheme.colors.fgBase}
 								dimColor={index >= 5} // Dim files beyond first 5
+								wrap="truncate"
 							>
 								• {file}
 							</Text>
@@ -132,7 +134,7 @@ export function ContextPanel({
 
 				{/* Open Diffs */}
 				{openDiffs && (
-					<Box flexDirection="column" marginBottom={1}>
+					<Box flexDirection="column" marginBottom={1} width="100%">
 						<Box marginBottom={0}>
 							<Text bold color={crushTheme.accent.tertiary}>
 								OPEN DIFFS
@@ -148,14 +150,14 @@ export function ContextPanel({
 
 				{/* Browser State */}
 				{browserState && (
-					<Box flexDirection="column" marginBottom={1}>
+					<Box flexDirection="column" marginBottom={1} width="100%">
 						<Box marginBottom={0}>
 							<Text bold color={crushTheme.accent.info}>
 								BROWSER
 							</Text>
 						</Box>
-						<Box flexDirection="row" gap={1}>
-							<Text color={floydTheme.colors.fgBase}>{browserState.domain}</Text>
+						<Box flexDirection="row" gap={1} width="100%">
+							<Text color={floydTheme.colors.fgBase} wrap="truncate">{browserState.domain}</Text>
 							<Box
 								borderStyle="single"
 								borderColor={
@@ -186,16 +188,16 @@ export function ContextPanel({
 
 				{/* Quick Actions */}
 				{quickActions.length > 0 && (
-					<Box flexDirection="column" marginTop={1}>
+					<Box flexDirection="column" marginTop={1} width="100%">
 						<Box marginBottom={0}>
 							<Text bold color={crushTheme.accent.highlight}>
 								QUICK ACTS
 							</Text>
 						</Box>
 						{quickActions.map((action, index) => (
-							<Box key={index} flexDirection="row" gap={1}>
+							<Box key={index} flexDirection="row" gap={1} width="100%">
 								<Text color={crushTheme.accent.primary}>{action.shortcut}</Text>
-								<Text color={floydTheme.colors.fgBase}>{action.label}</Text>
+								<Text color={floydTheme.colors.fgBase} wrap="truncate">{action.label}</Text>
 							</Box>
 						))}
 					</Box>

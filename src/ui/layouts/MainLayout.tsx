@@ -51,6 +51,7 @@ import type {
 } from '../panels/index.js';
 import {HelpOverlay, type Hotkey} from '../overlays/HelpOverlay.js';
 import {PromptLibraryOverlay} from '../overlays/PromptLibraryOverlay.js';
+import {VoiceInputButton} from '../components/VoiceInputButton.js';
 
 // Agent Visualization
 import {type ThinkingStatus} from '../agent/ThinkingStream.js';
@@ -567,6 +568,11 @@ interface InputAreaProps {
 	onSubmit: (value: string) => void;
 	isThinking?: boolean;
 	hint?: string;
+	onVoiceInput?: () => void;
+	isRecording?: boolean;
+	isTranscribing?: boolean; 
+	isWideScreen?: boolean;
+	isNarrowScreen?: boolean;
 }
 
 function InputArea({
@@ -575,24 +581,27 @@ function InputArea({
 	onSubmit,
 	isThinking,
 	hint,
+	onVoiceInput,
+	isRecording,
+	isTranscribing = false, 
+	isWideScreen = false,
+	isNarrowScreen = false,
 }: InputAreaProps) {
 	return (
-		<Box flexDirection="column" width="100%" minWidth={60} marginTop={1}>
+		<Box flexDirection="column" width="100%" minWidth={isNarrowScreen ? 60 : 80} marginTop={1} paddingX={isNarrowScreen ? 0 : 1}>
 			{/* Prompt text above input */}
-			<Box marginBottom={1}>
+			<Box marginBottom={1} paddingX={1}>
 				<Text bold color={crushTheme.accent.secondary}>
 					Your turn. Type a message or command.
 				</Text>
 			</Box>
-
 			{/* Input box - thicker border, more padding */}
 			<Box
 				borderStyle="double"
 				borderColor={floydTheme.colors.borderFocus}
-				paddingX={1}
+				paddingX={isNarrowScreen ? 1 : 2}
 				paddingY={1}
 				width="100%"
-				flexGrow={1}
 			>
 				<Text color={roleColors.inputPrompt}>❯ </Text>
 				<TextInput
@@ -603,10 +612,23 @@ function InputArea({
 				/>
 			</Box>
 
+			{/* Voice Input Button */}
+			{onVoiceInput && (
+				<Box marginTop={1} paddingX={1}>
+					{isRecording ? (
+						<Text color={crushTheme.status.error}>🔴 Recording... (Press Ctrl+R again to stop)</Text>
+					) : isTranscribing ? (
+						<Text color={crushTheme.status.working}>⏳ Transcribing...</Text>
+					) : (
+						<Text color={crushTheme.accent.secondary}>🎤 Ctrl+R: Voice Input</Text>
+					)}
+				</Box>
+			)}
+			
 			{/* Hint footer */}
-			<Box marginTop={1} flexDirection="row" justifyContent="space-between">
+			<Box marginTop={1} flexDirection="row" justifyContent="space-between" paddingX={1}>
 				<Text color={roleColors.hint} dimColor>
-					{hint || 'Ctrl+P: Commands • Ctrl+/: Help • ?: Toggle Help • Esc: Exit'}
+					{hint || 'Ctrl+R: Voice Input • Ctrl+P: Commands • Ctrl+/: Help • ?: Toggle Help • Esc: Exit'}
 				</Text>
 				{isThinking && (
 					<Text color={roleColors.thinking}>
@@ -679,6 +701,45 @@ export function MainLayout({
 	const [showAgentBuilder, setShowAgentBuilder] = useState(false);
 	const [currentSafetyMode, setCurrentSafetyMode] = useState<'yolo' | 'ask' | 'plan'>(safetyMode || 'ask');
 	const {exit: inkExit} = useApp();
+
+	// Screen size detection for responsive layout (Flexbot)
+	const terminalWidth = process.stdout.columns || 80;
+	const terminalHeight = process.stdout.rows || 24;
+	
+	const isWideScreen = terminalWidth >= 120;
+	const isUltraWideScreen = terminalWidth >= 160;
+	const isNarrowScreen = terminalWidth < 100;
+	
+	// Calculate available height for transcript panel
+	// Overhead: ASCII banner (10) + StatusBar (2) + InputArea (5) + padding (2) = ~19 lines
+	const overheadHeight = 19;
+	const availableHeight = Math.max(10, terminalHeight - overheadHeight);
+	const transcriptHeight = isNarrowScreen 
+		? Math.max(8, availableHeight) 
+		: isUltraWideScreen 
+			? Math.max(30, availableHeight) 
+			: Math.max(15, availableHeight);
+
+	// STT demo state (placeholder for actual STT integration)
+	const [isRecording, setIsRecording] = useState(false);
+	const [isTranscribing, setIsTranscribing] = useState(false);
+
+	const handleVoiceInput = useCallback(() => {
+		if (!isThinking && !isRecording) {
+			setIsRecording(true);
+			setIsTranscribing(false);
+			// Demo transcription (3 second placeholder for STT)
+			setTimeout(() => {
+				setIsRecording(false);
+				setIsTranscribing(true);
+				setTimeout(() => {
+					setIsTranscribing(false);
+					const demoText = 'This is a demo transcription. Full STT integration coming soon.';
+					setInput(prev => prev + (prev ? ' ' : '') + demoText);
+				}, 1000);
+			}, 2000);
+		}
+	}, [isThinking, isRecording]);
 
 	// Use ref to track input state for hotkey checks (prevents race conditions)
 	const inputRef = useRef(input);
@@ -885,6 +946,12 @@ export function MainLayout({
 			return;
 		}
 
+		// Ctrl+R to start voice input
+		if (key.ctrl && _inputKey === 'r') {
+			handleVoiceInput();
+			return;
+		}
+
 		// Ctrl+Shift+P to open prompt library
 		if (key.ctrl && key.shift && _inputKey === 'p') {
 			setShowPromptLibrary(v => !v);
@@ -992,10 +1059,10 @@ export function MainLayout({
 				)}
 
 				{/* Main 3-Column Content Area */}
-				<Box flexDirection="row" flexGrow={1} gap={1} overflowY="hidden">
+				<Box flexDirection="row" flexGrow={1} gap={isWideScreen ? 2 : 1} paddingX={isNarrowScreen ? 0 : 1} overflowY="hidden">
 					{/* Left: SESSION Panel */}
-					{!compact && (
-						<Box width={18} flexShrink={0}>
+					{!compact && (isWideScreen || !compact) && (
+						<Box width={isUltraWideScreen ? 22 : 18} flexShrink={0} marginRight={1}>
 							<SessionPanel
 								repoName={repoName}
 								techStack={techStack}
@@ -1006,32 +1073,33 @@ export function MainLayout({
 								tools={toolStates}
 								workers={workerStates}
 								quickActions={quickActions.map(qa => qa.shortcut + ' ' + qa.label)}
-								compact={compact}
+								compact={compact || !isWideScreen}
 							/>
 						</Box>
 					)}
 
-					{/* Center: TRANSCRIPT Panel */}
-					<Box flexGrow={1} flexDirection="column">
+					{/* Center: TRANSCRIPT Panel - increased padding */}
+					<Box flexGrow={1} flexDirection="column" paddingX={isNarrowScreen ? 0 : 2}>
 						<TranscriptPanel
-							messages={messages}
+							messages={messages.slice(-20)} // Limit to last 20 messages
 							userName={userName}
 							toolExecutions={propToolExecutions}
 							streamingContent={streamingContent}
 							isThinking={isThinking}
+							height={transcriptHeight}
 						/>
 					</Box>
 
 					{/* Right: CONTEXT Panel */}
-					{!compact && (
-						<Box width={18} flexShrink={0}>
+					{!compact && (isUltraWideScreen || isWideScreen) && (
+						<Box width={isUltraWideScreen ? 22 : 18} flexShrink={0} marginLeft={1}>
 							<ContextPanel
 								currentPlan={currentPlan}
 								filesTouched={filesTouched}
 								openDiffs={openDiffs}
 								browserState={browserState}
 								quickActions={quickActions}
-								compact={compact}
+								compact={compact || !isUltraWideScreen}
 							/>
 						</Box>
 					)}
@@ -1044,10 +1112,15 @@ export function MainLayout({
 						onChange={setInput}
 						onSubmit={handleSubmit}
 						isThinking={isThinking}
+						onVoiceInput={handleVoiceInput}
+						isRecording={isRecording}
+						isTranscribing={isTranscribing}
+						isWideScreen={isWideScreen}
+						isNarrowScreen={isNarrowScreen}
 					/>
-				)}
-			</Box>
-		</CommandPaletteTrigger>
+					)}
+					</Box>
+				</CommandPaletteTrigger>
 	);
 }
 
