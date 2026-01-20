@@ -34,6 +34,9 @@ export interface CommandItem {
 
 	/** Disable the command */
 	disabled?: boolean;
+
+	/** Text to insert into input field (defaults to label if not provided) */
+	insertText?: string;
 }
 
 export interface CommandPaletteProps {
@@ -48,6 +51,9 @@ export interface CommandPaletteProps {
 
 	/** Callback when palette is opened */
 	onOpen?: () => void;
+
+	/** Callback when a command is selected (for inserting into input field) */
+	onCommandSelected?: (commandText: string) => void;
 
 	/** Placeholder text */
 	placeholder?: string;
@@ -138,6 +144,7 @@ export function CommandPalette({
 	isOpen,
 	onClose,
 	onOpen,
+	onCommandSelected,
 	placeholder = 'Type a command or search...',
 	maxVisible = 8,
 	fuzzy = true,
@@ -199,13 +206,22 @@ export function CommandPalette({
 		if (key.return && filteredCommands.length > 0) {
 			const selected = filteredCommands[selectedIndex];
 			if (selected && !selected.disabled) {
-				try {
-					selected.action();
+				// Insert command text into parent input field (if callback provided)
+				// Otherwise execute action directly (for backwards compatibility)
+				if (onCommandSelected) {
+					const textToInsert = selected.insertText || selected.label;
+					onCommandSelected(textToInsert);
 					onClose();
-				} catch (error) {
-					// Error handling: keep palette open and log error
-					console.error('[CommandPalette] Command execution failed:', error);
-					// Could show error message to user here
+				} else {
+					// Backwards compatible: execute action if no insert callback
+					try {
+						selected.action();
+						onClose();
+					} catch (error) {
+						// Error handling: keep palette open and log error
+						console.error('[CommandPalette] Command execution failed:', error);
+						// Could show error message to user here
+					}
 				}
 			}
 			return;
@@ -401,6 +417,9 @@ export interface CommandPaletteTriggerProps {
 
 	/** Additional keybindings to open palette */
 	openKeys?: string[];
+
+	/** Callback when a command is selected (for inserting into input field) */
+	onCommandSelected?: (commandText: string) => void;
 }
 
 export function CommandPaletteTrigger({
@@ -408,6 +427,7 @@ export function CommandPaletteTrigger({
 	children,
 	initialOpen = false,
 	openKeys = [],
+	onCommandSelected,
 }: CommandPaletteTriggerProps) {
 	const [isOpen, setIsOpen] = useState(initialOpen);
 
@@ -418,9 +438,11 @@ export function CommandPaletteTrigger({
 			return;
 		}
 
-		// Check additional keybindings
-		if (openKeys.includes(input) || (key.ctrl && openKeys.includes(input))) {
+		// Check additional keybindings (only when pressed alone, not combined with other keys)
+		// This prevents "/" from triggering when user is typing paths like "/usr/local"
+		if (openKeys.includes(input) && !key.ctrl && !key.shift && !key.meta) {
 			setIsOpen(true);
+			return;
 		}
 
 		// Escape to close
@@ -437,6 +459,7 @@ export function CommandPaletteTrigger({
 				isOpen={isOpen}
 				onClose={() => setIsOpen(false)}
 				onOpen={() => setIsOpen(true)}
+				onCommandSelected={onCommandSelected}
 			/>
 		</>
 	);

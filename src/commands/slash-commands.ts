@@ -354,6 +354,24 @@ export class SlashCommandParser {
 	getBuiltInCommands(): CommandDefinition[] {
 		return [
 			{
+				name: 'agent',
+				description: 'Create and manage custom AI agents',
+				category: 'agents',
+				usage: '/agent [list|edit|delete] [name]',
+				examples: [
+					'/agent',
+					'/agent list',
+					'/agent edit security-analyzer',
+					'/agent delete old-agent',
+				],
+				handler: async (args, context) => {
+					// Launch Agent Builder UI
+					// This will be handled by the UI layer, not here
+					console.log('Agent command:', (args as string[]).join(' '));
+					return {command: 'agent', args};
+				},
+			},
+			{
 				name: 'plan',
 				description: 'Toggle Plan Mode - read-only codebase exploration',
 				category: 'modes',

@@ -39,6 +39,7 @@ import {
 	type CommandItem,
 	commonCommands,
 } from '../components/CommandPalette.js';
+import {AgentBuilderOverlay, type AgentConfig} from '../components/AgentBuilder.js';
 import {SessionPanel, ContextPanel, TranscriptPanel} from '../panels/index.js';
 import type {
 	ToolToggle,
@@ -671,6 +672,7 @@ export function MainLayout({
 	const [input, setInput] = useState('');
 	const [showHelp, setShowHelp] = useState(showHelpProp);
 	const [showPromptLibrary, setShowPromptLibrary] = useState(showPromptLibraryProp);
+	const [showAgentBuilder, setShowAgentBuilder] = useState(false);
 	const {exit: inkExit} = useApp();
 
 	// Use ref to track input state for hotkey checks (prevents race conditions)
@@ -861,6 +863,10 @@ export function MainLayout({
 				case 'help':
 					setShowHelp(true);
 					break;
+				case 'agent':
+					// Launch Agent Builder
+					setShowAgentBuilder(true);
+					break;
 			}
 		},
 		[onCommand, onExit, inkExit],
@@ -899,8 +905,31 @@ export function MainLayout({
 		);
 	}
 
+	// Render Agent Builder overlay
+	if (showAgentBuilder) {
+		return (
+			<AgentBuilderOverlay
+				isOpen={showAgentBuilder}
+				onCreate={(config) => {
+					// Handle agent creation
+					console.log('Agent created:', config);
+					setShowAgentBuilder(false);
+				}}
+				onClose={() => setShowAgentBuilder(false)}
+			/>
+		);
+	}
+
 	return (
-		<CommandPaletteTrigger commands={augmentedCommands} initialOpen={false}>
+		<CommandPaletteTrigger 
+			commands={augmentedCommands} 
+			initialOpen={false}
+			openKeys={['/']}  // Add / as a trigger key
+			onCommandSelected={(commandText) => {
+				// Insert selected command into input field
+				setInput(commandText);
+			}}
+		>
 			<Box flexDirection="column" padding={1} width="100%" height="100%">
 				{/* ASCII Banner */}
 				{!compact && <FloydAsciiBanner />}
