@@ -241,7 +241,7 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 			setAgentStatus('thinking');
 			setAgentStoreStatus('thinking');
 
-			// Show whimsical phrase while thinking
+			// Show whimsical phrase while thinking (stored for status bar, NOT added to conversation)
 			const whimsicalPhrase = getRandomWhimsicalPhrase();
 			setCurrentWhimsicalPhrase(whimsicalPhrase.text);
 			setAgentStoreStatus('thinking');

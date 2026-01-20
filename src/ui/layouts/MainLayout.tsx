@@ -573,27 +573,36 @@ function InputArea({
 	hint,
 }: InputAreaProps) {
 	return (
-		<Box flexDirection="column" width="100%" minWidth={60}>
-			{/* Input box */}
+		<Box flexDirection="column" width="100%" minWidth={60} marginTop={1}>
+			{/* Prompt text above input */}
+			<Box marginBottom={1}>
+				<Text bold color={crushTheme.accent.secondary}>
+					Your turn. Type a message or command.
+				</Text>
+			</Box>
+
+			{/* Input box - thicker border, more padding */}
 			<Box
-				borderStyle="single"
-				borderColor={floydTheme.colors.border}
+				borderStyle="double"
+				borderColor={floydTheme.colors.borderFocus}
 				paddingX={1}
+				paddingY={1}
 				width="100%"
+				flexGrow={1}
 			>
 				<Text color={roleColors.inputPrompt}>❯ </Text>
 				<TextInput
 					value={value}
 					onChange={onChange}
 					onSubmit={onSubmit}
-					placeholder={isThinking ? 'Please wait...' : 'Type a message...'}
+					placeholder={isThinking ? 'Please wait...' : '│'}
 				/>
 			</Box>
 
 			{/* Hint footer */}
-			<Box marginTop={0} flexDirection="row" justifyContent="space-between">
+			<Box marginTop={1} flexDirection="row" justifyContent="space-between">
 				<Text color={roleColors.hint} dimColor>
-					{hint || 'Ctrl+P: Commands • Ctrl+/: Help • Esc: Exit'}
+					{hint || 'Ctrl+P: Commands • Ctrl+/: Help • ?: Toggle Help • Esc: Exit'}
 				</Text>
 				{isThinking && (
 					<Text color={roleColors.thinking}>
