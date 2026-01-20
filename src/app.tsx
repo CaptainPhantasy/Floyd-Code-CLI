@@ -1,9 +1,9 @@
 import {useState, useEffect, useRef, useCallback} from 'react';
 import {Box, Text, useInput, useApp} from 'ink';
 import {AgentEngine, MCPClientManager, PermissionManager} from 'floyd-agent-core';
-import {MCPClientManager as LocalMCPClientManager} from './mcp/client-manager.js';
 import {SessionManager} from './store/session-store.js';
 import {ConfigLoader} from './utils/config.js';
+import {BUILTIN_SERVERS} from './config/builtin-servers.js';
 import {StreamProcessor} from './streaming/stream-engine.js';
 import {getRandomWhimsicalPhrase} from './utils/whimsical-phrases.js';
 import {floydTheme, floydRoles} from './theme/crush-theme.js';
@@ -118,7 +118,9 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 	useEffect(() => {
 		const init = async () => {
 			try {
-				const mcpManager = new MCPClientManager();
+				// Initialize shared MCPClientManager with built-in servers
+				const mcpManager = new MCPClientManager(BUILTIN_SERVERS);
+				
 				if (chrome) {
 					await mcpManager.startServer(3000); // Default port for Chrome bridge
 				}
@@ -128,9 +130,7 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 				const permissionManager = new PermissionManager(config.allowedTools);
 
 				// Start built-in MCP servers (patch, runner, git, cache)
-				// Use local MCPClientManager for built-in servers (has startBuiltinServers method)
-				const localMcpManager = new LocalMCPClientManager();
-				await localMcpManager.startBuiltinServers();
+				await mcpManager.startBuiltinServers();
 
 				// Connect to MCP servers defined in .floyd/mcp.json
 				await mcpManager.connectExternalServers(process.cwd());
