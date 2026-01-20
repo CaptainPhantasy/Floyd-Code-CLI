@@ -832,10 +832,10 @@ export function MainLayout({
 			return;
 		}
 
-		// Only process ? hotkey when:
-		// - TextInput is NOT focused (no content and not recently typed)
-		// - This prevents ? from triggering while typing questions like "What?"
-		if (!textInputFocusedRef.current && _inputKey === '?') {
+		// ? hotkey ONLY triggers when input bar is COMPLETELY EMPTY
+		// This prevents triggering when typing sentences ending with "?" like "What is this?"
+		// Check: input must be empty AND not recently typed
+		if (input.length === 0 && !isTypingRef.current && _inputKey === '?') {
 			setShowHelp(v => !v);
 			return;
 		}
@@ -845,7 +845,6 @@ export function MainLayout({
 			onCommand?.('toggle-yolo');
 			return;
 		}
-		// If TextInput has focus (content or recent typing), ignore ? hotkey (let user type normally)
 	});
 
 	// Handle command execution
