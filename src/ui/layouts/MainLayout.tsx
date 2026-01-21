@@ -27,10 +27,19 @@
  * @module ui/layouts/MainLayout
  */
 
-import {useState, useCallback, useRef, useEffect, type ReactNode} from 'react';
+import {useState, useCallback, useRef, useEffect, useMemo, type ReactNode} from 'react';
+
+import {useFloydStore} from '../../store/floyd-store.js';
 import {Box, Text, useInput, useApp} from 'ink';
 import TextInput from 'ink-text-input';
 import Spinner from 'ink-spinner';
+
+// Layout constants
+import { LAYOUT } from '../../theme/layout.js';
+
+// Input validation constants
+const MAX_INPUT_LENGTH = 5000; // Maximum characters allowed in input
+const SUBMIT_DEBOUNCE_MS = 200; // Minimum time between submissions in milliseconds
 
 // UI Components
 import {ToolCard} from '../components/ToolCard.js';
@@ -127,6 +136,15 @@ export interface MainLayoutProps {
 
 	/** Show/hide prompt library */
 	showPromptLibrary?: boolean;
+
+	/** Show/hide monitor dashboard */
+	showMonitor?: boolean;
+
+	/** Show/hide agent builder */
+	showAgentBuilder?: boolean;
+
+	/** Callback to close monitor dashboard */
+	onCloseMonitor?: () => void;
 
 	/** Obsidian vault path for prompt library */
 	promptLibraryVaultPath?: string;
@@ -366,66 +384,40 @@ function StatusBar({
 			borderStyle="round"
 			borderColor={floydTheme.colors.borderFocus}
 			paddingX={1}
-			marginBottom={1}
+			paddingY={0}
+			marginBottom={0}
 			width="100%"
 		>
-			<Box width="100%" justifyContent="space-between">
-				<Box flexDirection="row" gap={2}>
-					{/* FLOYD branding */}
-					<Box flexDirection="row">
-						<Text bold color={FLOYD_GRADIENT_COLORS[0]}>
-							F
-						</Text>
-						<Text bold color={FLOYD_GRADIENT_COLORS[1]}>
-							L
-						</Text>
-						<Text bold color={FLOYD_GRADIENT_COLORS[2]}>
-							O
-						</Text>
-						<Text bold color={FLOYD_GRADIENT_COLORS[3]}>
-							Y
-						</Text>
-						<Text bold color={FLOYD_GRADIENT_COLORS[4]}>
-							D
-						</Text>
-						<Text color={roleColors.headerStatus}> CLI</Text>
-					</Box>
-
-					{/* User info */}
+			<Box width="100%" justifyContent="space-between" alignItems="center">
+				<Box flexDirection="row" gap={1} alignItems="center">
+					{/* FLOYD branding - ultra compact */}
+					<Text bold color={FLOYD_GRADIENT_COLORS[0]}>F</Text>
+					<Text bold color={FLOYD_GRADIENT_COLORS[1]}>L</Text>
+					<Text bold color={FLOYD_GRADIENT_COLORS[2]}>O</Text>
+					<Text bold color={FLOYD_GRADIENT_COLORS[3]}>Y</Text>
+					<Text bold color={FLOYD_GRADIENT_COLORS[4]}>D</Text>
+					<Text> </Text>
 					<Text color={roleColors.userLabel}>{userName}</Text>
-
-					{/* Mode */}
-					<Box
-						borderStyle="single"
-						borderColor={floydTheme.colors.border}
-						paddingX={1}
-					>
-						<Text color={crushTheme.accent.secondary}>{modeLabels[mode]}</Text>
-					</Box>
+					<Text> </Text>
+					<Text color={crushTheme.accent.secondary}>{modeLabels[mode]}</Text>
 				</Box>
 
-				<Box flexDirection="row" gap={2}>
-					{/* CWD (truncated) */}
-					<Text color={roleColors.hint} dimColor wrap="truncate">
-						{cwd.length > 30 ? '...' + cwd.slice(-27) : cwd}
-					</Text>
-
-					{/* Connection status */}
+				<Box flexDirection="row" gap={1} alignItems="center">
+					{/* Connection status - compact */}
 					<Text color={connectionColor}>
 						{connectionStatus === 'connected' && '●'}
 						{connectionStatus === 'connecting' && <Spinner type="dots" />}
 						{connectionStatus === 'disconnected' && '○'}
 					</Text>
-					<Text color={connectionColor}>{connectionLabel}</Text>
-
-					{/* Agent status */}
+					<Text> </Text>
+					{/* Agent status - compact */}
 					{isThinking && (
 						<Text color={getAgentStatusColor()} wrap="truncate">
-							<Spinner type="dots" /> {whimsicalPhrase || 'Thinking...'}
+							<Spinner type="dots" /> {whimsicalPhrase || 'Thinking'}
 						</Text>
 					)}
 					{!isThinking && (
-						<Text color={getAgentStatusColor()} wrap="truncate">{getAgentStatusLabel()}</Text>
+						<Text color={getAgentStatusColor()}>{getAgentStatusLabel()}</Text>
 					)}
 				</Box>
 			</Box>
@@ -588,51 +580,33 @@ function InputArea({
 	isNarrowScreen = false,
 }: InputAreaProps) {
 	return (
-		<Box flexDirection="column" width="100%" minWidth={isNarrowScreen ? 60 : 80} marginTop={1} paddingX={isNarrowScreen ? 0 : 1}>
-			{/* Prompt text above input */}
-			<Box marginBottom={1} paddingX={1}>
-				<Text bold color={crushTheme.accent.secondary}>
-					Your turn. Type a message or command.
-				</Text>
-			</Box>
-			{/* Input box - thicker border, more padding */}
+		<Box flexDirection="column" width="100%" minWidth={isNarrowScreen ? 60 : 80} marginTop={0} paddingX={0}>
+			{/* Input box - full width, 3 lines tall */}
 			<Box
 				borderStyle="double"
 				borderColor={floydTheme.colors.borderFocus}
-				paddingX={isNarrowScreen ? 1 : 2}
-				paddingY={1}
+				paddingX={1}
+				paddingY={0}
 				width="100%"
+				height={3}
 			>
 				<Text color={roleColors.inputPrompt}>❯ </Text>
 				<TextInput
 					value={value}
 					onChange={onChange}
 					onSubmit={onSubmit}
-					placeholder={isThinking ? 'Please wait...' : '│'}
+					placeholder={isThinking ? 'Please wait...' : 'Type a message...'}
 				/>
 			</Box>
 
-			{/* Voice Input Button */}
-			{onVoiceInput && (
-				<Box marginTop={1} paddingX={1}>
-					{isRecording ? (
-						<Text color={crushTheme.status.error}>🔴 Recording... (Press Ctrl+R again to stop)</Text>
-					) : isTranscribing ? (
-						<Text color={crushTheme.status.working}>⏳ Transcribing...</Text>
-					) : (
-						<Text color={crushTheme.accent.secondary}>🎤 Ctrl+R: Voice Input</Text>
-					)}
-				</Box>
-			)}
-			
-			{/* Hint footer */}
-			<Box marginTop={1} flexDirection="row" justifyContent="space-between" paddingX={1}>
+			{/* Compact hint footer - single line */}
+			<Box marginTop={0} flexDirection="row" justifyContent="space-between" paddingX={1}>
 				<Text color={roleColors.hint} dimColor>
-					{hint || 'Ctrl+R: Voice Input • Ctrl+P: Commands • Ctrl+/: Help • ?: Toggle Help • Esc: Exit'}
+					{isNarrowScreen ? 'Ctrl+P: Cmds • Ctrl+/: Help • Esc: Exit' : 'Ctrl+P: Commands • Ctrl+/: Help • Esc: Exit'}
 				</Text>
 				{isThinking && (
 					<Text color={roleColors.thinking}>
-						<Spinner type="dots" /> Generating response...
+						<Spinner type="dots" />
 					</Text>
 				)}
 			</Box>
@@ -669,6 +643,9 @@ export function MainLayout({
 	commands = commonCommands,
 	showHelp: showHelpProp = false,
 	showPromptLibrary: showPromptLibraryProp = false,
+	showMonitor: showMonitorProp = false,
+	showAgentBuilder: showAgentBuilderProp = false,
+	onCloseMonitor,
 	promptLibraryVaultPath,
 	isThinking = false,
 	whimsicalPhrase,
@@ -696,29 +673,117 @@ export function MainLayout({
 	quickActions = [],
 }: MainLayoutProps) {
 	const [input, setInput] = useState('');
-	const [showHelp, setShowHelp] = useState(showHelpProp);
-	const [showPromptLibrary, setShowPromptLibrary] = useState(showPromptLibraryProp);
-	const [showAgentBuilder, setShowAgentBuilder] = useState(false);
+	// showHelp local state - controlled internally for keyboard shortcuts
+	// Don't sync with prop to avoid infinite loop
+	const [showHelp, setShowHelp] = useState(false);
+
+	// Overlay state from centralized store (consolidated)
+	// NOTE: Use stable selectors for values, useCallback for actions to prevent infinite re-render loops
+	const showPromptLibrary = useFloydStore(state => state.showPromptLibrary);
+	const showAgentBuilder = useFloydStore(state => state.showAgentBuilder);
+	const setShowPromptLibrary = useCallback((value: boolean) => {
+		useFloydStore.getState().setOverlay('showPromptLibrary', value);
+	}, []);
+	const setShowAgentBuilder = useCallback((value: boolean) => {
+		useFloydStore.getState().setOverlay('showAgentBuilder', value);
+	}, []);
+	const togglePromptLibrary = useCallback(() => {
+		useFloydStore.getState().toggleOverlay('showPromptLibrary');
+	}, []);
+	const toggleAgentBuilder = useCallback(() => {
+		useFloydStore.getState().toggleOverlay('showAgentBuilder');
+	}, []);
+
 	const [currentSafetyMode, setCurrentSafetyMode] = useState<'yolo' | 'ask' | 'plan'>(safetyMode || 'ask');
 	const {exit: inkExit} = useApp();
 
-	// Screen size detection for responsive layout (Flexbot)
-	const terminalWidth = process.stdout.columns || 80;
-	const terminalHeight = process.stdout.rows || 24;
-	
-	const isWideScreen = terminalWidth >= 120;
-	const isUltraWideScreen = terminalWidth >= 160;
-	const isNarrowScreen = terminalWidth < 100;
-	
-	// Calculate available height for transcript panel
-	// Overhead: ASCII banner (10) + StatusBar (2) + InputArea (5) + padding (2) = ~19 lines
-	const overheadHeight = 19;
-	const availableHeight = Math.max(10, terminalHeight - overheadHeight);
-	const transcriptHeight = isNarrowScreen 
-		? Math.max(8, availableHeight) 
-		: isUltraWideScreen 
-			? Math.max(30, availableHeight) 
-			: Math.max(15, availableHeight);
+	// Screen size state for responsive layout (handles terminal resize)
+	const [terminalWidth, setTerminalWidth] = useState(process.stdout.columns || 80);
+	const [terminalHeight, setTerminalHeight] = useState(process.stdout.rows || 24);
+
+	// Listen for terminal resize events (debounced to prevent jitter)
+	useEffect(() => {
+		let resizeTimeout: NodeJS.Timeout | null = null;
+		const DEBOUNCE_MS = 100;
+
+		const handleResize = () => {
+			// Clear any pending resize handler
+			if (resizeTimeout) {
+				clearTimeout(resizeTimeout);
+			}
+
+			// Debounce: only update after no resize events for DEBOUNCE_MS
+			resizeTimeout = setTimeout(() => {
+				setTerminalWidth(process.stdout.columns || 80);
+				setTerminalHeight(process.stdout.rows || 24);
+			}, DEBOUNCE_MS);
+		};
+
+		// Listen to the resize event
+		process.stdout.on('resize', handleResize);
+
+		// Clean up the listener and any pending timeout on unmount
+		return () => {
+			process.stdout.off('resize', handleResize);
+			if (resizeTimeout) {
+				clearTimeout(resizeTimeout);
+			}
+		};
+	}, []);
+
+	// Responsive layout calculations based on terminal size
+	// Memoized to prevent recalculation on every render
+	const layoutConfig = useMemo(() => {
+		const isWideScreen = terminalWidth >= 120;
+		const isUltraWideScreen = terminalWidth >= 160;
+		const isNarrowScreen = terminalWidth < 100;
+		const isVeryNarrowScreen = terminalWidth < 80;
+
+		// Calculate available height for content panels
+		// CRITICAL: Ensure layout NEVER exceeds terminal height
+		// Use centralized layout constants for consistent height calculations
+		const hasBanner = !isVeryNarrowScreen && !isNarrowScreen;
+		const transcriptHeight = LAYOUT.calculateAvailableHeight(
+			terminalHeight,
+			hasBanner,
+			isNarrowScreen || isVeryNarrowScreen
+		);
+
+		// Panel widths - responsive to terminal size
+		const sessionPanelWidth = isVeryNarrowScreen ? 0 : isNarrowScreen ? 16 : isUltraWideScreen ? 24 : 20;
+		const contextPanelWidth = isVeryNarrowScreen ? 0 : isNarrowScreen ? 0 : isUltraWideScreen ? 24 : 20;
+
+		// Show panels based on available width
+		const showSessionPanel = !isVeryNarrowScreen && !compact;
+		const showContextPanel = !isNarrowScreen && !isVeryNarrowScreen && !compact;
+
+		return {
+			isWideScreen,
+			isUltraWideScreen,
+			isNarrowScreen,
+			isVeryNarrowScreen,
+			hasBanner,
+			transcriptHeight,
+			sessionPanelWidth,
+			contextPanelWidth,
+			showSessionPanel,
+			showContextPanel,
+		};
+	}, [terminalWidth, terminalHeight, compact]);
+
+	// Destructure for cleaner code
+	const {
+		isWideScreen,
+		isUltraWideScreen,
+		isNarrowScreen,
+		isVeryNarrowScreen,
+		hasBanner,
+		transcriptHeight,
+		sessionPanelWidth,
+		contextPanelWidth,
+		showSessionPanel,
+		showContextPanel,
+	} = layoutConfig;
 
 	// STT demo state (placeholder for actual STT integration)
 	const [isRecording, setIsRecording] = useState(false);
@@ -746,6 +811,7 @@ export function MainLayout({
 	const isTypingRef = useRef(false);
 	const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const textInputFocusedRef = useRef(false);
+	const lastSubmitTimeRef = useRef<number>(0);
 
 	// Sync ref with state
 	useEffect(() => {
@@ -759,12 +825,13 @@ export function MainLayout({
 			clearTimeout(typingTimeoutRef.current);
 		}
 
-		// Set typing flag to false after 1000ms of no input (increased from 500ms for safety)
+		// Set typing flag to false after 200ms of no input (reduced from 1000ms)
+		// This allows the ? hotkey to work more quickly after typing stops
 		if (input.length > 0) {
 			typingTimeoutRef.current = setTimeout(() => {
 				isTypingRef.current = false;
 				textInputFocusedRef.current = false;
-			}, 1000);
+			}, 200);
 		} else {
 			isTypingRef.current = false;
 			textInputFocusedRef.current = false;
@@ -777,16 +844,47 @@ export function MainLayout({
 		};
 	}, [input]);
 
-	// Sync messages with props (fixes prop reactivity issue)
-	const [messages, setMessages] = useState<ChatMessage[]>(propMessages);
-	useEffect(() => {
-		setMessages(propMessages);
-	}, [propMessages]);
+	// Use propMessages directly - no local state sync needed
+	// This prevents infinite re-render loop when store updates during streaming
+	const messages = propMessages;
 
 	// Handle input submission
 	const handleSubmit = useCallback(
 		(value: string) => {
-			if (!value.trim() || isThinking) return;
+			const now = Date.now();
+
+			// Debounce: Prevent rapid submissions within SUBMIT_DEBOUNCE_MS
+			if (now - lastSubmitTimeRef.current < SUBMIT_DEBOUNCE_MS) {
+				return;
+			}
+
+			// Rate limit check: Prevent submission if currently rate limited
+			if (useFloydStore.getState().isRateLimited()) {
+				return;
+			}
+
+			// Validation: Check for empty input
+			if (!value.trim()) {
+				return;
+			}
+
+			// Validation: Check for maximum length
+			if (value.length > MAX_INPUT_LENGTH) {
+				return;
+			}
+
+			// Prevent submission if agent is thinking
+			if (isThinking) {
+				return;
+			}
+
+			// Update last submission time
+			lastSubmitTimeRef.current = now;
+
+			// Record the API call (will be decremented from remaining)
+			useFloydStore.getState().recordCall();
+
+			// Clear input and submit
 			setInput('');
 			onSubmit?.(value);
 		},
@@ -882,8 +980,19 @@ export function MainLayout({
 	// 1. Input is empty AND user not actively typing, OR
 	// 2. Modifier keys are pressed (Ctrl+/), OR
 	// 3. Help overlay is already open
+
 	useInput((_inputKey, key) => {
-		// Always allow Esc to work (highest priority)
+		// Ctrl+C HARD EXIT - Always first check, unconditional, bypasses everything
+		if (key.ctrl && (_inputKey === 'c' || _inputKey === 'C')) {
+			onExit?.();
+			inkExit();
+			// Hard fallback - ensure process terminates even if inkExit doesn't work
+			setTimeout(() => process.exit(0), 50);
+			return;
+		}
+
+
+		// Always allow Esc to work
 		if (key.escape) {
 			if (showHelp) {
 				setShowHelp(false);
@@ -891,6 +1000,9 @@ export function MainLayout({
 				setShowPromptLibrary(false);
 			} else if (showAgentBuilder) {
 				setShowAgentBuilder(false);
+			} else if (showMonitorProp) {
+				onCloseMonitor?.();
+				return;
 			} else {
 				onExit?.();
 				inkExit();
@@ -919,6 +1031,7 @@ export function MainLayout({
 		if (input.length === 0 && !isTypingRef.current && _inputKey === '?') {
 			setShowHelp(v => !v);
 			return;
+		} else if (_inputKey === '?') {
 		}
 
 		// Shift+Tab to cycle through safety modes: YOLO → ASK → PLAN → YOLO
@@ -927,7 +1040,7 @@ export function MainLayout({
 			const currentIndex = modes.indexOf(currentSafetyMode);
 			const nextIndex = (currentIndex + 1) % modes.length;
 			const newMode = modes[nextIndex];
-			
+
 			setCurrentSafetyMode(newMode);
 			onSafetyModeChange?.(newMode);
 			onCommand?.('safety-mode-changed');
@@ -954,7 +1067,7 @@ export function MainLayout({
 
 		// Ctrl+Shift+P to open prompt library
 		if (key.ctrl && key.shift && _inputKey === 'p') {
-			setShowPromptLibrary(v => !v);
+			togglePromptLibrary();
 			return;
 		}
 	});
@@ -982,11 +1095,30 @@ export function MainLayout({
 		[onCommand, onExit, inkExit],
 	);
 
-	// Augment commands with handlers
-	const augmentedCommands: CommandItem[] = commands.map(cmd => ({
-		...cmd,
-		action: () => handleCommand(cmd.id),
-	}));
+	// Commands are already augmented in app.tsx - use them directly to avoid duplicate augmentation
+	// which would cause unnecessary re-renders. The augmentation happens once in app.tsx
+	// with the proper handleCommand callback chain.
+	const augmentedCommands = commands;
+
+	// Memoized quickActions labels for SessionPanel
+	const quickActionLabels = useMemo(
+		() => quickActions.map(qa => qa.shortcut + ' ' + qa.label),
+		[quickActions],
+	);
+
+	// Memoized recent messages for TranscriptPanel
+	const recentMessages = useMemo(
+		() => messages.slice(-20),
+		[messages],
+	);
+
+	// Memoized command selection callback
+	const handleCommandSelected = useCallback(
+		(commandText: string) => {
+			setInput(commandText);
+		},
+		[],
+	);
 
 	// Render help overlay
 	if (showHelp) {
@@ -1031,18 +1163,15 @@ export function MainLayout({
 	}
 
 	return (
-		<CommandPaletteTrigger 
-			commands={augmentedCommands} 
+		<CommandPaletteTrigger
+			commands={augmentedCommands}
 			initialOpen={false}
 			openKeys={['/']}  // Add / as a trigger key
-			onCommandSelected={(commandText) => {
-				// Insert selected command into input field
-				setInput(commandText);
-			}}
+			onCommandSelected={handleCommandSelected}
 		>
-			<Box flexDirection="column" padding={1} width="100%" height="100%">
-				{/* ASCII Banner */}
-				{!compact && <FloydAsciiBanner />}
+			<Box flexDirection="column" padding={0} width="100%">
+				{/* ASCII Banner - hide on narrow screens */}
+				{!compact && !isNarrowScreen && <FloydAsciiBanner />}
 
 				{/* Custom header or Status Bar */}
 				{customHeader || (
@@ -1058,11 +1187,11 @@ export function MainLayout({
 					/>
 				)}
 
-				{/* Main 3-Column Content Area */}
+				{/* Main 3-Column Content Area - responsive layout */}
 				<Box flexDirection="row" flexGrow={1} gap={isWideScreen ? 2 : 1} paddingX={isNarrowScreen ? 0 : 1} overflowY="hidden">
-					{/* Left: SESSION Panel */}
-					{!compact && (isWideScreen || !compact) && (
-						<Box width={isUltraWideScreen ? 22 : 18} flexShrink={0} marginRight={1}>
+					{/* Left: SESSION Panel - hidden on very narrow screens */}
+					{showSessionPanel && (
+						<Box width={sessionPanelWidth} flexShrink={0} marginRight={showSessionPanel && showContextPanel ? 1 : 0}>
 							<SessionPanel
 								repoName={repoName}
 								techStack={techStack}
@@ -1072,16 +1201,16 @@ export function MainLayout({
 								safetyMode={safetyMode}
 								tools={toolStates}
 								workers={workerStates}
-								quickActions={quickActions.map(qa => qa.shortcut + ' ' + qa.label)}
+								quickActions={quickActionLabels}
 								compact={compact || !isWideScreen}
 							/>
 						</Box>
 					)}
 
-					{/* Center: TRANSCRIPT Panel - increased padding */}
-					<Box flexGrow={1} flexDirection="column" paddingX={isNarrowScreen ? 0 : 2}>
+					{/* Center: TRANSCRIPT Panel - always shown, fills available space */}
+					<Box flexGrow={1} flexDirection="column" paddingX={isVeryNarrowScreen ? 1 : isNarrowScreen ? 1 : 2}>
 						<TranscriptPanel
-							messages={messages.slice(-20)} // Limit to last 20 messages
+							messages={recentMessages}
 							userName={userName}
 							toolExecutions={propToolExecutions}
 							streamingContent={streamingContent}
@@ -1090,9 +1219,9 @@ export function MainLayout({
 						/>
 					</Box>
 
-					{/* Right: CONTEXT Panel */}
-					{!compact && (isUltraWideScreen || isWideScreen) && (
-						<Box width={isUltraWideScreen ? 22 : 18} flexShrink={0} marginLeft={1}>
+					{/* Right: CONTEXT Panel - hidden on narrow screens */}
+					{showContextPanel && (
+						<Box width={contextPanelWidth} flexShrink={0} marginLeft={showSessionPanel && showContextPanel ? 1 : 0}>
 							<ContextPanel
 								currentPlan={currentPlan}
 								filesTouched={filesTouched}
@@ -1149,8 +1278,62 @@ export function CompactMainLayout({
 }: CompactMainLayoutProps) {
 	const [input, setInput] = useState('');
 	const {exit: inkExit} = useApp();
+	const lastSubmitTimeRef = useRef<number>(0);
+
+	// Handle input submission with validation
+	const handleSubmit = useCallback(
+		(value: string) => {
+			const now = Date.now();
+
+			// Debounce: Prevent rapid submissions within SUBMIT_DEBOUNCE_MS
+			if (now - lastSubmitTimeRef.current < SUBMIT_DEBOUNCE_MS) {
+				return;
+			}
+
+			// Rate limit check: Prevent submission if currently rate limited
+			if (useFloydStore.getState().isRateLimited()) {
+				return;
+			}
+
+			// Validation: Check for empty input
+			if (!value.trim()) {
+				return;
+			}
+
+			// Validation: Check for maximum length
+			if (value.length > MAX_INPUT_LENGTH) {
+				return;
+			}
+
+			// Prevent submission if agent is thinking
+			if (isThinking) {
+				return;
+			}
+
+			// Update last submission time
+			lastSubmitTimeRef.current = now;
+
+			// Record the API call (will be decremented from remaining)
+			useFloydStore.getState().recordCall();
+
+			// Clear input and submit
+			setInput('');
+			onSubmit?.(value);
+		},
+		[isThinking, onSubmit],
+	);
 
 	useInput((_inputKey, key) => {
+		// Ctrl+C HARD EXIT - Always first check, unconditional, bypasses everything
+		if (key.ctrl && (_inputKey === 'c' || _inputKey === 'C')) {
+			onExit?.();
+			inkExit();
+			// Hard fallback - ensure process terminates even if inkExit doesn't work
+			setTimeout(() => process.exit(0), 50);
+			return;
+		}
+
+		// Esc also exits
 		if (key.escape) {
 			onExit?.();
 			inkExit();
@@ -1194,11 +1377,15 @@ export function CompactMainLayout({
 				<Text>❯ </Text>
 				<TextInput
 					value={input}
-					onChange={setInput}
-					onSubmit={v => {
-						setInput('');
-						onSubmit?.(v);
+					onChange={(newValue) => {
+						// Enforce maxLength by truncating if necessary
+						if (newValue.length > MAX_INPUT_LENGTH) {
+							setInput(newValue.slice(0, MAX_INPUT_LENGTH));
+						} else {
+							setInput(newValue);
+						}
 					}}
+					onSubmit={handleSubmit}
 					placeholder="..."
 				/>
 			</Box>

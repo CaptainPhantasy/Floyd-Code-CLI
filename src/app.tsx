@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef, useCallback} from 'react';
+import {useState, useEffect, useRef, useCallback, useMemo} from 'react';
 import {Box, Text, useInput, useApp} from 'ink';
 import {AgentEngine, MCPClientManager, PermissionManager} from 'floyd-agent-core';
 import {SessionManager} from './store/session-store.js';
@@ -25,8 +25,29 @@ import type {Task} from './ui/agent/TaskChecklist.js';
 import type {ToolExecution} from './ui/monitor/ToolTimeline.js';
 import type {StreamEvent} from './ui/monitor/EventStream.js';
 import dotenv from 'dotenv';
+import {resolve} from 'node:path';
 
-dotenv.config();
+// Load environment variables from multiple possible locations
+const envPaths = [
+  '.env.local', // Project-specific local env (git-ignored)
+  '.env', // Project env
+  `${process.env.HOME}/.floyd/.env.local`, // Global user env
+];
+
+for (const envPath of envPaths) {
+  try {
+    const result = dotenv.config({path: envPath});
+    if (result.error) {
+      // Silently ignore ENOENT (file not found) errors
+      // Log other errors
+      console.error(`Error loading ${envPath}:`, result.error.message);
+    } else if (Object.keys(result.parsed ?? {}).length > 0) {
+      console.log(`Loaded environment from: ${envPath}`);
+    }
+  } catch {
+    // Ignore errors, try next path
+  }
+}
 
 type Message = {
 	role: 'user' | 'assistant' | 'system' | 'tool';
@@ -81,14 +102,14 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 	const [isThinking, setIsThinking] = useState(false);
 	const [agentStatus, setAgentStatus] = useState<ThinkingStatus>('idle');
 	const [currentWhimsicalPhrase, setCurrentWhimsicalPhrase] = useState<string | null>(null);
-	const [showHelp, setShowHelp] = useState(false);
+	// Removed showHelp local state - using Zustand store
 	// Removed localMessages - using Zustand store as single source of truth
 
 	// Agent visualization state
 	const [tasks, setTasks] = useState<Task[]>([]);
 	const [toolExecutions, setToolExecutions] = useState<ToolExecution[]>([]);
 	const [events, setEvents] = useState<StreamEvent[]>([]);
-	const [showMonitor, setShowMonitor] = useState(false);
+	// Removed showMonitor local state - using Zustand store
 	const [showAgentViz, setShowAgentViz] = useState(false);
 
 	// Refs for engine instances
@@ -108,6 +129,23 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 	const setAgentStoreStatus = useFloydStore(state => state.setStatus);
 	const safetyMode = useFloydStore(state => state.safetyMode);
 	const toggleSafetyMode = useFloydStore(state => state.toggleSafetyMode);
+
+	// Overlay state from store (consolidated)
+	// NOTE: Use stable selectors for values, useCallback for actions to prevent infinite re-render loops
+	const showHelp = useFloydStore(state => state.showHelp);
+	const showMonitor = useFloydStore(state => state.showMonitor);
+	const setShowHelp = useCallback((value: boolean) => {
+		useFloydStore.getState().setOverlay('showHelp', value);
+	}, []);
+	const setShowMonitor = useCallback((value: boolean) => {
+		useFloydStore.getState().setOverlay('showMonitor', value);
+	}, []);
+	const toggleHelp = useCallback(() => {
+		useFloydStore.getState().toggleOverlay('showHelp');
+	}, []);
+	const toggleMonitor = useCallback(() => {
+		useFloydStore.getState().toggleOverlay('showMonitor');
+	}, []);
 	
 	const {exit} = useApp();
 
@@ -136,6 +174,8 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 				await mcpManager.connectExternalServers(process.cwd());
 
 				const apiKey = process.env['GLM_API_KEY'] || 'dummy-key';
+				const apiEndpoint = process.env['GLM_ENDPOINT'] || 'https://api.z.ai/api/anthropic';
+				const apiModel = process.env['GLM_MODEL'] || 'claude-sonnet-4-20250514';
 
 				if (process.env['GLM_API_KEY'] === undefined) {
 					// We warn but continue with dummy for UI testing if requested
@@ -145,6 +185,8 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 			engineRef.current = new AgentEngine(
 				{
 					apiKey,
+					baseURL: apiEndpoint,
+					model: apiModel,
 					enableThinkingMode: true,
 					temperature: 0.2,
 				},
@@ -382,43 +424,32 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 	// ============================================================================
 
 	useInput((inputKey, key) => {
-		if (key.escape) {
-			if (showHelp) {
-				setShowHelp(false);
-			} else if (showMonitor) {
-				setShowMonitor(false);
-			} else {
-				exit();
-			}
-			return;
-		}
-
-		// Ctrl+/ to toggle help overlay (modifier key, safe to trigger anytime)
-		if (key.ctrl && inputKey === '/') {
-			setShowHelp(value => !value);
-			return;
-		}
+		// Note: Esc key is now handled by MainLayout, which has full visibility into all overlays
+		// Note: Ctrl+/ is now handled by MainLayout, which has access to showHelp state
 
 		// ? key only works when help/monitor overlays are not showing
 		// This prevents it from triggering during normal typing in MainLayout
 		if (inputKey === '?' && !showHelp && !showMonitor) {
-			setShowHelp(value => !value);
+			toggleHelp();
 			return;
 		}
 
 		// Ctrl+M to toggle monitor dashboard
 		if (inputKey === 'm' && key.ctrl) {
-			setShowMonitor(value => !value);
+			toggleMonitor();
+			return;
 		}
 
 		// Ctrl+T to toggle agent visualization
 		if (inputKey === 't' && key.ctrl) {
 			setShowAgentViz(value => !value);
+			return;
 		}
 
 		// Ctrl+Y to toggle YOLO mode
 		if (inputKey === 'y' && key.ctrl) {
 			toggleSafetyMode();
+			return;
 		}
 	});
 
@@ -439,10 +470,18 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 					useFloydStore.getState().clearMessages();
 					break;
 				case 'toggle-monitor':
-					setShowMonitor(v => !v);
+					toggleMonitor();
 					break;
 				case 'toggle-agent-viz':
 					setShowAgentViz(v => !v);
+					break;
+				case 'help':
+					// Toggle help overlay using store state
+					toggleHelp();
+					break;
+				case 'agent':
+					// Launch Agent Builder overlay
+					useFloydStore.getState().setOverlay('showAgentBuilder', true);
 					break;
 				case 'safety-mode-changed':
 					// Safety mode changed via Shift+Tab in MainLayout
@@ -452,7 +491,7 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 					break;
 			}
 		},
-		[exit],
+		[exit, toggleHelp],
 	);
 
 	// Handle safety mode changes from MainLayout
@@ -461,39 +500,47 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 	}, []);
 
 	// Augment common commands with additional Floyd-specific commands
-	const augmentedCommands: CommandItem[] = [
-		...commonCommands,
-		{
-			id: 'toggle-monitor',
-			label: 'Toggle Monitor',
-			icon: '◐',
-			action: () => setShowMonitor(v => !v),
-		},
-		{
-			id: 'toggle-agent-viz',
-			label: 'Toggle Agent Viz',
-			icon: '◉',
-			action: () => setShowAgentViz(v => !v),
-		},
-		{
-			id: 'dock',
-			label: 'Dock Command',
-			description: 'Execute command in TMUX monitor pane (e.g., :dock btop)',
-			icon: '⚓',
-			action: async () => {
-				// Dock commands are handled via text input parsing
-				// User types ":dock <command>" in the input field
-				// This command entry is for documentation/help purposes
+	// Memoized to prevent infinite re-render loop in MainLayout
+	const augmentedCommands: CommandItem[] = useMemo(
+		() => [
+			...commonCommands,
+			{
+				id: 'toggle-monitor',
+				label: 'Toggle Monitor',
+				icon: '◐',
+				action: () => toggleMonitor(),
 			},
-		},
-	].map(cmd => ({...cmd, action: () => handleCommand(cmd.id)}));
+			{
+				id: 'toggle-agent-viz',
+				label: 'Toggle Agent Viz',
+				icon: '◉',
+				action: () => setShowAgentViz(v => !v),
+			},
+			{
+				id: 'dock',
+				label: 'Dock Command',
+				description: 'Execute command in TMUX monitor pane (e.g., :dock btop)',
+				icon: '⚓',
+				action: async () => {
+					// Dock commands are handled via text input parsing
+					// User types ":dock <command>" in the input field
+					// This command entry is for documentation/help purposes
+				},
+			},
+		].map(cmd => ({...cmd, action: () => handleCommand(cmd.id)})),
+		[commonCommands, handleCommand, toggleMonitor]
+	);
 
 	// ============================================================================
 	// COMBINE MESSAGES FOR DISPLAY
 	// ============================================================================
 
 	// Use store messages as single source of truth (convert to ChatMessage format)
-	const allMessages: ChatMessage[] = storeMessages.map(toChatMessage);
+	// Memoized to prevent infinite re-render loop in MainLayout
+	const allMessages: ChatMessage[] = useMemo(
+		() => storeMessages.map(toChatMessage),
+		[storeMessages]
+	);
 
 	// ============================================================================
 	// HELP OVERLAY
@@ -612,6 +659,9 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 				onExit={exit}
 				safetyMode={safetyMode}
 				onSafetyModeChange={handleSafetyModeChange}
+				showHelp={showHelp}
+				showMonitor={showMonitor}
+				onCloseMonitor={() => setShowMonitor(false)}
 				showAgentViz={showAgentViz || (hasActivity && tasks.length > 0)}
 				showToolTimeline={
 					showAgentViz || (hasActivity && toolExecutions.length > 0)
