@@ -8,7 +8,7 @@
  */
 
 import {useState, useEffect} from 'react';
-import {Box, Text, useInput} from 'ink';
+import {Box, Text, useInput, useFocus} from 'ink';
 import TextInput from 'ink-text-input';
 import SelectInput from 'ink-select-input';
 import {SimpleTable} from '../ui/components/SimpleTable.js';
@@ -37,6 +37,7 @@ const CATEGORIES: Array<{label: string; value: PromptCategory}> = [
  * PromptLibrary - Prompt template management interface
  */
 export function PromptLibrary() {
+	const {isFocused} = useFocus({autoFocus: true});
 	const {
 		templates,
 		getTemplatesByCategory,
@@ -78,6 +79,8 @@ export function PromptLibrary() {
 
 	// Handle input
 	useInput((input, key) => {
+		if (!isFocused) return;
+
 		if (key.escape) {
 			setShowAddForm(false);
 			setEditingId(null);

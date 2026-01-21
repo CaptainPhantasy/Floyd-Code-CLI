@@ -8,18 +8,19 @@
  */
 
 import {useState} from 'react';
-import {Box, Text, useInput, useApp} from 'ink';
+import {Box, Text, useInput, useApp, useFocus} from 'ink';
 import {Tabs, Tab} from 'ink-tab';
 import {MonitorConfig} from './MonitorConfig.js';
 import {AgentManager} from './AgentManager.js';
 import {PromptLibrary} from './PromptLibrary.js';
+import {ApiSettings} from './ApiSettings.js';
 import {floydTheme, roleColors} from '../theme/crush-theme.js';
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-type ConfigTab = 'monitor' | 'agents' | 'prompts';
+type ConfigTab = 'monitor' | 'agents' | 'prompts' | 'api';
 
 // ============================================================================
 // CONFIG APP COMPONENT
@@ -29,11 +30,14 @@ type ConfigTab = 'monitor' | 'agents' | 'prompts';
  * ConfigApp - Main configuration interface
  */
 export function ConfigApp() {
+	const {isFocused} = useFocus({autoFocus: true});
 	const [activeTab, setActiveTab] = useState<ConfigTab>('monitor');
 	const {exit} = useApp();
 
 	// Handle keyboard input
 	useInput((input, key) => {
+		if (!isFocused) return;
+
 		if (key.escape) {
 			exit();
 			return;
@@ -43,6 +47,7 @@ export function ConfigApp() {
 		if (input === '1') setActiveTab('monitor');
 		if (input === '2') setActiveTab('agents');
 		if (input === '3') setActiveTab('prompts');
+		if (input === '4') setActiveTab('api');
 	});
 
 	const handleTabChange = (name: string) => {
@@ -63,7 +68,7 @@ export function ConfigApp() {
 				</Text>
 				<Box marginLeft={2}>
 					<Text color={roleColors.hint} dimColor>
-						Press Tab/Arrows to switch tabs • 1-3 for direct selection • Esc to exit
+						Press Tab/Arrows to switch tabs • 1-4 for direct selection • Esc to exit
 					</Text>
 				</Box>
 			</Box>
@@ -74,6 +79,7 @@ export function ConfigApp() {
 					<Tab name="monitor">Monitor</Tab>
 					<Tab name="agents">Agents</Tab>
 					<Tab name="prompts">Prompts</Tab>
+					<Tab name="api">API</Tab>
 				</Tabs>
 			</Box>
 
@@ -82,6 +88,7 @@ export function ConfigApp() {
 				{activeTab === 'monitor' && <MonitorConfig />}
 				{activeTab === 'agents' && <AgentManager />}
 				{activeTab === 'prompts' && <PromptLibrary />}
+				{activeTab === 'api' && <ApiSettings />}
 			</Box>
 		</Box>
 	);

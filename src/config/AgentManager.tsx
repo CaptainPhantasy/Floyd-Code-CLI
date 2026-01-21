@@ -8,7 +8,7 @@
  */
 
 import {useState, useEffect} from 'react';
-import {Box, Text, useInput} from 'ink';
+import {Box, Text, useInput, useFocus} from 'ink';
 import TextInput from 'ink-text-input';
 import SelectInput from 'ink-select-input';
 import MultiSelect from 'ink-multi-select';
@@ -48,6 +48,7 @@ const AVAILABLE_TOOLS = [
  * AgentManager - Agent profile management interface
  */
 export function AgentManager() {
+	const {isFocused} = useFocus({autoFocus: true});
 	const {
 		profiles,
 		activeProfileId,
@@ -88,6 +89,8 @@ export function AgentManager() {
 
 	// Handle input
 	useInput((input, key) => {
+		if (!isFocused) return;
+
 		if (key.escape) {
 			setShowAddForm(false);
 			setEditingId(null);

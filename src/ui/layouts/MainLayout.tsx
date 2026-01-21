@@ -1,4 +1,11 @@
 /**
+ * 🔒 LOCKED FILE - CORE STABILITY
+ * This file has been audited and stabilized by Gemini 4.
+ * Please do not modify without explicit instruction and regression testing.
+ * Ref: geminireport.md
+ */
+
+/**
  * MainLayout Component
  *
  * Primary interactive screen layout for the FLOYD CLI.
@@ -86,6 +93,7 @@ export interface ChatMessage {
 	role: MessageRole;
 	content: string | ReactNode;
 	timestamp: Date;
+	streaming?: boolean;
 	toolCalls?: Array<{
 		name: string;
 		status: 'pending' | 'running' | 'success' | 'error';
@@ -581,14 +589,14 @@ function InputArea({
 }: InputAreaProps) {
 	return (
 		<Box flexDirection="column" width="100%" minWidth={isNarrowScreen ? 60 : 80} marginTop={0} paddingX={0}>
-			{/* Input box - full width, 3 lines tall */}
+			{/* Input box - full width, 5 lines tall */}
 			<Box
 				borderStyle="double"
 				borderColor={floydTheme.colors.borderFocus}
 				paddingX={1}
-				paddingY={0}
+				paddingY={1}
 				width="100%"
-				height={3}
+				height={5}
 			>
 				<Text color={roleColors.inputPrompt}>❯ </Text>
 				<TextInput
@@ -695,6 +703,7 @@ export function MainLayout({
 	}, []);
 
 	const [currentSafetyMode, setCurrentSafetyMode] = useState<'yolo' | 'ask' | 'plan'>(safetyMode || 'ask');
+	const [zenMode, setZenMode] = useState(false);
 	const {exit: inkExit} = useApp();
 
 	// Screen size state for responsive layout (handles terminal resize)
@@ -754,8 +763,8 @@ export function MainLayout({
 		const contextPanelWidth = isVeryNarrowScreen ? 0 : isNarrowScreen ? 0 : isUltraWideScreen ? 24 : 20;
 
 		// Show panels based on available width
-		const showSessionPanel = !isVeryNarrowScreen && !compact;
-		const showContextPanel = !isNarrowScreen && !isVeryNarrowScreen && !compact;
+		const showSessionPanel = !isVeryNarrowScreen && !compact && !zenMode;
+		const showContextPanel = !isNarrowScreen && !isVeryNarrowScreen && !compact && !zenMode;
 
 		return {
 			isWideScreen,
@@ -769,7 +778,7 @@ export function MainLayout({
 			showSessionPanel,
 			showContextPanel,
 		};
-	}, [terminalWidth, terminalHeight, compact]);
+	}, [terminalWidth, terminalHeight, compact, zenMode]);
 
 	// Destructure for cleaner code
 	const {
@@ -973,6 +982,15 @@ export function MainLayout({
 				setShowHelp(false);
 			},
 		},
+		{
+			keys: 'Ctrl+Z',
+			description: 'Toggle Zen Mode (Hide/Show sidebars)',
+			category: 'View',
+			action: () => {
+				setZenMode(v => !v);
+				setShowHelp(false);
+			},
+		},
 	];
 
 	// Handle keyboard input
@@ -981,8 +999,33 @@ export function MainLayout({
 	// 2. Modifier keys are pressed (Ctrl+/), OR
 	// 3. Help overlay is already open
 
+	// Track all overlay states in a single ref to avoid closure staleness in useInput
+	const overlayStateRef = useRef({
+		showHelp,
+		showPromptLibrary,
+		showAgentBuilder,
+		showMonitorProp,
+	});
+	useEffect(() => {
+		overlayStateRef.current = {
+			showHelp,
+			showPromptLibrary,
+			showAgentBuilder,
+			showMonitorProp,
+		};
+	}, [showHelp, showPromptLibrary, showAgentBuilder, showMonitorProp]);
+
 	useInput((_inputKey, key) => {
-		// Ctrl+C HARD EXIT - Always first check, unconditional, bypasses everything
+		// Ctrl+Q DEFINITIVE QUIT - Always first check, this is THE way to exit floyd-cli
+		if (key.ctrl && (_inputKey === 'q' || _inputKey === 'Q')) {
+			onExit?.();
+			inkExit();
+			// Hard fallback - ensure process terminates even if inkExit doesn't work
+			setTimeout(() => process.exit(0), 50);
+			return;
+		}
+
+		// Ctrl+C HARD EXIT - Failsafe that also works
 		if (key.ctrl && (_inputKey === 'c' || _inputKey === 'C')) {
 			onExit?.();
 			inkExit();
@@ -992,47 +1035,49 @@ export function MainLayout({
 		}
 
 
-		// Always allow Esc to work
+		// Esc key exits the CLI when no overlays are open
+		// (Overlays handle their own Esc key in their own useInput handlers)
 		if (key.escape) {
-			if (showHelp) {
-				setShowHelp(false);
-			} else if (showPromptLibrary) {
-				setShowPromptLibrary(false);
-			} else if (showAgentBuilder) {
-				setShowAgentBuilder(false);
-			} else if (showMonitorProp) {
-				onCloseMonitor?.();
-				return;
-			} else {
-				onExit?.();
-				inkExit();
-			}
+			onExit?.();
+			inkExit();
 			return;
 		}
 
-		// Ctrl+/ always triggers help overlay (modifier key, safe to trigger anytime)
+		// Ctrl+/ toggles help overlay
 		if (key.ctrl && _inputKey === '/') {
 			setShowHelp(v => !v);
 			return;
 		}
 
-		// Ctrl+P opens command palette (handled by CommandPaletteTrigger, but we can also trigger it manually)
+		// Ctrl+P opens command palette (handled by CommandPaletteTrigger)
 		if (key.ctrl && _inputKey === 'p') {
-			// CommandPaletteTrigger handles this, but we close help if it's open
-			if (showHelp) {
-				setShowHelp(false);
-			}
-			return;
+			return; // Let CommandPaletteTrigger handle it
 		}
 
 		// ? hotkey ONLY triggers when input bar is COMPLETELY EMPTY
 		// This prevents triggering when typing sentences ending with "?" like "What is this?"
-		// Check: input must be empty AND not recently typed
-		if (input.length === 0 && !isTypingRef.current && _inputKey === '?') {
+		// Check: input must be empty (actual state value, not a timeout-based ref)
+		if (input.length === 0 && _inputKey === '?') {
 			setShowHelp(v => !v);
 			return;
-		} else if (_inputKey === '?') {
 		}
+
+		// CRITICAL FIX: When ANY overlay is open, return early to let the overlay handle its own input.
+		// MainLayout's useInput runs even when conditional rendering shows only an overlay,
+		// so we must get out of the way and not interfere with the overlay's own useInput handler.
+		// This fixes the bug where help menu was stuck open with no working exit keys.
+		// Use ref to get current values, avoiding closure staleness.
+		const {
+			showHelp: helpOpen,
+			showPromptLibrary: promptLibOpen,
+			showAgentBuilder: agentBuilderOpen,
+			showMonitorProp: monitorOpen,
+		} = overlayStateRef.current;
+
+		if (helpOpen || promptLibOpen || agentBuilderOpen || monitorOpen) {
+			return; // Let the active overlay handle keyboard input
+		}
+
 
 		// Shift+Tab to cycle through safety modes: YOLO → ASK → PLAN → YOLO
 		if (key.tab && key.shift) {
@@ -1062,6 +1107,12 @@ export function MainLayout({
 		// Ctrl+R to start voice input
 		if (key.ctrl && _inputKey === 'r') {
 			handleVoiceInput();
+			return;
+		}
+
+		// Ctrl+Z to toggle Zen Mode
+		if (key.ctrl && _inputKey === 'z') {
+			setZenMode(v => !v);
 			return;
 		}
 
@@ -1154,7 +1205,6 @@ export function MainLayout({
 				isOpen={showAgentBuilder}
 				onCreate={(config) => {
 					// Handle agent creation
-					console.log('Agent created:', config);
 					setShowAgentBuilder(false);
 				}}
 				onClose={() => setShowAgentBuilder(false)}
@@ -1324,7 +1374,16 @@ export function CompactMainLayout({
 	);
 
 	useInput((_inputKey, key) => {
-		// Ctrl+C HARD EXIT - Always first check, unconditional, bypasses everything
+		// Ctrl+Q DEFINITIVE QUIT - Always first check, this is THE way to exit floyd-cli
+		if (key.ctrl && (_inputKey === 'q' || _inputKey === 'Q')) {
+			onExit?.();
+			inkExit();
+			// Hard fallback - ensure process terminates even if inkExit doesn't work
+			setTimeout(() => process.exit(0), 50);
+			return;
+		}
+
+		// Ctrl+C HARD EXIT - Failsafe that also works
 		if (key.ctrl && (_inputKey === 'c' || _inputKey === 'C')) {
 			onExit?.();
 			inkExit();

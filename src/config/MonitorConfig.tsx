@@ -8,7 +8,7 @@
  */
 
 import {useState, useEffect} from 'react';
-import {Box, Text, useInput} from 'ink';
+import {Box, Text, useInput, useFocus} from 'ink';
 import TextInput from 'ink-text-input';
 import SelectInput from 'ink-select-input';
 import MultiSelect from 'ink-multi-select';
@@ -26,6 +26,7 @@ import type {WatchPattern, EventFilter, MCPServerConfig} from '../store/config-s
  * MonitorConfig - Monitoring configuration interface
  */
 export function MonitorConfig() {
+	const {isFocused} = useFocus({autoFocus: true});
 	const {
 		config,
 		setWatchPatterns,
@@ -65,6 +66,8 @@ export function MonitorConfig() {
 
 	// Handle input
 	useInput((input, key) => {
+		if (!isFocused) return;
+
 		if (key.escape) {
 			setShowAddPattern(false);
 			setShowDeleteConfirm(false);

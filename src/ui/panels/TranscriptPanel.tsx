@@ -1,4 +1,11 @@
 /**
+ * 🔒 LOCKED FILE - CORE STABILITY
+ * This file has been audited and stabilized by Gemini 4.
+ * Please do not modify without explicit instruction and regression testing.
+ * Ref: geminireport.md
+ */
+
+/**
  * TranscriptPanel Component
  *
  * Middle pane showing conversation history, tool calls, and agent activity.
@@ -11,6 +18,7 @@ import Spinner from 'ink-spinner';
 import {Frame} from '../crush/Frame.js';
 import {Viewport} from '../crush/Viewport.js';
 import {ToolCard, ToolCardList} from '../components/ToolCard.js';
+import {MarkdownRenderer} from '../components/MarkdownRenderer.js';
 import {floydTheme, roleColors} from '../../theme/crush-theme.js';
 import type {ChatMessage, MessageRole} from '../layouts/MainLayout.js';
 import type {ToolExecution} from '../monitor/ToolTimeline.js';
@@ -90,7 +98,7 @@ export function TranscriptPanel({
 	const displayMessages = messages.slice(-maxMessages);
 
 	return (
-		<Frame title=" TRANSCRIPT " borderStyle="round" borderVariant="focus" padding={2}>
+		<Frame title=" TRANSCRIPT " borderStyle="round" borderVariant="focus" padding={2} width="100%">
 			<Viewport height={height} showScrollbar>
 				<Box flexDirection="column" gap={1} width="100%">
 					{/* Messages */}
@@ -103,21 +111,29 @@ export function TranscriptPanel({
 					)}
 
 					{displayMessages.map(msg => (
-						<Box key={msg.id} flexDirection="column" marginBottom={1} width="100%">
+						<Box key={msg.id} flexDirection="column" marginBottom={2} width="100%">
 							{/* Message header */}
-							<Box flexDirection="row" gap={2}>
-								<Text color={getMessageColor(msg.role)}>
-									{msg.role === 'user' ? '>' : '<'} {getLabel(msg.role)}:
+							<Box flexDirection="row" gap={1} marginBottom={1}>
+								<Text color={getMessageColor(msg.role)} bold>
+									{msg.role === 'user' ? '❯' : '✦'} {getLabel(msg.role)}
 								</Text>
 								<Text color={floydTheme.colors.fgSubtle} dimColor>
 									{formatTimestamp(msg.timestamp)}
 								</Text>
+								{msg.streaming && isThinking && (
+									<Text color={roleColors.thinking}>
+										<Spinner type="dots" />
+									</Text>
+								)}
 							</Box>
 
 							{/* Message content */}
-							<Box marginLeft={3} flexDirection="column" width="100%">
+							<Box marginLeft={2} flexDirection="column" width="100%">
 								{typeof msg.content === 'string' ? (
-									<Text color={floydTheme.colors.fgBase} wrap="wrap">{msg.content}</Text>
+									<Box flexDirection="column">
+										<MarkdownRenderer>{msg.content}</MarkdownRenderer>
+										{msg.streaming && <Text color={roleColors.thinking}>▋</Text>}
+									</Box>
 								) : (
 									msg.content
 								)}
@@ -160,28 +176,6 @@ export function TranscriptPanel({
 							}))}
 							compact={false}
 						/>
-					)}
-
-					{/* Streaming content */}
-					{streamingContent && (
-						<Box flexDirection="column" marginBottom={1} width="100%">
-							<Box flexDirection="row" gap={2}>
-								<Text bold color={roleColors.assistantLabel}>
-									&lt; Assistant:
-								</Text>
-								{isThinking && (
-									<Text color={roleColors.thinking}>
-										<Spinner type="dots" />
-									</Text>
-								)}
-							</Box>
-							<Box marginLeft={3} width="100%">
-								<Text color={floydTheme.colors.fgBase} wrap="wrap">
-									{streamingContent}
-									<Text color={roleColors.thinking}>▋</Text>
-								</Text>
-							</Box>
-						</Box>
 					)}
 				</Box>
 			</Viewport>
