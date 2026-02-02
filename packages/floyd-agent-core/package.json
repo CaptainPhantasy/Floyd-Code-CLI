@@ -44,7 +44,7 @@
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "dev": "tsc -b --watch",
     "lint": "eslint src --ext .ts",
-    "test": "node --test --experimental-test-coverage src/__tests__/*.test.ts",
+    "test": "node --test --experimental-test-coverage dist/__tests__/*.test.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -4,8 +4,13 @@
  * Default system prompt for FLOYD CLI agent interactions.
  * Provides core instructions, behavior guidelines, and context.
  *
+ * PHASE 1 ITEM 1: Dynamic Prompt Generation integrated
+ *
  * @module prompts/system-prompt
  */
+
+// Import dynamic tool capabilities from floyd-agent-core
+import { generateToolCapabilities, type ToolCapabilitiesOptions } from 'floyd-agent-core';
 
 // ============================================================================
 // SYSTEM PROMPT CONFIG
@@ -47,6 +52,23 @@ export interface SystemPromptConfig {
 
 	/** Custom instructions to append */
 	appendInstructions?: string[];
+
+	/** Phase 1 Item 1: Dynamic tool capabilities options */
+	toolCapabilitiesOptions?: ToolCapabilitiesOptions;
+
+	/** Use dynamic tool capabilities instead of static list */
+	useDynamicToolCapabilities?: boolean;
+}
+
+// ============================================================================
+// DYNAMIC TOOL CAPABILITIES (Phase 1 Item 1)
+// ============================================================================
+
+/**
+ * Generate tool capabilities dynamically from centralized tool registry
+ */
+export function getToolCapabilities(options?: ToolCapabilitiesOptions): string {
+	return generateToolCapabilities(options);
 }
 
 // ============================================================================
@@ -66,6 +88,8 @@ export function getSystemPrompt(config: SystemPromptConfig = {}): string {
 		features = {},
 		customInstructions = [],
 		appendInstructions = [],
+		useDynamicToolCapabilities = false,
+		toolCapabilitiesOptions = { includePermissions: true, groupByCategory: true, includeSummary: true },
 	} = config;
 
 	const sections: string[] = [];
@@ -101,6 +125,10 @@ You run in the terminal, help users with code, and use tools to interact with th
 - Think → Call Tool → Observe Output → Think Again
 - Never batch all planning upfront - iterate based on tool results
 - Preserve reasoning context across multi-turn conversations
+${
+	useDynamicToolCapabilities
+		? generateToolCapabilities(toolCapabilitiesOptions)
+		: `
 
 ## Capabilities
 
@@ -122,6 +150,8 @@ ${
 	tools.length > 0
 		? `**Available Tools:**\n${tools.map(t => `- ${t}`).join('\n')}`
 		: ''
+}
+`
 }
 
 ## Behavior Guidelines
@@ -396,4 +426,6 @@ export default {
 	getDebugPrompt,
 	getRefactorPrompt,
 	getExplanationPrompt,
+	// Phase 1 Item 1: Dynamic tool capabilities
+	getToolCapabilities,
 };

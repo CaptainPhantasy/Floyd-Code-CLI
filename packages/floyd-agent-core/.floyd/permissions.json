@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "sessionId": "session-1770006844476",
+  "permissions": {
+    "delete_file": {
+      "toolName": "delete_file",
+      "decision": "allow",
+      "scope": "session",
+      "timestamp": 1770006844477,
+      "expiresAt": 1770093244477
+    }
+  }
+}

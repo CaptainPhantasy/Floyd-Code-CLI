@@ -169,8 +169,107 @@ export {
   formatHumanizedError,
   isRetryableError,
   getErrorCategory,
+  fuzzyMatch,
+  fuzzyMatchBatch,
+  findBestLineMatch,
+  generatePatchSuggestion,
   type HumanizedError,
-} from './utils/error-humanizer.js';
+  type FuzzyMatch,
+  type FuzzyMatchConfig,
+} from './utils/index.js';
+
+// ============================================================================
+// IO - File Operations (PHASE 3 ITEMS 11, 12)
+// ============================================================================
+export {
+  readFilePath,
+  calculateLineRange,
+  shouldChunk,
+  calculateChunkCount,
+  dryRunWrite,
+  dryRunEdit,
+  dryRunDelete,
+  dryRunBatch,
+  calculateBatchRisk,
+  type FileReadOptions,
+  type FileReadResult,
+  type DryRunResult,
+  type DryRunOptions,
+} from './io/index.js';
+
+// ============================================================================
+// CACHE - Tier Operations (PHASE 3 ITEMS 10, 13)
+// ============================================================================
+export {
+  getCacheTierDescription,
+  migrateCacheEntry,
+  validateCacheKey,
+  recommendTier,
+  type CacheTier,
+  type CacheTierInfo,
+  type CacheMigrationResult,
+} from './cache/cache-tiers.js';
+
+// ============================================================================
+// GIT - Branch Protection (PHASE 3 ITEM 14)
+// ============================================================================
+export {
+  isProtectedBranch,
+  checkBranchOperation,
+  validateBranchName,
+  PROTECTED_BRANCHES,
+  DEFAULT_PROTECTION,
+  type BranchProtectionRule,
+} from './git/index.js';
+
+// ============================================================================
+// BROWSER - Graceful Degradation & NL Click (PHASE 3 ITEMS 15, 17)
+// ============================================================================
+export {
+  checkBrowserConnection,
+  executeWithFallback,
+  getDegradationMessage,
+  BrowserOperations,
+  describeElement,
+  generateSelector,
+  parseNaturalLanguage,
+  findByDescription,
+  generateClickInstruction,
+  type BrowserStatus,
+} from './browser/index.js';
+
+// ============================================================================
+// SEARCH - Extended Grep (PHASE 3 ITEM 16)
+// ============================================================================
+export {
+  extendedGrep,
+  grepWithContextHighlight,
+  grepExists,
+  grepLineNumbers,
+  grepBatch,
+  type GrepOptions,
+  type GrepMatch,
+  type GrepResult,
+} from './search/index.js';
+
+// ============================================================================
+// TRANSACTIONS - Multi-file Rollback (PHASE 3 ITEM 18)
+// ============================================================================
+export {
+  createTransaction,
+  addOperation,
+  beginTransaction,
+  commitTransaction,
+  rollbackTransaction,
+  storeRollbackData,
+  getTransactionStatus,
+  listActiveTransactions,
+  isTransactionStale,
+  cleanupStaleTransactions,
+  type Transaction,
+  type TransactionOperation,
+  type TransactionOptions,
+} from './transactions/index.js';
 
 // ============================================================================
 // PROMPTS - Tool Capabilities & System Prompts (PHASE 1)
@@ -184,3 +283,29 @@ export {
   type ToolDefinition,
   type ToolCapabilitiesOptions,
 } from './prompts/index.js';
+
+// ============================================================================
+// COMPLEXITY - Task Classification (PHASE 3 ITEM 7)
+// ============================================================================
+export {
+  assessComplexity,
+  quickAssess,
+  getTimeoutForComplexity,
+  getMaxTurnsForComplexity,
+  ComplexityLevel,
+  TaskType,
+  type ComplexityAssessment,
+  type TaskContext,
+} from './complexity/complexity-classifier.js';
+
+// ============================================================================
+// GUARDS - Loop Detection & Retry (PHASE 3 ITEM 8)
+// ============================================================================
+export {
+  RetryGuard,
+  createRetryGuard,
+  getRetryDelay,
+  type GuardToolExecution,
+  type LoopDetection,
+  type RetryGuardConfig,
+} from './guards/index.js';

@@ -17,7 +17,11 @@
 		"test:components": "ava src/ui/components/__tests__",
 		"test:modules": "ava src/__tests__/module-resolution.test.ts",
 		"test:build": "ava src/__tests__/build-verification.test.ts",
-		"test:runtime": "ava src/__tests__/runtime-verification.test.ts"
+		"test:runtime": "ava src/__tests__/runtime-verification.test.ts",
+		"validate:agents": "tsx .claude-plugin/bin/validate-agents.ts check",
+		"validate:agents:fix": "tsx .claude-plugin/bin/validate-agents.ts fix",
+		"validate:agents:watch": "tsx .claude-plugin/bin/validate-agents.ts watch",
+		"prepare": "git config core.hooksPath .claude-plugin/hooks || true"
 	},
 	"files": [
 		"dist"
@@ -30,7 +34,8 @@
 		"@types/ws": "^8.18.1",
 		"chokidar": "^3.6.0",
 		"cli-chart": "^0.3.1",
-		"diff": "^7.0.0",
+		"commander": "^14.0.3",
+		"diff": "^8.0.3",
 		"dotenv": "^17.2.3",
 		"execa": "^9.5.2",
 		"fast-glob": "^3.3.3",
@@ -64,6 +69,7 @@
 		"ink-table": "^3.0.0",
 		"ink-task-list": "^2.0.0",
 		"ink-text-input": "^5.0.1",
+		"js-yaml": "^4.1.1",
 		"keytar": "^7.9.0",
 		"marked": "^12.0.2",
 		"meow": "^11.0.0",
@@ -93,13 +99,13 @@
 		"chalk": "^5.2.0",
 		"eslint-config-xo-react": "^0.27.0",
 		"eslint-plugin-react": "^7.32.2",
-		"eslint-plugin-react-hooks": "^4.6.0",
+		"eslint-plugin-react-hooks": "^7.0.1",
 		"ink-testing-library": "^3.0.0",
 		"prettier": "^2.8.7",
 		"ts-node": "^10.9.1",
 		"tsx": "^4.21.0",
 		"typescript": "^5.0.3",
-		"xo": "^0.53.1"
+		"xo": "^0.60.0"
 	},
 	"ava": {
 		"extensions": {

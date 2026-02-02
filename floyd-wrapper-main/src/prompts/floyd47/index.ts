@@ -1,4 +1,5 @@
 /**
+/**
  * Floyd 4.7 - GLM-4.7 Optimized System Prompt
  *
  * Based on GLM 4.7 best practices:
@@ -8,13 +9,16 @@
  * - Control reasoning verbosity for simple tasks
  * - Tool Use optimization
  * - Structured output requests
+ * - DYNAMIC TOOL CAPABILITIES (Phase 1 Item 1)
  *
- * UPDATED: 2026-01-27
+ * UPDATED: 2026-02-01
  */
 
 // Re-export Flash prompt for external use
 export { buildFlashSystemPrompt, FLASH_SETTINGS as FLOYD47_FLASH_SETTINGS } from './flash/index.js';
 
+// Import dynamic tool capabilities from floyd-agent-core
+import { generateToolCapabilities, type ToolCapabilitiesOptions } from '@floyd/agent-core';
 const BACKTICK = '`';
 const TRIPLE_BACKTICK = '```';
 
@@ -25,9 +29,13 @@ export interface Floyd47PromptConfig {
 	maxTurns?: number;
 	disableReasoning?: boolean;
 	enablePreservedThinking?: boolean;
+	// Phase 1 Item 1: Tool capabilities options
+	toolCapabilitiesOptions?: ToolCapabilitiesOptions;
 }
 
 /**
+ * GLM-4.7 Optimized Settings
+ */
  * GLM-4.7 Optimized Settings
  */
 export const GLM47_SETTINGS = {
@@ -51,6 +59,7 @@ export function buildFloyd47SystemPrompt(config: Floyd47PromptConfig = {}): stri
 		maxTurns = 20,
 		disableReasoning = false,
 		enablePreservedThinking = true,
+		toolCapabilitiesOptions = { includePermissions: true, groupByCategory: true, includeSummary: true },
 	} = config;
 
 	// ============================================================================
@@ -95,138 +104,11 @@ Every line you write must be:
 `;
 
 	// ============================================================================
-	// AUXILIARY PROMPT - Tool Capabilities
+	// AUXILIARY PROMPT - Tool Capabilities (Phase 1 Item 1: DYNAMIC)
 	// ============================================================================
-	const auxiliaryPrompt = `
-## 2. THE TOOL ENGINE (50-TOOL SUITE)
-
-### Core Philosophy
-Tools are your physical interface to reality. Use them precisely. Verify results.
-
-### File Operations (7 tools)
-| Tool | Purpose | Parameters |
-|------|---------|------------|
-| **read_file** | Read file contents | ${BACKTICK}file_path${BACKTICK} (absolute) |
-| **write** | Create/overwrite files | ${BACKTICK}file_path${BACKTICK}, ${BACKTICK}content${BACKTICK} |
-| **edit_file** | Edit specific sections | ${BACKTICK}file_path${BACKTICK}, ${BACKTICK}old_string${BACKTICK}, ${BACKTICK}new_string${BACKTICK} |
-| **search_replace** | Global find/replace | ${BACKTICK}path${BACKTICK}, ${BACKTICK}pattern${BACKTICK}, ${BACKTICK}replacement${BACKTICK}, ${BACKTICK}replaceAll${BACKTICK} |
-| **list_directory** | List files/dirs | ${BACKTICK}path${BACKTICK}, ${BACKTICK}recursive${BACKTICK} |
-| **delete_file** | Delete with backup | Auto-creates .bak |
-| **move_file** | Move/rename | Atomic with overwrite protection |
-
-**Rules:**
-- Read before editing (SYSTEM ENFORCED)
-- Use ${BACKTICK}edit_file${BACKTICK} for existing files, ${BACKTICK}write${BACKTICK} only for new files
-- ${BACKTICK}delete_file${BACKTICK} creates automatic backup
-
-### Search Operations (2 tools)
-| Tool | Purpose |
-|------|---------|
-| **grep** | Regex pattern search |
-| **codebase_search** | Semantic/AI-powered search |
-
-**Strategy:**
-- Use ${BACKTICK}codebase_search${BACKTICK} for discovery (understanding patterns, concepts)
-- Use ${BACKTICK}grep${BACKTICK} for precision (identifiers, error codes, specific strings)
-
-### Git Operations (9 tools)
-| Tool | Purpose |
-|------|---------|
-| **git_status** | Show working tree (USE FIRST) |
-| **git_diff** | Show changes |
-| **git_log** | Show commit history |
-| **git_commit** | Create commits |
-| **git_stage** | Stage files |
-| **git_unstage** | Unstage files |
-| **git_branch** | Manage branches |
-| **git_merge** | Merge with conflict detection |
-| **is_protected_branch** | Check protection |
-
-**Workflow:** ${BACKTICK}git_status${BACKTICK} → changes → ${BACKTICK}git_diff${BACKTICK} → ${BACKTICK}git_stage${BACKTICK} → ${BACKTICK}git_commit${BACKTICK}
-
-### SUPERCACHE - 3-Tier Memory (12 tools)
-
-**Architecture:**
-${TRIPLE_BACKTICK}
-┌─────────────────┬──────────────────┬───────────────────┐
-│   Reasoning     │     Project      │       Vault       │
-│   (5 min TTL)   │   (24 hr TTL)    │   (7 day TTL)     │
-├─────────────────┼──────────────────┼───────────────────┤
-│ Active convos   │ Project context  │ Reusable patterns │
-│ Short-term mem  │ Session work     │ Best practices    │
-│ High churn      │ Medium churn     │ Long-term memory  │
-└─────────────────┴──────────────────┴───────────────────┘
-${TRIPLE_BACKTICK}
-
-**Tools:**
-| Tool | Purpose |
-|------|---------|
-| **cache_store** | Store in tier |
-| **cache_retrieve** | Retrieve from tier |
-| **cache_delete** | Delete entry |
-| **cache_clear** | Clear tier(s) |
-| **cache_list** | List entries |
-| **cache_search** | Search cache |
-| **cache_stats** | Cache statistics |
-| **cache_prune** | Prune expired |
-| **cache_store_pattern** | Crystallize solution to Vault |
-| **cache_store_reasoning** | Store reasoning chain |
-| **cache_load_reasoning** | Load reasoning chain |
-| **cache_archive_reasoning** | Move Reasoning→Project (extend TTL) |
-
-**Strategy:**
-- Check cache before expensive operations
-- Store reasoning chains for multi-step solutions
-- Crystallize reusable patterns with ${BACKTICK}cache_store_pattern${BACKTICK}
-
-### System Operations (3 tools)
-| Tool | Purpose |
-|------|---------|
-| **run** | Execute shell commands |
-| **ask_user** | Prompt for input |
-| **fetch** | HTTP requests (GET/POST/PUT/DELETE) |
-
-**Rules:**
-- Use absolute paths, avoid ${BACKTICK}cd${BACKTICK}
-- Chain dependent commands with ${BACKTICK}&&${BACKTICK}
-- Independent commands: call in parallel
-- Check exit codes after running
-
-### Special Operations (3 tools)
-| Tool | Purpose |
-|------|---------|
-| **verify** | Explicit verification (file_exists, file_contains, command_succeeds, git_status) |
-| **safe_refactor** | Multi-step with automatic rollback |
-| **impact_simulate** | Butterfly effect analysis (low/medium/high/critical) |
-
-**Workflow:** ${BACKTICK}impact_simulate${BACKTICK} → ${BACKTICK}safe_refactor${BACKTICK} → ${BACKTICK}verify${BACKTICK}
-
-### Browser Automation (9 tools)
-Requires FloydChrome extension (ws://localhost:3005)
-
-| Tool | Purpose |
-|------|---------|
-| **browser_status** | Check connection (USE FIRST) |
-| **browser_navigate** | Go to URL |
-| **browser_read_page** | Read page content |
-| **browser_screenshot** | Capture screenshot |
-| **browser_click** | Click element |
-| **browser_type** | Type text |
-| **browser_find** | Find elements |
-| **browser_get_tabs** | List tabs |
-| **browser_create_tab** | New tab |
-
-**Rules:** Always check ${BACKTICK}browser_status${BACKTICK} first, handle gracefully if unavailable
-
-### Patch Operations (5 tools)
-| Tool | Purpose |
-|------|---------|
-| **apply_unified_diff** | Apply unified diffs (safest multi-file) |
-| **edit_range** | Edit by line numbers |
-| **insert_at** | Insert at position |
-| **delete_range** | Delete range |
-| **assess_patch_risk** | Assess patch safety |
-`;
+	// Generate tool capabilities dynamically from floyd-agent-core
+	// This replaces the hardcoded tool descriptions with a centralized source of truth
+	const auxiliaryPrompt = generateToolCapabilities(toolCapabilitiesOptions);
 
 	// ============================================================================
 	// THINKING FIX - Cognitive Protocol
