@@ -1,10 +1,12 @@
 import * as Ink from 'ink';
+import { useInput } from 'ink';
 import { useTuiStore } from '../store/tui-store.js';
 
 interface QuickAction {
   id: string;
   label: string;
   shortcut: string;
+  keys: string[];
   action: () => void;
 }
 
@@ -13,6 +15,7 @@ interface QuickActionsProps {
   onExplain?: () => void;
   onDiff?: () => void;
   onUndo?: () => void;
+  isActive?: boolean;
 }
 
 /**
@@ -20,15 +23,29 @@ interface QuickActionsProps {
  * Provides quick access to common actions
  */
 export function QuickActions(props: QuickActionsProps) {
-  const { onApply, onExplain, onDiff, onUndo } = props;
+  const { onApply, onExplain, onDiff, onUndo, isActive = true } = props;
   const undoLastExchange = useTuiStore((state) => state.undoLastExchange);
+  const overlayMode = useTuiStore((state) => state.overlayMode);
 
   const actions: QuickAction[] = [
-    { id: 'apply', label: 'Apply', shortcut: '1/a', action: onApply || (() => {}) },
-    { id: 'explain', label: 'Explain', shortcut: '2/e', action: onExplain || (() => {}) },
-    { id: 'diff', label: 'Diff', shortcut: '3/d', action: onDiff || (() => {}) },
-    { id: 'undo', label: 'Undo', shortcut: '4/u', action: onUndo || undoLastExchange },
+    { id: 'apply', label: 'Apply', shortcut: '1/a', keys: ['1', 'a', 'A'], action: onApply || (() => {}) },
+    { id: 'explain', label: 'Explain', shortcut: '2/e', keys: ['2', 'e', 'E'], action: onExplain || (() => {}) },
+    { id: 'diff', label: 'Diff', shortcut: '3/d', keys: ['3', 'd', 'D'], action: onDiff || (() => {}) },
+    { id: 'undo', label: 'Undo', shortcut: '4/u', keys: ['4', 'u', 'U'], action: onUndo || undoLastExchange },
   ];
+
+  // Handle keyboard input for quick actions
+  useInput((input, _key) => {
+    // Only handle input when active and no overlay is open
+    if (!isActive || overlayMode !== 'none') return;
+
+    for (const action of actions) {
+      if (action.keys.includes(input)) {
+        action.action();
+        return;
+      }
+    }
+  });
 
   return (
     <Ink.Box marginTop={1} paddingX={1} borderStyle="single" borderColor="#303050">

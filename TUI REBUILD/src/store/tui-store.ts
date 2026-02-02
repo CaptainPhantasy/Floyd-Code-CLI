@@ -271,6 +271,20 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 			return `Background task started: ${command}`;
 		}
 
+		// Handle @ prefix for file references
+		if (trimmedContent.startsWith('@')) {
+			const filePath = trimmedContent.slice(1).trim();
+			get().addMessage({
+				id: Math.random().toString(36).substring(7),
+				role: 'system',
+				content: `📁 File reference: ${filePath}`,
+				timestamp: Date.now(),
+			});
+			// Include file in context for next message
+			// For now, acknowledge the file reference - actual file reading would be done by the assistant
+			return `File reference added: ${filePath}`;
+		}
+
 		const userMessage: ChatMessage = {
 			id: Math.random().toString(36).substring(7),
 			role: 'user',
@@ -296,6 +310,7 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 		let apiKey = getProviderApiKey(provider);
 
 		// Smart fallback: if current provider has no key, try to use GLM
+		let effectiveModel = model;
 		if (!apiKey && provider !== 'glm') {
 			const glmKey = getProviderApiKey('glm');
 			if (glmKey) {
@@ -304,8 +319,10 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 				);
 				provider = 'glm';
 				apiKey = glmKey;
+				// Also reset model to GLM default when falling back
+				effectiveModel = 'GLM-4.7';
 				// Update store to reflect fallback
-				set({provider});
+				set({provider, model: effectiveModel});
 			}
 		}
 
@@ -329,7 +346,7 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 		const {createLLMClient} = await import('../llm/factory.js');
 		const client = createLLMClient(provider as LLMProvider, {
 			apiKey,
-			model,
+			model: effectiveModel,
 			baseURL,
 		});
 
