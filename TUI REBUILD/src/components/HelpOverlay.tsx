@@ -65,20 +65,47 @@ export function HelpOverlay() {
         </Ink.Box>
         <Ink.Box flexDirection="column" marginLeft={2}>
           <Ink.Box>
-            <Ink.Text color="#FFC107">YOLO      </Ink.Text>
-            <Ink.Text>Auto-approve safe tools</Ink.Text>
-          </Ink.Box>
-          <Ink.Box>
             <Ink.Text color="#2196F3">ASK       </Ink.Text>
-            <Ink.Text>Confirm all tool execution</Ink.Text>
+            <Ink.Text>Prompt for all operations</Ink.Text>
           </Ink.Box>
           <Ink.Box>
             <Ink.Text color="#4CAF50">PLAN      </Ink.Text>
             <Ink.Text>Read-only analysis mode</Ink.Text>
           </Ink.Box>
           <Ink.Box>
-            <Ink.Text color="#00BCD4">DIALOGUE  </Ink.Text>
-            <Ink.Text>Quick chat, no tools</Ink.Text>
+            <Ink.Text color="#9C27B0">AUTO      </Ink.Text>
+            <Ink.Text>Auto-approve safe tools</Ink.Text>
+          </Ink.Box>
+          <Ink.Box>
+            <Ink.Text color="#00BCD4">DISCUSS   </Ink.Text>
+            <Ink.Text>Active dialogue mode</Ink.Text>
+          </Ink.Box>
+          <Ink.Box>
+            <Ink.Text color="#F44336">FUCKIT    </Ink.Text>
+            <Ink.Text>NO RESTRICTIONS - FULL AUTONOMY</Ink.Text>
+          </Ink.Box>
+        </Ink.Box>
+
+        {/* Prefix Modes */}
+        <Ink.Box marginTop={1}>
+          <Ink.Text bold color="#FFC107">Prefix Modes</Ink.Text>
+        </Ink.Box>
+        <Ink.Box flexDirection="column" marginLeft={2}>
+          <Ink.Box>
+            <Ink.Text color="#FFC107">!         </Ink.Text>
+            <Ink.Text>Direct execution (Bash)</Ink.Text>
+          </Ink.Box>
+          <Ink.Box>
+            <Ink.Text color="#FFC107">/         </Ink.Text>
+            <Ink.Text>Slash command (/commit, /help)</Ink.Text>
+          </Ink.Box>
+          <Ink.Box>
+            <Ink.Text color="#FFC107">&amp;         </Ink.Text>
+            <Ink.Text>Background task execution</Ink.Text>
+          </Ink.Box>
+          <Ink.Box>
+            <Ink.Text color="#FFC107">@         </Ink.Text>
+            <Ink.Text>File reference context</Ink.Text>
           </Ink.Box>
         </Ink.Box>
       </Ink.Box>

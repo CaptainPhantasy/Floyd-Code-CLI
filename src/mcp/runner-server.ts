@@ -26,6 +26,11 @@ import {
 	  schemaRegistry,
 	  type ValidationSchema,
 	} from '../utils/agent-core-polyfills.js';
+import {
+	executeDockCommand,
+	parseDockCommand,
+} from '../tmux/dock.js';
+
 export type ProjectType = 'node' | 'go' | 'rust' | 'python' | 'unknown';
 
 export interface ProjectDetection {
@@ -223,7 +228,8 @@ export async function executeCommand(
 	const {cwd = process.cwd(), timeout = 30000} = options;
 
 	try {
-		const result = await execa(command, args, {
+		const shell = process.env.SHELL || '/bin/bash';
+		const result = await execa(shell, ['-lc', `${command} ${args.join(' ')}`], {
 			cwd,
 			timeout,
 			reject: false,
@@ -639,52 +645,71 @@ export async function createRunnerServer(): Promise<Server> {
 						},
 					},
 				},
-				{
-					name: 'lint',
-					description: "Run the project's linter. Requires permission.",
-					inputSchema: {
-						type: 'object',
-						properties: {
-							projectPath: {
-								type: 'string',
-								description: 'Path to the project directory',
-							},
-							command: {
-								type: 'string',
-								description: 'Custom lint command (overrides detected command)',
-							},
-							grantPermission: {
-								type: 'boolean',
-								description: 'Grant permission for this session',
-								default: false,
-							},
-						},
-					},
-				},
-				{
-					name: 'build',
-					description: 'Build the project. Requires permission.',
-					inputSchema: {
-						type: 'object',
-						properties: {
-							projectPath: {
-								type: 'string',
-								description: 'Path to the project directory',
-							},
-							command: {
-								type: 'string',
-								description:
-									'Custom build command (overrides detected command)',
-							},
-							grantPermission: {
-								type: 'boolean',
-								description: 'Grant permission for this session',
-								default: false,
-							},
-						},
-					},
-				},
-				{
+				                {
+				                    name: 'lint',
+				                    description: "Run the project's linter.",
+				                    inputSchema: {
+				                        type: 'object',
+				                        properties: {
+				                            projectPath: {
+				                                type: 'string',
+				                                description: 'Path to the project directory',
+				                            },
+				                            command: {
+				                                type: 'string',
+				                                description: 'Custom lint command (overrides detected command)',
+				                            },
+				                            grantPermission: {
+				                                type: 'boolean',
+				                                description: 'Grant permission for this session',
+				                                default: false,
+				                            },
+				                        },
+				                    },
+				                },
+				                {
+				                    name: 'build',
+				                    description: 'Build the project.',
+				                    inputSchema: {
+				                        type: 'object',
+				                        properties: {
+				                            projectPath: {
+				                                type: 'string',
+				                                description: 'Path to the project directory',
+				                            },
+				                            command: {
+				                                type: 'string',
+				                                description:
+				                                    'Custom build command (overrides detected command)',
+				                            },
+				                            grantPermission: {
+				                                type: 'boolean',
+				                                description: 'Grant permission for this session',
+				                                default: false,
+				                            },
+				                        },
+				                    },
+				                },
+				                {
+				                    name: 'run_interactive',
+				                    description: 'Run interactive terminal tools (vim, less, top, lazygit) in a TMUX pane.',
+				                    inputSchema: {
+				                        type: 'object',
+				                        properties: {
+				                            command: {
+				                                type: 'string',
+				                                description: 'The command to run (e.g., "vim README.md")',
+				                            },
+				                            split: {
+				                                type: 'string',
+				                                enum: ['v', 'h'],
+				                                description: 'Split direction (v=vertical, h=horizontal)',
+				                                default: 'v',
+				                            },
+				                        },
+				                        required: ['command'],
+				                    },
+				                },				{
 					name: 'check_permission',
 					description: 'Check if permission is granted for a runner operation',
 					inputSchema: {
@@ -808,6 +833,38 @@ export async function createRunnerServer(): Promise<Server> {
 					};
 				}
 
+				case 'run_interactive': {
+					const {command, split = 'v'} = args as {
+						command: string;
+						split?: 'v' | 'h';
+					};
+
+					const {command: cmd, args: cmdArgs} = parseCommandString(command);
+					
+					const result = await executeDockCommand({
+						command: cmd,
+						args: cmdArgs,
+						createNewPane: true,
+						splitDirection: split as 'v' | 'h',
+					});
+
+					if (!result.success) {
+						return {
+							content: [{ type: 'text', text: `Failed to start interactive command: ${result.error}` }],
+							isError: true,
+						};
+					}
+
+					return {
+						content: [
+							{
+								type: 'text',
+								text: `Started interactive tool '${cmd}' in a new TMUX pane. User can interact with it there.`,
+							},
+						],
+					};
+				}
+
 				case 'check_permission': {
 					const {toolName, projectPath} = args as {
 						toolName: string;
@@ -838,15 +895,19 @@ export async function createRunnerServer(): Promise<Server> {
 				default:
 					throw new Error(`Unknown tool: ${name}`);
 			}
-		} catch (error) {
+		} catch (error: any) {
 			return {
 				content: [
 					{
 						type: 'text',
 						text: JSON.stringify({
-							error: (error as Error).message,
+							success: false,
+							error: {
+								type: error.code || 'RUNNER_ERROR',
+								message: error.message,
+							},
 							tool: name,
-						}),
+						}, null, 2),
 					},
 				],
 				isError: true,

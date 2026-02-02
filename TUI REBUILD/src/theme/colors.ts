@@ -40,11 +40,12 @@ export const roleColors = {
   muted: '#808080',
 };
 
-export const MODE_COLORS = {
-  yolo: '#FFC107',
+import type { FloydMode } from '../store/tui-store.js';
+
+export const MODE_COLORS: Record<FloydMode, string> = {
   ask: '#2196F3',
   plan: '#4CAF50',
   auto: '#9C27B0',
-  dialogue: '#00BCD4',
+  discuss: '#00BCD4',
   fuckit: '#F44336',
 };

@@ -262,11 +262,11 @@ interface SessionSlice {
  */
 interface ConfigSlice {
 	/** Safety mode setting */
-	safetyMode: 'yolo' | 'ask' | 'plan';
+	safetyMode: 'ask' | 'plan' | 'auto' | 'discuss' | 'fuckit';
 	/** Toggle safety mode */
 	toggleSafetyMode: () => void;
 	/** Set safety mode */
-	setSafetyMode: (mode: 'yolo' | 'ask' | 'plan') => void;
+	setSafetyMode: (mode: 'ask' | 'plan' | 'auto' | 'discuss' | 'fuckit') => void;
 }
 
 /**
@@ -414,11 +414,13 @@ export const useFloydStore = create<FloydStore>()(
 			...initialConfigState,
 
 			toggleSafetyMode: () =>
-			set(state => ({
-				safetyMode: state.safetyMode === 'yolo' ? 'ask' : state.safetyMode === 'ask' ? 'plan' : 'yolo',
-			})),
+			set(state => {
+				const modes: Array<'ask' | 'plan' | 'auto' | 'discuss' | 'fuckit'> = ['ask', 'plan', 'auto', 'discuss', 'fuckit'];
+				const nextIdx = (modes.indexOf(state.safetyMode) + 1) % modes.length;
+				return { safetyMode: modes[nextIdx]! };
+			}),
 
-			setSafetyMode: (mode: 'yolo' | 'ask' | 'plan') => set({safetyMode: mode}),
+			setSafetyMode: (mode: 'ask' | 'plan' | 'auto' | 'discuss' | 'fuckit') => set({safetyMode: mode}),
 
 			// ============================================================
 			// OVERLAY STATE

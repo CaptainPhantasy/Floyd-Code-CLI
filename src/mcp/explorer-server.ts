@@ -26,7 +26,64 @@ import {
 import fs from 'fs-extra';
 import path from 'path';
 import { globby } from 'globby';
-import { readFilePath } from '../utils/agent-core-polyfills.js';
+import {
+  validatePreExecution,
+  schemaRegistry,
+  type ValidationSchema,
+  readFilePath,
+} from '../utils/agent-core-polyfills.js';
+
+/**
+ * Register validation schemas for tools
+ */
+function registerSchemas() {
+  schemaRegistry.register('project_map', {
+    type: 'object',
+    properties: {
+      maxDepth: { type: 'number' },
+      ignorePatterns: { type: 'array', items: { type: 'string' } },
+    },
+  });
+
+  schemaRegistry.register('read_file', {
+    type: 'object',
+    properties: {
+      filePath: { type: 'string' },
+      startLine: { type: 'number' },
+      endLine: { type: 'number' },
+      full: { type: 'boolean' },
+    },
+    required: ['filePath'],
+  });
+
+  schemaRegistry.register('smart_replace', {
+    type: 'object',
+    properties: {
+      filePath: { type: 'string' },
+      searchString: { type: 'string' },
+      replaceString: { type: 'string' },
+      dryRun: { type: 'boolean' },
+    },
+    required: ['filePath', 'searchString', 'replaceString'],
+  });
+
+  schemaRegistry.register('list_symbols', {
+    type: 'object',
+    properties: {
+      filePath: { type: 'string' },
+    },
+    required: ['filePath'],
+  });
+
+  schemaRegistry.register('manage_scratchpad', {
+    type: 'object',
+    properties: {
+      action: { type: 'string', enum: ['read', 'write', 'append', 'clear'] },
+      content: { type: 'string' },
+    },
+    required: ['action'],
+  });
+}
 
 /**
  * Manage Scratchpad
@@ -196,6 +253,8 @@ async function listSymbols(filePath: string) {
  * Create the Explorer server
  */
 export function createExplorerServer(): Server {
+  registerSchemas();
+
   const server = new Server(
     {
       name: 'floyd-explorer-server',
@@ -288,6 +347,8 @@ export function createExplorerServer(): Server {
     const { name, arguments: args } = request.params;
 
     try {
+      validatePreExecution(name, args as Record<string, unknown>);
+
       switch (name) {
         case 'project_map': {
           const result = await getProjectMap(process.cwd(), args as any);
@@ -318,7 +379,18 @@ export function createExplorerServer(): Server {
       }
     } catch (error: any) {
       return {
-        content: [{ type: 'text', text: JSON.stringify({ error: error.message }) }],
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: false,
+              error: {
+                type: error.code || 'EXPLORER_ERROR',
+                message: error.message,
+              },
+            }, null, 2),
+          },
+        ],
         isError: true,
       };
     }

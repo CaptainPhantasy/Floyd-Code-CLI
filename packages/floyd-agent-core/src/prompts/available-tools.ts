@@ -104,7 +104,7 @@ export const AVAILABLE_TOOLS: ToolDefinition[] = [
 	{
 		name: 'delete_file',
 		displayName: 'Delete File',
-		description: 'Delete files (dangerous - use with caution)',
+		description: 'Delete files from disk. Automatically creates .bak backup.',
 		icon: '[X]',
 		defaultEnabled: true,
 		category: 'file',

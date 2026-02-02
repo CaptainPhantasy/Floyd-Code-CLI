@@ -26,8 +26,9 @@ export function useKeyboard(options: KeyboardOptions = {}) {
 
 		const now = Date.now();
 
-		// Ctrl+Q: Quit (double-press safety)
-		if (key.ctrl && input === 'q') {
+		// Ctrl+Q / Ctrl+C: Quit
+		if (key.ctrl && (input === 'q' || input === 'c')) {
+			// Add 500ms debounce to prevent accidental exits, but allow fast double-tap
 			if (now - lastKeyPress.current < 500) {
 				process.exit(0);
 			}

@@ -56,7 +56,7 @@ export function ExternalEditorOverlay() {
           // Cleanup
           try {
             if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
-          } catch (e) {
+          } catch {
             // ignore
           }
         });

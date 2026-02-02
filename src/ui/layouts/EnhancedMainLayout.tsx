@@ -244,7 +244,7 @@ export function EnhancedMainLayout({
 									gitBranch={gitBranch}
 									gitStatus={gitStatus}
 									fileCount={changedFiles}
-									safetyMode={safetyMode.toLowerCase() as 'yolo' | 'ask' | 'plan'}
+									safetyMode={safetyMode.toLowerCase() as 'ask' | 'plan' | 'auto' | 'discuss' | 'fuckit'}
 									tools={tools.map(t => ({name: t.name, enabled: t.enabled}))}
 									workers={workers.map(w => ({
 										name: w.name,

@@ -211,6 +211,17 @@ export const crushTheme = {
 	},
 };
 
+/**
+ * Execution Mode Colors
+ */
+export const MODE_COLORS = {
+  ask: '#00A4FF',     // Info blue
+  plan: '#12C78F',    // Ready green
+  auto: '#C259FF',    // Violet
+  discuss: '#68FFD6', // Tertiary teal
+  fuckit: '#EB4268',  // Error red
+};
+
 // ============================================================================
 // ROLE-BASED COLORS
 // ============================================================================

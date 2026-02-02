@@ -31,6 +31,14 @@ import type {ThinkingStatus} from './ui/agent/ThinkingStream.js';
 import type {Task} from './ui/agent/TaskChecklist.js';
 import type {ToolExecution} from './ui/monitor/ToolTimeline.js';
 import type {StreamEvent} from './ui/monitor/EventStream.js';
+import {
+	parsePrefixMode,
+	isBashCommand,
+	isSlashCommand,
+	parseBashCommand,
+	parseSlashCommand,
+	validateBashCommand,
+} from './utils/prefix-parser.js';
 import dotenv from 'dotenv';
 import {resolve} from 'node:path';
 
@@ -236,6 +244,124 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 		async (value: string) => {
 			if (!value.trim() || isThinking) return;
 
+			// ========================================================================
+			// PREFIX MODE DETECTION (Claude Code alignment)
+			// ========================================================================
+			const parsed = parsePrefixMode(value);
+
+			// Handle bash commands (!ls -la)
+			if (isBashCommand(parsed)) {
+				const {command, args} = parseBashCommand(parsed.cleanInput);
+				const fullCommand = `${command} ${args.join(' ')}`.trim();
+
+				// Validate bash command safety
+				const warnings = validateBashCommand(fullCommand);
+				if (warnings.length > 0) {
+					const warningMsg: ConversationMessage = {
+						id: `warning-${Date.now()}`,
+						role: 'system',
+						content: `⚠️  Dangerous command detected:\n${warnings.join('\n')}\n\nUse safety mode 'fuckit' to override.`,
+						timestamp: Date.now(),
+					};
+					addMessage(warningMsg);
+					return;
+				}
+
+				// Add bash command message
+				const bashMsg: ConversationMessage = {
+					id: `bash-${Date.now()}`,
+					role: 'user',
+					content: `Execute: ${fullCommand}`,
+					timestamp: Date.now(),
+				};
+				addMessage(bashMsg);
+
+				// Send to agent with explicit bash instruction
+				if (engineRef.current) {
+					const bashInstruction = `Execute this bash command: ${fullCommand}\n\nUse the bash tool directly. Return only the command output.`;
+					const generator = engineRef.current.sendMessage(bashInstruction);
+
+					setIsThinking(true);
+					setAgentStatus('executing');
+					setAgentStoreStatus('executing');
+
+					try {
+						let output = '';
+						for await (const chunk of generator) {
+							output += chunk;
+						}
+
+						const resultMsg: ConversationMessage = {
+							id: `bash-result-${Date.now()}`,
+							role: 'assistant',
+							content: output,
+							timestamp: Date.now(),
+						};
+						addMessage(resultMsg);
+					} catch (error) {
+						const errorMsg: ConversationMessage = {
+							id: `bash-error-${Date.now()}`,
+							role: 'system',
+							content: `⚠️  Bash error: ${error instanceof Error ? error.message : String(error)}`,
+							timestamp: Date.now(),
+						};
+						addMessage(errorMsg);
+					} finally {
+						setIsThinking(false);
+						setAgentStatus('idle');
+						setAgentStoreStatus('idle');
+					}
+				}
+				return;
+			}
+
+			// Handle slash commands (/help, /explain)
+			if (isSlashCommand(parsed)) {
+				const {command, args} = parseSlashCommand(parsed.cleanInput);
+
+				// Built-in slash commands
+				if (command === 'help') {
+					const helpMsg: ConversationMessage = {
+						id: `help-${Date.now()}`,
+						role: 'system',
+						content: `**Floyd Prefix Commands**
+
+!command - Execute bash command directly
+/help - Show this help
+/explain [topic] - Explain a topic
+@agent [task] - Delegate to specific agent (future)
+&tool [args] - Direct tool invocation (future)
+
+**Safety Modes** (Shift+Tab to cycle):
+- ASK: Prompt before every action
+- PLAN: Show plan, wait for approval
+- AUTO: Balanced autonomy
+- DISCUSS: Conversational mode
+- FUCKIT: Maximum autonomy`,
+						timestamp: Date.now(),
+					};
+					addMessage(helpMsg);
+					return;
+				}
+
+				if (command === 'explain') {
+					if (!args) {
+						const errorMsg: ConversationMessage = {
+							id: `explain-error-${Date.now()}`,
+							role: 'system',
+							content: '⚠️  Usage: /explain [topic]',
+							timestamp: Date.now(),
+						};
+						addMessage(errorMsg);
+						return;
+					}
+
+					// Send explain request to agent
+					value = `Explain: ${args}`;
+					// Fall through to normal message handling
+				}
+			}
+
 			// Check for dock commands (e.g., ":dock btop" or ":btop")
 			const dockArgs = parseDockArgs(value.trim().split(/\s+/));
 			if (dockArgs) {
@@ -437,6 +563,12 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 		// Note: Most keyboard shortcuts are now handled by MainLayout
 		// MainLayout has access to input state and overlay states for proper context
 
+		// ESC key to close help
+		if (key.escape && showHelp) {
+			setShowHelp(false);
+			return;
+		}
+
 		// Ctrl+M to toggle monitor dashboard
 		if (inputKey === 'm' && key.ctrl) {
 			toggleMonitor();
@@ -498,7 +630,7 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 	);
 
 	// Handle safety mode changes from MainLayout
-	const handleSafetyModeChange = useCallback((mode: 'yolo' | 'ask' | 'plan') => {
+	const handleSafetyModeChange = useCallback((mode: 'ask' | 'plan' | 'auto' | 'discuss' | 'fuckit') => {
 		useFloydStore.getState().setSafetyMode(mode);
 	}, []);
 

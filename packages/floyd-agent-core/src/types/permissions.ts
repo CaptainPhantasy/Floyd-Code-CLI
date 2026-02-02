@@ -9,7 +9,7 @@
 /**
  * Execution mode - determines how permission requests are handled
  */
-export type ExecutionMode = 'ASK' | 'YOLO' | 'AUTO' | 'PLAN' | 'DIALOGUE' | 'FUCKIT';
+export type ExecutionMode = 'ASK' | 'PLAN' | 'AUTO' | 'DISCUSS' | 'FUCKIT';
 
 /**
  * Permission level for tools

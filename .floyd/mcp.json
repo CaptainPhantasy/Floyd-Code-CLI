@@ -56,6 +56,96 @@
         "args": ["-e", "import('/Volumes/Storage/FLOYD_CLI/INK/floyd-cli/src/mcp/browser-server.ts').then(m => m.startBrowserServer())"],
         "env": {}
       }
+    },
+    {
+      "name": "floyd-patch",
+      "enabled": true,
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": ["--import", "tsx", "/Volumes/Storage/FLOYD_CLI/src/mcp/patch-server.ts"],
+        "env": {}
+      }
+    },
+    {
+      "name": "floyd-runner",
+      "enabled": true,
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": ["--import", "tsx", "/Volumes/Storage/FLOYD_CLI/src/mcp/runner-server.ts"],
+        "env": {}
+      }
+    },
+    {
+      "name": "floyd-supercache",
+      "enabled": true,
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": ["--import", "tsx", "/Volumes/Storage/FLOYD_CLI/src/mcp/cache-server.ts"],
+        "env": {}
+      }
+    },
+    {
+      "name": "floyd-git",
+      "enabled": true,
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": ["--import", "tsx", "/Volumes/Storage/FLOYD_CLI/src/mcp/git-server.ts"],
+        "env": {}
+      }
+    },
+    {
+      "name": "floyd-explorer",
+      "enabled": true,
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": ["--import", "tsx", "/Volumes/Storage/FLOYD_CLI/src/mcp/explorer-server.ts"],
+        "env": {}
+      }
+    },
+    {
+      "name": "floyd-safe-ops",
+      "enabled": true,
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": ["--import", "tsx", "/Volumes/Storage/MCP/floyd-safe-ops-server/src/index.ts"],
+        "env": {}
+      }
+    },
+    {
+      "name": "floyd-terminal",
+      "enabled": true,
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": ["--import", "tsx", "/Volumes/Storage/MCP/floyd-terminal-server/src/index.ts"],
+        "env": {}
+      }
+    },
+    {
+      "name": "novel-concepts",
+      "enabled": true,
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": ["--import", "tsx", "/Volumes/Storage/MCP/novel-concepts-server/src/index.ts"],
+        "env": {}
+      }
+    },
+    {
+      "name": "floyd-devtools",
+      "enabled": true,
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": ["--loader", "tsx", "/Volumes/Storage/MCP/floyd-devtools-server/src/index.ts"],
+        "env": {}
+      }
     }
   ]
 }

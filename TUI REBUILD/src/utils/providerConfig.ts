@@ -122,7 +122,7 @@ function getClaudeSettingsKey(): string | undefined {
       // Defaulting to looking for 'api_key' or 'anthropic_api_key'
       return settings.api_key || settings.anthropic_api_key;
     }
-  } catch (e) {
+  } catch {
     // Ignore errors
   }
   return undefined;

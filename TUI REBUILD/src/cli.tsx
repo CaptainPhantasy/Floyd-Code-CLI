@@ -1,9 +1,14 @@
 #!/usr/bin/env node
 import { render } from 'ink';
 import { App } from './app.js';
+import { TuiErrorBoundary } from './components/TuiErrorBoundary.js';
 
 async function main() {
-  const { waitUntilExit } = render(<App />);
+  const { waitUntilExit } = render(
+    <TuiErrorBoundary>
+      <App />
+    </TuiErrorBoundary>
+  );
 
   // Handle graceful shutdown
   process.on('SIGINT', () => {

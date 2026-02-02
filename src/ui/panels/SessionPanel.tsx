@@ -15,7 +15,7 @@
 import {Box, Text} from 'ink';
 import {Frame} from '../crush/Frame.js';
 import {WorkerBadge} from '../components/WorkerBadge.js';
-import {floydTheme, crushTheme, statusColors} from '../../theme/crush-theme.js';
+import {floydTheme, crushTheme, statusColors, MODE_COLORS} from '../../theme/crush-theme.js';
 
 export interface ToolToggle {
 	name: string;
@@ -45,7 +45,7 @@ export interface SessionPanelProps {
 	fileCount?: number;
 
 	/** Safety mode setting */
-	safetyMode: 'yolo' | 'ask' | 'plan';
+	safetyMode?: 'ask' | 'plan' | 'auto' | 'discuss' | 'fuckit';
 
 	/** Tool toggle states */
 	tools: ToolToggle[];
@@ -113,10 +113,6 @@ export function SessionPanel({
 	quickActions = [],
 	compact = false,
 }: SessionPanelProps) {
-	const safetyColor =
-		safetyMode === 'yolo' ? statusColors.error : statusColors.ready;
-	const safetyLabel = safetyMode === 'yolo' ? 'YOLO ON' : 'YOLO OFF';
-
 	return (
 		<Frame
 			title=" SESSION "
@@ -169,28 +165,39 @@ export function SessionPanel({
 						<Text color={floydTheme.colors.fgBase}>Safety: </Text>
 						<Box
 							borderStyle="single"
-							borderColor={
-								safetyMode === 'yolo'
-									? statusColors.error
-									: safetyMode === 'plan'
-									? statusColors.warning
-									: statusColors.ready
-							}
+							borderColor={MODE_COLORS[safetyMode || 'ask']}
 							paddingX={1}
 						>
 							<Text
-								color={
-									safetyMode === 'yolo'
-										? statusColors.error
-										: safetyMode === 'plan'
-										? statusColors.warning
-										: statusColors.ready
-								}
+								color={MODE_COLORS[safetyMode || 'ask']}
 								bold
 							>
-								{safetyMode === 'yolo' ? 'YOLO' : safetyMode === 'plan' ? 'PLAN' : 'ASK'}
+								{(safetyMode || 'ask').toUpperCase()}
 							</Text>
 						</Box>
+					</Box>
+				</Box>
+
+				{/* Prefix Commands Help */}
+				<Box flexDirection="column" marginBottom={1}>
+					<Box marginBottom={0}>
+						<Text bold color={crushTheme.accent.secondary}>
+							PREFIX MODES
+						</Text>
+					</Box>
+					<Box flexDirection="column">
+						<Text color={floydTheme.colors.fgSubtle} dimColor>
+							<Text color={crushTheme.accent.info}>!</Text>command - Bash mode
+						</Text>
+						<Text color={floydTheme.colors.fgSubtle} dimColor>
+							<Text color={crushTheme.accent.info}>/</Text>help - Commands
+						</Text>
+						<Text color={floydTheme.colors.fgSubtle} dimColor>
+							<Text color={crushTheme.accent.info}>@</Text>agent - Delegate
+						</Text>
+						<Text color={floydTheme.colors.fgSubtle} dimColor>
+							<Text color={crushTheme.accent.info}>&</Text>tool - Direct call
+						</Text>
 					</Box>
 				</Box>
 

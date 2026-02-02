@@ -22,14 +22,13 @@ import { PermissionStore } from './store.js';
 /**
  * Permission mode - determines how permission requests are handled
  *
- * - yolo: Auto-approve all tools (no prompts)
- * - ask: Prompt for medium/high risk tools
- * - plan: Deny all write/destructive operations
- * - auto: Auto-approve low-risk, prompt for others
- * - dialogue: Interactive mode with explanations
- * - fuckit: Extreme YOLO - suppresses all warnings and errors
+ * - ask: Prompt for all operations (Learning mode)
+ * - plan: Deny all write/destructive operations (Markdown plan + todo list)
+ * - auto: Auto-approve safe tools, prompt for destructive
+ * - discuss: Active dialogue mode - emphasis on rapport and turn-taking
+ * - fuckit: NO RESTRICTIONS - Agent follows orders without asking
  */
-export type PermissionMode = 'yolo' | 'ask' | 'plan' | 'auto' | 'dialogue' | 'fuckit';
+export type PermissionMode = 'ask' | 'plan' | 'auto' | 'discuss' | 'fuckit';
 
 /**
  * Permission request context
@@ -239,37 +238,77 @@ abstract class BasePermissionStrategy implements IPermissionStrategy {
 }
 
 // ============================================================================
-// YOLO STRATEGY (auto-approve all)
+// DISCUSS STRATEGY (active dialogue mode)
 // ============================================================================
 
 /**
- * YOLO strategy - auto-approve all permissions
- * Used for automated testing and trusted environments
+ * Discuss strategy - interactive mode with emphasis on dialogue
  */
-class YoloPermissionStrategy extends BasePermissionStrategy {
+class DiscussPermissionStrategy extends BasePermissionStrategy {
+  private promptFn: PermissionPromptFunction;
+  private throwOnError: boolean;
+
   constructor(config: PermissionStrategyConfig) {
-    super('yolo', config);
+    super('discuss', config);
+    this.promptFn = config.promptFn ?? this.defaultPrompt;
+    this.throwOnError = config.throwOnError ?? true;
   }
 
   async checkPermission(request: PermissionRequest): Promise<PermissionResponse> {
     const risk = classifyRisk(request.toolName, request.arguments);
     const target = this.extractTarget(request.arguments);
 
-    // Always grant in YOLO mode
-    this.addAuditEntry(request.toolName, risk, target, 'GRANTED');
+    // Always prompt in discuss mode to encourage interaction
+    try {
+      const granted = await this.promptFn(request, risk);
 
-    return {
-      granted: true,
-      mode: 'yolo',
-      risk,
-      reason: 'YOLO mode - all operations auto-approved',
-      requiredConfirmation: false,
-    };
+      if (granted) {
+        this.addAuditEntry(request.toolName, risk, target, 'GRANTED');
+      } else {
+        this.addAuditEntry(request.toolName, risk, target, 'DENIED');
+      }
+
+      return {
+        granted,
+        mode: 'discuss',
+        risk,
+        reason: this.formatDiscussReason(request, risk, granted),
+        requiredConfirmation: true,
+      };
+    } catch (error) {
+      if (this.throwOnError) {
+        throw new Error(
+          `Permission system error: ${error instanceof Error ? error.message : String(error)}`
+        );
+      }
+      this.addAuditEntry(request.toolName, risk, target, 'DENIED');
+
+      return {
+        granted: false,
+        mode: 'discuss',
+        risk,
+        reason: 'Permission system error - denied',
+        requiredConfirmation: false,
+      };
+    }
+  }
+
+  private formatDiscussReason(request: PermissionRequest, risk: RiskAssessment, granted: boolean): string {
+    const reasons = risk.reasons.join(', ');
+    return granted
+      ? `Discussed and approved: ${request.toolName} (${risk.level} risk: ${reasons})`
+      : `Discussed and denied: ${request.toolName} (${risk.level} risk: ${reasons})`;
+  }
+
+  private async defaultPrompt(_request: PermissionRequest, _risk: RiskAssessment): Promise<boolean> {
+    throw new Error(
+      'No prompt function provided. Set promptFn in config or use a different permission mode.'
+    );
   }
 }
 
 // ============================================================================
-// PLAN STRATEGY (deny all destructive)
+// FUCKIT STRATEGY (extreme YOLO - suppress all warnings)
 // ============================================================================
 
 /**
@@ -496,76 +535,6 @@ class AutoPermissionStrategy extends BasePermissionStrategy {
 }
 
 // ============================================================================
-// DIALOGUE STRATEGY (interactive with explanations)
-// ============================================================================
-
-/**
- * Dialogue strategy - interactive mode with detailed explanations
- */
-class DialoguePermissionStrategy extends BasePermissionStrategy {
-  private promptFn: PermissionPromptFunction;
-  private throwOnError: boolean;
-
-  constructor(config: PermissionStrategyConfig) {
-    super('dialogue', config);
-    this.promptFn = config.promptFn ?? this.defaultPrompt;
-    this.throwOnError = config.throwOnError ?? true;
-  }
-
-  async checkPermission(request: PermissionRequest): Promise<PermissionResponse> {
-    const risk = classifyRisk(request.toolName, request.arguments);
-    const target = this.extractTarget(request.arguments);
-
-    // Always explain and prompt in dialogue mode
-    try {
-      const granted = await this.promptFn(request, risk);
-
-      if (granted) {
-        this.addAuditEntry(request.toolName, risk, target, 'GRANTED');
-      } else {
-        this.addAuditEntry(request.toolName, risk, target, 'DENIED');
-      }
-
-      return {
-        granted,
-        mode: 'dialogue',
-        risk,
-        reason: this.formatDialogueReason(request, risk, granted),
-        requiredConfirmation: true,
-      };
-    } catch (error) {
-      if (this.throwOnError) {
-        throw new Error(
-          `Permission system error: ${error instanceof Error ? error.message : String(error)}`
-        );
-      }
-      this.addAuditEntry(request.toolName, risk, target, 'DENIED');
-
-      return {
-        granted: false,
-        mode: 'dialogue',
-        risk,
-        reason: 'Permission system error - denied',
-        requiredConfirmation: false,
-      };
-    }
-  }
-
-  private formatDialogueReason(request: PermissionRequest, risk: RiskAssessment, granted: boolean): string {
-    const reasons = risk.reasons.join(', ');
-    return granted
-      ? `Approved: ${request.toolName} (${risk.level} risk: ${reasons})`
-      : `Denied: ${request.toolName} (${risk.level} risk: ${reasons})`;
-  }
-
-  private async defaultPrompt(_request: PermissionRequest, _risk: RiskAssessment): Promise<boolean> {
-    throw new Error(
-      'No prompt function provided. Set promptFn in config or use a different permission mode.'
-    );
-  }
-}
-
-// ============================================================================
 // FUCKIT STRATEGY (extreme YOLO - suppress all warnings)
 // ============================================================================
 
@@ -699,16 +668,14 @@ export class UnifiedPermissionManager {
    */
   private createStrategy(config: PermissionStrategyConfig): IPermissionStrategy {
     switch (config.mode) {
-      case 'yolo':
-        return new YoloPermissionStrategy(config);
       case 'plan':
         return new PlanPermissionStrategy(config);
       case 'ask':
         return new AskPermissionStrategy(config);
       case 'auto':
         return new AutoPermissionStrategy(config);
-      case 'dialogue':
-        return new DialoguePermissionStrategy(config);
+      case 'discuss':
+        return new DiscussPermissionStrategy(config);
       case 'fuckit':
         return new FuckitPermissionStrategy(config);
       default:
@@ -727,13 +694,6 @@ export class UnifiedPermissionManager {
  */
 export function createPermissionManager(config: PermissionStrategyConfig): UnifiedPermissionManager {
   return new UnifiedPermissionManager(config);
-}
-
-/**
- * Create a YOLO mode permission manager (for testing)
- */
-export function createYoloManager(): UnifiedPermissionManager {
-  return new UnifiedPermissionManager({ mode: 'yolo' });
 }
 
 /**

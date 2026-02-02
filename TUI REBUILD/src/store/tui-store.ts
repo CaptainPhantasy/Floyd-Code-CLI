@@ -9,6 +9,8 @@ import {getRandomPhraseUnique} from '../utils/whimsical-phrases.js';
 import type {LLMProvider} from '../llm/factory.js';
 import {loadFloydEnv, getProviderApiKey} from '../utils/providerConfig.js';
 
+import {TuiTagParser} from '../utils/tag-parser.js';
+
 export type OverlayMode =
 	| 'none'
 	| 'transcript'
@@ -22,11 +24,10 @@ export type OverlayMode =
 	| 'editor';
 
 export type FloydMode =
-	| 'yolo'
 	| 'ask'
 	| 'plan'
 	| 'auto'
-	| 'dialogue'
+	| 'discuss'
 	| 'fuckit';
 
 export type ConnectionStatus = 'online' | 'offline' | 'connecting';
@@ -106,7 +107,7 @@ interface TuiStore {
 }
 
 export const useTuiStore = create<TuiStore>((set, get) => ({
-	mode: 'yolo',
+	mode: 'ask',
 	model: 'GLM-4.7',
 	provider: 'glm',
 	connectionStatus: 'offline',
@@ -129,11 +130,10 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 	setInput: input => set({input}),
 	cycleMode: () => {
 		const modes: FloydMode[] = [
-			'yolo',
 			'ask',
 			'plan',
 			'auto',
-			'dialogue',
+			'discuss',
 			'fuckit',
 		];
 		const currentIdx = modes.indexOf(get().mode);
@@ -207,6 +207,70 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 		})),
 
 	sendMessage: async content => {
+		const trimmedContent = content.trim();
+
+		// Handle prefixes
+		if (trimmedContent.startsWith('!')) {
+			const command = trimmedContent.slice(1).trim();
+			get().addBackgroundTask({
+				command,
+				status: 'running',
+				startTime: Date.now(),
+			});
+			// For now, we just acknowledge it. 
+			// In a real implementation, this would trigger the actual execution.
+			get().addMessage({
+				id: Math.random().toString(36).substring(7),
+				role: 'system',
+				content: `🚀 Executing direct command: ${command}`,
+				timestamp: Date.now(),
+			});
+			return `Direct command execution started: ${command}`;
+		}
+
+		if (trimmedContent.startsWith('/')) {
+			const parts = trimmedContent.slice(1).split(' ');
+			const command = parts[0]?.toLowerCase();
+			const args = parts.slice(1).join(' ');
+
+			if (command === 'commit') {
+				get().addMessage({
+					id: Math.random().toString(36).substring(7),
+					role: 'system',
+					content: `📦 Preparing commit with message: ${args || 'Auto-generated message'}`,
+					timestamp: Date.now(),
+				});
+				// Stub for commit logic
+				return `Commit workflow started.`;
+			}
+
+			if (command === 'help') {
+				get().setOverlayMode('help');
+				return 'Opening help...';
+			}
+
+			if (command === 'exit' || command === 'quit') {
+				get().addMessage({
+					id: Math.random().toString(36).substring(7),
+					role: 'system',
+					content: '👋 Goodbye!',
+					timestamp: Date.now(),
+				});
+				setTimeout(() => process.exit(0), 500);
+				return 'Exiting...';
+			}
+		}
+
+		if (trimmedContent.startsWith('&')) {
+			const command = trimmedContent.slice(1).trim();
+			get().addBackgroundTask({
+				command,
+				status: 'running',
+				startTime: Date.now(),
+			});
+			return `Background task started: ${command}`;
+		}
+
 		const userMessage: ChatMessage = {
 			id: Math.random().toString(36).substring(7),
 			role: 'user',
@@ -287,17 +351,50 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 
 		try {
 			let fullResponse = '';
+			const parser = new TuiTagParser(['thinking']);
+			let inThinking = false;
 
 			await client.sendMessage(content, (chunk: string) => {
-				fullResponse += chunk;
-				// Update the streaming message with new content
-				set(state => ({
-					messages: state.messages.map(msg =>
-						msg.id === assistantId
-							? {...msg, content: fullResponse, streaming: true}
-							: msg,
-					),
-				}));
+				for (const event of parser.process(chunk)) {
+					if (event.type === 'tag_open' && event.tagName === 'thinking') {
+						inThinking = true;
+						// Update whimsical phrase for each new thinking block
+						const newPhrase = getRandomPhraseUnique(get().whimsicalPhrase ?? undefined);
+						set({isThinking: true, whimsicalPhrase: newPhrase});
+						continue;
+					}
+
+					if (event.type === 'tag_close' && event.tagName === 'thinking') {
+						inThinking = false;
+						// Brief pause after thinking
+						set({isThinking: false, whimsicalPhrase: null});
+						continue;
+					}
+
+					if (event.type === 'text' && event.content) {
+						if (inThinking) {
+							// Thinking content is suppressed from main transcript but keeps thinking status active
+							continue;
+						}
+
+						// Actual text content
+						fullResponse += event.content;
+						
+						// If we were thinking but now have text, clear thinking state
+						if (get().isThinking) {
+							set({isThinking: false, whimsicalPhrase: null});
+						}
+
+						// Update the streaming message with new content
+						set(state => ({
+							messages: state.messages.map(msg =>
+								msg.id === assistantId
+									? {...msg, content: fullResponse, streaming: true}
+									: msg,
+							),
+						}));
+					}
+				}
 			});
 
 			// Final update - mark streaming complete
@@ -306,6 +403,7 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 					msg.id === assistantId ? {...msg, streaming: false} : msg,
 				),
 				isThinking: false,
+				whimsicalPhrase: null,
 			}));
 
 			return fullResponse;
@@ -361,7 +459,7 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 		await clearPersistedState();
 		// Reset to defaults
 		set({
-			mode: 'yolo',
+			mode: 'ask',
 			thinkingEnabled: true,
 			provider: 'glm',
 			model: 'GLM-4.7',

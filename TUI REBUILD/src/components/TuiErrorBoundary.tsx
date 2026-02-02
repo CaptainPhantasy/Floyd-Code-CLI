@@ -32,42 +32,32 @@ export class TuiErrorBoundary extends React.Component<
 		// Log error for debugging
 		console.error('FLOYD TUI FATAL ERROR:', error);
 		console.error('Component Stack:', errorInfo.componentStack);
+	}
 
-		// Send to error tracking (placeholder)
-		if (
-			typeof process !== 'undefined' &&
-			process.env.NODE_ENV === 'production'
-		) {
-			// TODO: Send error to production error tracking service
-		}
-
-		// Exit gracefully with error code
-		process.exit(1);
+	resetError = () => {
+		this.setState({hasError: false, error: undefined});
 	}
 
 	render() {
 		if (this.state.hasError) {
 			return (
-				<Ink.Box flexDirection="column" paddingX={1} justifyContent="center">
+				<Ink.Box flexDirection="column" padding={2} borderStyle="double" borderColor="red">
 					<Ink.Text bold color="red">
-						ERROR: FLOYD TUI CRASHED
+						[!] FLOYD TUI ENCOUNTERED A FATAL ERROR
 					</Ink.Text>
-					<Ink.Text dimColor>
-						{'\n'}
-						{'\n'}
-						Something went wrong with the FLOYD TUI.
-						{'\n'}
-						Please restart the application.
-						{'\n'}
-						{'\n'}
-						Error Details:
-						{'\n'}
-						{this.state.error?.message}
-						{'\n'}
-						{'\n'}
-						If this issue persists, please report it.
-						{'\n'}
-					</Ink.Text>
+					<Ink.Box marginTop={1} flexDirection="column">
+						<Ink.Text color="white">The application has crashed due to an unexpected error.</Ink.Text>
+						<Ink.Box marginTop={1}>
+							<Ink.Text dimColor>Error: {this.state.error?.message}</Ink.Text>
+						</Ink.Box>
+					</Ink.Box>
+					<Ink.Box marginTop={2} flexDirection="column">
+						<Ink.Text bold color="yellow">Recovery Options:</Ink.Text>
+						<Ink.Box marginTop={1}>
+							<Ink.Text color="red" bold>• Press Ctrl+C twice to exit completely</Ink.Text>
+						</Ink.Box>
+						<Ink.Text>• Check the logs for more details</Ink.Text>
+					</Ink.Box>
 				</Ink.Box>
 			);
 		}

@@ -119,7 +119,7 @@ export interface MainLayoutProps {
 	mode?: 'chat' | 'code' | 'browse' | 'swarm';
 
 	/** Callback when safety mode is toggled */
-	onSafetyModeChange?: (mode: 'yolo' | 'ask' | 'plan') => void;
+	onSafetyModeChange?: (mode: 'ask' | 'plan' | 'auto' | 'discuss' | 'fuckit') => void;
 
 	/** Messages to display */
 	messages?: ChatMessage[];
@@ -210,7 +210,7 @@ export interface MainLayoutProps {
 	fileCount?: number;
 
 	/** Safety mode setting */
-	safetyMode?: 'yolo' | 'ask' | 'plan';
+	safetyMode?: 'ask' | 'plan' | 'auto' | 'discuss' | 'fuckit';
 
 	/** Tool toggle states */
 	toolStates?: ToolToggle[];
@@ -702,7 +702,7 @@ export function MainLayout({
 		useFloydStore.getState().toggleOverlay('showAgentBuilder');
 	}, []);
 
-	const [currentSafetyMode, setCurrentSafetyMode] = useState<'yolo' | 'ask' | 'plan'>(safetyMode || 'ask');
+	const [currentSafetyMode, setCurrentSafetyMode] = useState<'ask' | 'plan' | 'auto' | 'discuss' | 'fuckit'>(safetyMode || 'ask');
 	const [zenMode, setZenMode] = useState(false);
 	const {exit: inkExit} = useApp();
 
@@ -975,7 +975,7 @@ export function MainLayout({
 		},
 		{
 			keys: 'Shift+Tab',
-			description: 'Cycle safety mode (YOLO → ASK → PLAN)',
+			description: 'Cycle safety mode (ASK → PLAN → AUTO → DISCUSS → FUCKIT)',
 			category: 'System',
 			action: () => {
 				// Handled by useInput handler
@@ -1079,12 +1079,12 @@ export function MainLayout({
 		}
 
 
-		// Shift+Tab to cycle through safety modes: YOLO → ASK → PLAN → YOLO
+		// Shift+Tab to cycle through safety modes: ASK → PLAN → AUTO → DISCUSS → FUCKIT → ASK
 		if (key.tab && key.shift) {
-			const modes: Array<'yolo' | 'ask' | 'plan'> = ['yolo', 'ask', 'plan'];
+			const modes: Array<'ask' | 'plan' | 'auto' | 'discuss' | 'fuckit'> = ['ask', 'plan', 'auto', 'discuss', 'fuckit'];
 			const currentIndex = modes.indexOf(currentSafetyMode);
 			const nextIndex = (currentIndex + 1) % modes.length;
-			const newMode = modes[nextIndex];
+			const newMode = modes[nextIndex]!;
 
 			setCurrentSafetyMode(newMode);
 			onSafetyModeChange?.(newMode);
