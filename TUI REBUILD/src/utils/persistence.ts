@@ -7,8 +7,8 @@
  * - Recent messages (last 10)
  */
 
-import {type FloydMode} from '../store/tui-store';
-import type {ChatMessage} from '../store/tui-store';
+import {type FloydMode} from '../store/tui-store.js';
+import type {ChatMessage} from '../store/tui-store.js';
 
 const SUPERCACHE_SERVER =
 	process.env.FLOYD_SUPERCACHE_PATH ||

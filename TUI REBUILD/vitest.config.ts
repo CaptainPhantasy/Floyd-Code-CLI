@@ -7,6 +7,11 @@ export default defineConfig({
 	test: {
 		globals: true,
 		environment: 'node',
+		setupFiles: ['./tests/setup.ts'],
+		include: [
+			'**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+			'**/test-*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+		],
 		coverage: {
 			provider: 'v8',
 			reporter: ['text', 'json', 'html'],
@@ -15,6 +20,7 @@ export default defineConfig({
 				'dist/',
 				'**/*.test.{js,jsx,ts,tsx}',
 				'**/*.spec.{js,jsx,ts,tsx}',
+				'tests/integration/**',
 			],
 		},
 	},

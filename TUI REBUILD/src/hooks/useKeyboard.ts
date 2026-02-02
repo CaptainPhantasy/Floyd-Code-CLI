@@ -1,6 +1,6 @@
 import {useRef} from 'react';
 import {useInput} from 'ink';
-import {useTuiStore} from '../store/tui-store';
+import {useTuiStore} from '../store/tui-store.js';
 
 interface KeyboardOptions {
 	disabled?: boolean;
@@ -55,18 +55,42 @@ export function useKeyboard(options: KeyboardOptions = {}) {
 			return;
 		}
 
-		// Ctrl+O: Overlay menu
+		// Ctrl+O: Toggle Transcript
 		if (key.ctrl && input === 'o') {
-			// Cycle through overlays
-			const overlays = ['transcript', 'history', 'background'] as const;
-			const currentIdx = overlays.indexOf(
-				overlayMode as (typeof overlays)[number],
-			);
-			if (currentIdx >= 0) {
-				const nextIdx = (currentIdx + 1) % overlays.length;
-				setOverlayMode(overlays[nextIdx]);
+			if (overlayMode === 'transcript') {
+				closeOverlay();
 			} else {
 				setOverlayMode('transcript');
+			}
+			return;
+		}
+
+		// Ctrl+B: Toggle Background Tasks
+		if (key.ctrl && input === 'b') {
+			if (overlayMode === 'background') {
+				closeOverlay();
+			} else {
+				setOverlayMode('background');
+			}
+			return;
+		}
+
+		// Ctrl+R: Toggle History Search
+		if (key.ctrl && input === 'r') {
+			if (overlayMode === 'history') {
+				closeOverlay();
+			} else {
+				setOverlayMode('history');
+			}
+			return;
+		}
+
+		// Ctrl+G: Toggle External Editor
+		if (key.ctrl && input === 'g') {
+			if (overlayMode === 'editor') {
+				closeOverlay();
+			} else {
+				setOverlayMode('editor');
 			}
 			return;
 		}

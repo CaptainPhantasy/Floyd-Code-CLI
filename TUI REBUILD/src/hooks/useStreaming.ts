@@ -1,5 +1,5 @@
 import {useRef, useState, useCallback} from 'react';
-import {useTuiStore} from '../store/tui-store';
+import {useTuiStore} from '../store/tui-store.js';
 
 interface StreamingOptions {
 	onComplete?: (content: string) => void;

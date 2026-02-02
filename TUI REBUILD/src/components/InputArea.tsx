@@ -7,7 +7,8 @@ const MAX_INPUT_LENGTH = 5000;
 const SUBMIT_DEBOUNCE_MS = 200;
 
 export function InputArea() {
-  const [input, setInput] = useState('');
+  const input = useTuiStore((state) => state.input);
+  const setInput = useTuiStore((state) => state.setInput);
   const [lastSubmitTime, setLastSubmitTime] = useState(0);
   const isThinking = useTuiStore((state) => state.isThinking);
   const overlayMode = useTuiStore((state) => state.overlayMode);

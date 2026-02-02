@@ -5,9 +5,9 @@ import {
 	clearState as clearPersistedState,
 	initializeState,
 } from '../utils/persistence.js';
-import {getRandomPhraseUnique} from '../utils/whimsical-phrases';
-import type {LLMProvider} from '../llm/factory';
-import {loadFloydEnv, getProviderApiKey} from '../utils/providerConfig';
+import {getRandomPhraseUnique} from '../utils/whimsical-phrases.js';
+import type {LLMProvider} from '../llm/factory.js';
+import {loadFloydEnv, getProviderApiKey} from '../utils/providerConfig.js';
 
 export type OverlayMode =
 	| 'none'
@@ -16,6 +16,7 @@ export type OverlayMode =
 	| 'background'
 	| 'command'
 	| 'help'
+	| 'diff'
 	| 'config'
 	| 'context'
 	| 'editor';
@@ -66,8 +67,16 @@ interface TuiStore {
 	whimsicalPhrase: string | null;
 	messages: ChatMessage[];
 	streamingContent: string;
+	input: string;
 	overlayMode: OverlayMode;
 	backgroundTasks: BackgroundTask[];
+	diffViewer: {
+		file1Path: string;
+		file2Path: string;
+		file1Content: string;
+		file2Content: string;
+		onClose: () => void;
+	} | null;
 	_initialized: boolean;
 
 	setMode: (mode: FloydMode) => void;
@@ -77,11 +86,13 @@ interface TuiStore {
 	setConnectionStatus: (status: ConnectionStatus) => void;
 	setThinking: (thinking: boolean, phrase?: string) => void;
 	toggleThinking: () => void;
+	setInput: (input: string) => void;
 	addMessage: (message: ChatMessage) => void;
 	clearMessages: () => void;
 	exportTranscript: () => void;
 	setStreamingContent: (content: string) => void;
 	setOverlayMode: (mode: OverlayMode) => void;
+	setDiffViewer: (diffData: TuiStore['diffViewer']) => void;
 	closeOverlay: () => void;
 	addBackgroundTask: (task: Omit<BackgroundTask, 'id'>) => string;
 	updateBackgroundTask: (id: string, updates: Partial<BackgroundTask>) => void;
@@ -104,8 +115,10 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 	whimsicalPhrase: null,
 	messages: [],
 	streamingContent: '',
+	input: '',
 	overlayMode: 'none',
 	backgroundTasks: [],
+	diffViewer: null,
 	_initialized: false,
 
 	setMode: mode => {
@@ -113,6 +126,7 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 		// Auto-save mode preference
 		saveState({mode}).catch(() => {});
 	},
+	setInput: input => set({input}),
 	cycleMode: () => {
 		const modes: FloydMode[] = [
 			'yolo',
@@ -137,6 +151,7 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 		saveState({provider}).catch(() => {});
 	},
 	setConnectionStatus: connectionStatus => set({connectionStatus}),
+	setDiffViewer: diffViewer => set({diffViewer}),
 
 	setThinking: (isThinking, whimsicalPhrase) => {
 		const phrase =
@@ -232,8 +247,8 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 
 		// Get endpoint from env if available
 		let baseURL = undefined;
-		if (provider === 'glm' && env.FLOYD_GLM_ENDPOINT) {
-			baseURL = env.FLOYD_GLM_ENDPOINT + '/chat/completions';
+		if (provider === 'glm') {
+			baseURL = env.FLOYD_GLM_ENDPOINT || 'https://api.z.ai/api/anthropic';
 		}
 
 		if (!apiKey) {
@@ -247,7 +262,7 @@ export const useTuiStore = create<TuiStore>((set, get) => ({
 		}
 
 		// Get LLM client
-		const {createLLMClient} = await import('../llm/factory');
+		const {createLLMClient} = await import('../llm/factory.js');
 		const client = createLLMClient(provider as LLMProvider, {
 			apiKey,
 			model,

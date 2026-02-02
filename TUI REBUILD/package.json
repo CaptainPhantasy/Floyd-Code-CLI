@@ -8,7 +8,7 @@
 		"floyd-tui": "./dist/cli.js"
 	},
 	"scripts": {
-		"dev": "tsx watch src/cli.ts",
+		"dev": "tsx watch src/cli.tsx",
 		"build": "tsc",
 		"build:check": "tsc --noEmit",
 		"start": "node dist/cli.js",
@@ -28,19 +28,22 @@
 		"ink": "6.6.0",
 		"ink-text-input": "6.0.0",
 		"inquirer": "^9.3.8",
-		"react": "19.1.0",
+		"react": "^19.2.4",
 		"zod": "3.24.1",
 		"zustand": "5.0.2"
 	},
 	"devDependencies": {
+		"@testing-library/react": "^16.3.2",
 		"@types/inquirer": "9.0.7",
-		"@types/node": "22.10.5",
-		"@types/react": "19.1.5",
+		"@types/node": "^25.2.0",
+		"@types/react": "^19.2.0",
 		"@typescript-eslint/eslint-plugin": "8.19.1",
 		"@typescript-eslint/parser": "8.19.1",
+		"@vitejs/plugin-react": "^5.1.2",
 		"eslint": "^9.39.2",
 		"tsx": "^4.21.0",
-		"typescript": "5.7.3"
+		"typescript": "5.7.3",
+		"vitest": "^4.0.18"
 	},
 	"engines": {
 		"node": ">=20.0.0",

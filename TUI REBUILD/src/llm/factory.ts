@@ -310,10 +310,10 @@ class GLMClientWrapper implements LLMClient {
       throw new LLMError('GLM API key is required', 'MISSING_API_KEY');
     }
     this.apiKey = config.apiKey;
-    this.baseURL = config.baseURL || 'https://open.bigmodel.cn/api/paas/v4/chat/completions';
-    this.model = config.model || 'GLM-4.7';
+    this.baseURL = config.baseURL || 'https://api.z.ai/api/anthropic';
+    this.model = config.model === 'claude-opus-4' ? 'GLM-4.7' : (config.model || 'GLM-4.7');
     this.temperature = config.temperature || 0.7;
-    this.maxTokens = config.maxTokens || 4000;
+    this.maxTokens = config.maxTokens || 8192;
     this.retryConfig = config.retryConfig || {};
 
     // Initialize with system message
