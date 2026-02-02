@@ -18,6 +18,8 @@ export interface ToolCapabilitiesOptions {
 	includeSummary?: boolean;
 	/** Permission badge style */
 	permissionStyle?: 'emoji' | 'text' | 'both';
+	/** Permission mode context */
+	mode?: 'yolo' | 'ask' | 'plan' | 'auto' | 'dialogue' | 'fuckit';
 }
 
 /**
@@ -58,6 +60,7 @@ export function generateToolCapabilities(options: ToolCapabilitiesOptions = {}):
 		groupByCategory = true,
 		includeSummary = true,
 		permissionStyle = 'both',
+		mode = 'ask',
 	} = options;
 
 	const categories = getToolsByCategory();
@@ -67,11 +70,23 @@ export function generateToolCapabilities(options: ToolCapabilitiesOptions = {}):
 	if (includeSummary) {
 		const stats = getToolStats();
 		output += `## Tool Capabilities (${stats.total} Tools)\n\n`;
+		output += `**Permission Mode: ${mode.toUpperCase()}**\n\n`;
+
+		if (mode === 'yolo') {
+			output += `> ⚠️ **YOLO MODE ACTIVE**: Tools with 'none' and 'moderate' permissions are auto-approved. Only 'dangerous' tools require confirmation.\n\n`;
+		} else if (mode === 'plan') {
+			output += `> 🛡️ **PLAN MODE ACTIVE**: Read-only mode. All write/destructive operations are DISABLED.\n\n`;
+		} else if (mode === 'ask') {
+			output += `> 🔒 **ASK MODE ACTIVE**: Standard safety. Write/destructive operations require explicit confirmation.\n\n`;
+		} else if (mode === 'fuckit') {
+			output += `> ☢️ **FUCKIT MODE ACTIVE**: MAXIMUM AUTONOMY. ALL TOOLS AUTO-APPROVED. PROCEED WITH EXTREME CAUTION.\n\n`;
+		}
+
 		output += `**Total Tools:** ${stats.total}\n`;
 		output += `**Enabled:** ${stats.enabled}\n`;
 		output += `**Disabled:** ${stats.disabled}\n\n`;
 	} else {
-		output += `## Tool Capabilities\n\n`;
+		output += `## Tool Capabilities (Mode: ${mode.toUpperCase()})\n\n`;
 	}
 
 	// Grouped by category

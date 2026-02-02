@@ -309,3 +309,17 @@ export {
   type LoopDetection,
   type RetryGuardConfig,
 } from './guards/index.js';
+
+// ============================================================================
+// VALIDATION - Parameter Validation (PHASE 2 ITEM 4)
+// ============================================================================
+export {
+  validateToolInput,
+  validatePreExecution,
+  schemaRegistry,
+  SchemaRegistry,
+  ToolValidationError,
+  type ValidationError,
+  type ValidationSchema,
+  type PropertySchema,
+} from './validation/index.js';

@@ -758,7 +758,7 @@ Provide a clear, concise summary of what was accomplished.`;
 	 */
 	async addMessage(message: Message): Promise<void> {
 		if (this.currentSession) {
-			this.currentSession.messages.push(message);
+			this.currentSession.messages.push(message as any);
 			await this.saveSession();
 		}
 	}

@@ -10,7 +10,7 @@
  */
 
 // Import dynamic tool capabilities from floyd-agent-core
-import { generateToolCapabilities, type ToolCapabilitiesOptions } from 'floyd-agent-core';
+import { generateToolCapabilities, type ToolCapabilitiesOptions } from '../utils/agent-core-polyfills.js';
 
 // ============================================================================
 // SYSTEM PROMPT CONFIG

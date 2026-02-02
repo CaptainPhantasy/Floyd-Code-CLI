@@ -39,7 +39,7 @@
 		"dotenv": "^17.2.3",
 		"execa": "^9.5.2",
 		"fast-glob": "^3.3.3",
-		"floyd-agent-core": "file:../../packages/floyd-agent-core",
+		"floyd-agent-core": "file:INK/floyd-agent-sandbox/packages/floyd-agent-core",
 		"fs-extra": "^11.3.3",
 		"fuzzysort": "^2.0.4",
 		"gray-matter": "^4.0.3",

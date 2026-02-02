@@ -1,6 +1,6 @@
 import {join} from 'path';
 import {fileURLToPath} from 'url';
-import type {MCPServerConfig} from 'floyd-agent-core/mcp';
+import type {MCPServerConfig} from 'floyd-agent-core';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = join(__filename, '..');

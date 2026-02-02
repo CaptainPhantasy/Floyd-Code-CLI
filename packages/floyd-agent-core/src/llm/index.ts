@@ -7,6 +7,7 @@
  */
 
 // Re-export types
+export * from './deepseek-client.js';
 export * from './types.js';
 
 // Export individual clients
@@ -18,6 +19,7 @@ import type { LLMClient, LLMClientOptions } from './types.js';
 import { GLMClient } from './glm-client.js';
 import { AnthropicClient } from './anthropic-client.js';
 import { OpenAICompatibleClient } from './openai-client.js';
+import { DeepSeekClient } from './deepseek-client.js';
 
 /**
  * Provider endpoints for auto-detection
@@ -114,10 +116,10 @@ export function createLLMClient(options: LLMClientOptions): LLMClient {
       });
 
     case 'deepseek':
-      return new OpenAICompatibleClient({
+      return new DeepSeekClient({
         apiKey: options.apiKey,
-        baseURL: options.baseURL ?? 'https://api.deepseek.com/v1',
-        model: options.model ?? 'deepseek-chat',
+        baseURL: options.baseURL,
+        model: options.model,
         maxTokens: options.maxTokens,
         defaultHeaders: options.defaultHeaders,
       });

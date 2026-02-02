@@ -5,7 +5,7 @@
  */
 
 import test from 'ava';
-import { LAYOUT } from '../layout.ts';
+import { LAYOUT } from '../layout.js';
 
 test('layout breakpoints are defined', t => {
 	t.is(LAYOUT.BREAKPOINTS.VERY_NARROW, 80);

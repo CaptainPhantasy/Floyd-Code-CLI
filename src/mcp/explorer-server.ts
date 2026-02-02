@@ -26,6 +26,7 @@ import {
 import fs from 'fs-extra';
 import path from 'path';
 import { globby } from 'globby';
+import { readFilePath } from '../utils/agent-core-polyfills.js';
 
 /**
  * Manage Scratchpad
@@ -222,6 +223,20 @@ export function createExplorerServer(): Server {
           },
         },
         {
+          name: 'read_file',
+          description: 'Read file content with optional chunking and line range.',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              filePath: { type: 'string', description: 'Path to the file' },
+              startLine: { type: 'number', description: 'Start line number (1-indexed)' },
+              endLine: { type: 'number', description: 'End line number (1-indexed)' },
+              full: { type: 'boolean', description: 'Read full content (default: true)', default: true },
+            },
+            required: ['filePath'],
+          },
+        },
+        {
           name: 'smart_replace',
           description: 'Surgical search and replace. Replaces a unique block of text with new content.',
           inputSchema: {
@@ -277,6 +292,11 @@ export function createExplorerServer(): Server {
         case 'project_map': {
           const result = await getProjectMap(process.cwd(), args as any);
           return { content: [{ type: 'text', text: result }] };
+        }
+        case 'read_file': {
+          const { filePath, startLine, endLine, full } = args as any;
+          const result = await readFilePath(filePath, { startLine, endLine, full });
+          return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
         }
         case 'smart_replace': {
           const { filePath, searchString, replaceString, dryRun } = args as any;

@@ -270,6 +270,20 @@ interface ConfigSlice {
 }
 
 /**
+ * Overlay slice for UI visibility state
+ */
+type OverlayKey = 'showHelp' | 'showMonitor' | 'showAgentBuilder' | 'showPromptLibrary';
+
+interface OverlaySlice {
+	showHelp: boolean;
+	showMonitor: boolean;
+	showAgentBuilder: boolean;
+	showPromptLibrary: boolean;
+	setOverlay: (key: OverlayKey, value: boolean) => void;
+	toggleOverlay: (key: OverlayKey) => void;
+}
+
+/**
  * Main Floyd store state combining all slices
  */
 type FloydStore = ConversationSlice &
@@ -277,7 +291,8 @@ type FloydStore = ConversationSlice &
 	ToolsSlice &
 	RateLimitSlice &
 	SessionSlice &
-	ConfigSlice & {
+	ConfigSlice &
+	OverlaySlice & {
 		/** Reset entire store to initial state */
 		reset: () => void;
 		/** Get store version for migration */
@@ -353,6 +368,13 @@ const initialConfigState: Omit<ConfigSlice, 'toggleSafetyMode' | 'setSafetyMode'
 	safetyMode: 'ask', // Default to ASK mode for safety
 };
 
+const initialOverlayState: Omit<OverlaySlice, 'setOverlay' | 'toggleOverlay'> = {
+	showHelp: false,
+	showMonitor: false,
+	showAgentBuilder: false,
+	showPromptLibrary: false,
+};
+
 // ============================================================================
 // STORE CREATION
 // ============================================================================
@@ -397,6 +419,14 @@ export const useFloydStore = create<FloydStore>()(
 			})),
 
 			setSafetyMode: (mode: 'yolo' | 'ask' | 'plan') => set({safetyMode: mode}),
+
+			// ============================================================
+			// OVERLAY STATE
+			// ============================================================
+			...initialOverlayState,
+
+			setOverlay: (key, value) => set({ [key]: value } as any),
+			toggleOverlay: (key) => set((state) => ({ [key]: !state[key] } as any)),
 
 			addMessage: message =>
 				set(state => {

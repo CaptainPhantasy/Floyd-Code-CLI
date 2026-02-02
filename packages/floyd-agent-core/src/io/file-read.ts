@@ -1,3 +1,5 @@
+import { readFile, stat } from 'node:fs/promises';
+
 /**
  * File Operations - Enhanced Read
  *
@@ -54,22 +56,44 @@ export async function readFilePath(
 ): Promise<FileReadResult> {
 	const {
 		full: _full = true,
-		chunkSize: _chunkSize = DEFAULT_CHUNK_SIZE,
-		maxSize: _maxSize = DEFAULT_MAX_SIZE,
-		lines: _lines,
-		startLine: _startLine,
-		endLine: _endLine,
+		chunkSize = DEFAULT_CHUNK_SIZE,
+		maxSize = DEFAULT_MAX_SIZE,
+		lines,
+		startLine,
+		endLine,
 	} = options;
 
-	// This is a type definition wrapper
-	// The actual implementation would use fs.readFile
-	// For now, return the structure
-	void filePath; // Used in actual implementation
+	const stats = await stat(filePath);
+	const fileSize = stats.size;
+
+	if (fileSize > maxSize) {
+		throw new Error(`File size (${fileSize} bytes) exceeds maximum limit (${maxSize} bytes).`);
+	}
+
+	// Determine if we need to chunk
+	const needsChunking = shouldChunk(fileSize, chunkSize);
+	
+	const content = await readFile(filePath, 'utf-8');
+	const allLines = content.split('\n');
+	const totalLines = allLines.length;
+
+	let resultLines = allLines;
+	let truncated = false;
+
+	if (startLine || endLine || lines) {
+		const range = calculateLineRange(totalLines, startLine, endLine || (startLine && lines ? startLine + lines - 1 : undefined));
+		resultLines = allLines.slice(range.start - 1, range.end);
+		truncated = true;
+	}
+
 	return {
-		content: '',
+		content: resultLines.join('\n'),
 		metadata: {
-			size: 0,
-			lines: 0,
+			size: fileSize,
+			lines: totalLines,
+			chunked: needsChunking,
+			chunkCount: calculateChunkCount(fileSize, chunkSize),
+			truncated,
 		},
 	};
 }

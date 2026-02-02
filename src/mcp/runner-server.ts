@@ -21,7 +21,11 @@ import {
 import fs from 'fs-extra';
 import path from 'path';
 import {execa} from 'execa';
-
+import {
+	  validatePreExecution,
+	  schemaRegistry,
+	  type ValidationSchema,
+	} from '../utils/agent-core-polyfills.js';
 export type ProjectType = 'node' | 'go' | 'rust' | 'python' | 'unknown';
 
 export interface ProjectDetection {
@@ -234,11 +238,26 @@ export async function executeCommand(
 			duration: Date.now() - startTime,
 		};
 	} catch (error) {
+		const err = error as any;
+		let stderr = err.message;
+
+		if (err.code === 'ENOENT') {
+			stderr = `Command not found: '${command}'.\n` +
+				`It seems '${command}' is not in your PATH.\n` +
+				`Working Directory: ${cwd}\n` +
+				`Suggestion: Ensure '${command}' is installed and available in your PATH.`;
+
+			if (command === 'npm') stderr += `\nTip: Install Node.js (brew install node)`;
+			if (command === 'cargo') stderr += `\nTip: Install Rust (curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh)`;
+			if (command === 'go') stderr += `\nTip: Install Go (brew install go)`;
+			if (command === 'python' || command === 'pip') stderr += `\nTip: Install Python (brew install python)`;
+		}
+
 		return {
 			success: false,
 			exitCode: null,
 			stdout: '',
-			stderr: (error as Error).message,
+			stderr: stderr,
 			duration: Date.now() - startTime,
 		};
 	}
@@ -499,9 +518,50 @@ export function formatTestResults(result: {
 }
 
 /**
+ * Register validation schemas for tools
+ */
+function registerSchemas() {
+	const commonSchema: ValidationSchema = {
+		type: 'object',
+		properties: {
+			projectPath: {type: 'string'},
+			command: {type: 'string'},
+			grantPermission: {type: 'boolean'},
+		},
+	};
+
+	schemaRegistry.register('detect_project', {
+		type: 'object',
+		properties: {
+			projectPath: {type: 'string'},
+		},
+	});
+
+	schemaRegistry.register('run_tests', commonSchema);
+	schemaRegistry.register('format', commonSchema);
+	schemaRegistry.register('lint', commonSchema);
+	schemaRegistry.register('build', commonSchema);
+
+	schemaRegistry.register('check_permission', {
+		type: 'object',
+		properties: {
+			toolName: {
+				type: 'string',
+				enum: ['run_tests', 'format', 'lint', 'build'],
+			},
+			projectPath: {type: 'string'},
+		},
+		required: ['toolName'],
+	});
+}
+
+/**
  * Create and start the MCP runner server
  */
 export async function createRunnerServer(): Promise<Server> {
+	// Register schemas on startup
+	registerSchemas();
+
 	const server = new Server(
 		{
 			name: 'floyd-runner-server',
@@ -652,6 +712,9 @@ export async function createRunnerServer(): Promise<Server> {
 		const {name, arguments: args} = request.params;
 
 		try {
+			// Validate arguments before execution
+			validatePreExecution(name, args as Record<string, unknown>);
+
 			switch (name) {
 				case 'detect_project': {
 					const {projectPath} = args as {projectPath?: string};
