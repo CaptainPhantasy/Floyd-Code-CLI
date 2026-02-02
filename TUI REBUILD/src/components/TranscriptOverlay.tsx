@@ -27,7 +27,9 @@ export function TranscriptOverlay() {
           return (
             <Ink.Box key={msg.id} flexDirection="column" marginBottom={1}>
               <Ink.Text bold color={color}>{prefix}</Ink.Text>
-              <Ink.Box paddingLeft={2}>{msg.content}</Ink.Box>
+              <Ink.Box paddingLeft={2}>
+                <Ink.Text>{msg.content}</Ink.Text>
+              </Ink.Box>
             </Ink.Box>
           );
         })}

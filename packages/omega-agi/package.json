@@ -1,0 +1,29 @@
+{
+  "name": "@floyd/omega-agi",
+  "version": "0.1.0",
+  "description": "Omega AGI - Layer 1: Hivemind Conflict Prevention",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node --test"
+  },
+  "keywords": [
+    "agi",
+    "hivemind",
+    "conflict-prevention",
+    "supercache",
+    "omega"
+  ],
+  "author": "Crush",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

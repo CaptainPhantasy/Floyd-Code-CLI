@@ -282,8 +282,8 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 					const generator = engineRef.current.sendMessage(bashInstruction);
 
 					setIsThinking(true);
-					setAgentStatus('executing');
-					setAgentStoreStatus('executing');
+					setAgentStatus('thinking');
+					setAgentStoreStatus('thinking');
 
 					try {
 						let output = '';
@@ -359,6 +359,47 @@ export default function App({name = 'User', chrome = false}: AppProps) {
 					// Send explain request to agent
 					value = `Explain: ${args}`;
 					// Fall through to normal message handling
+				}
+
+				// Handle /commit command
+				if (command === 'commit') {
+					const commitMsg: ConversationMessage = {
+						id: `commit-start-${Date.now()}`,
+						role: 'system',
+						content: '📝 Processing commit...',
+						timestamp: Date.now(),
+					};
+					addMessage(commitMsg);
+
+					try {
+						const {handleCommit} = await import(
+							'./commands/commit-handler.js'
+						);
+						const commitArgs = args ? args.split(/\s+/) : [];
+						const result = await handleCommit(commitArgs, {
+							cwd: process.cwd(),
+							args: commitArgs,
+						});
+
+						const resultMsg: ConversationMessage = {
+							id: `commit-result-${Date.now()}`,
+							role: 'system',
+							content: result.success
+								? `✅ Committed: ${result.commitHash?.slice(0, 7) || 'unknown'}\n📝 ${result.message.split('\n')[0]}\n📊 ${result.filesChanged} files changed${result.warnings?.length ? `\n⚠️  ${result.warnings.join(', ')}` : ''}`
+								: `❌ ${result.message}${result.error ? `\n${result.error}` : ''}`,
+							timestamp: Date.now(),
+						};
+						addMessage(resultMsg);
+					} catch (error) {
+						const errorMsg: ConversationMessage = {
+							id: `commit-error-${Date.now()}`,
+							role: 'system',
+							content: `❌ Commit failed: ${error instanceof Error ? error.message : String(error)}`,
+							timestamp: Date.now(),
+						};
+						addMessage(errorMsg);
+					}
+					return;
 				}
 			}
 

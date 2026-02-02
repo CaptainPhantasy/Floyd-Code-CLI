@@ -429,6 +429,23 @@ export class SlashCommandParser {
 					console.log('Floyd CLI Status');
 				},
 			},
+			{
+				name: 'commit',
+				description: 'Create a git commit with optional AI-generated message',
+				category: 'git',
+				usage: '/commit [message] [--amend] [--dry-run]',
+				examples: [
+					'/commit',
+					'/commit "fix: resolve auth bug"',
+					'/commit -m "feat: add login"',
+					'/commit --amend',
+					'/commit --dry-run',
+				],
+				handler: async (args, context) => {
+					const {handleCommit} = await import('./commit-handler.js');
+					return handleCommit(args as string[], context);
+				},
+			},
 		];
 	}
 }

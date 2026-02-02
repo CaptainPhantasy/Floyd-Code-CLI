@@ -96,6 +96,16 @@ export function useKeyboard(options: KeyboardOptions = {}) {
 			return;
 		}
 
+		// Ctrl+Z: Rewind (checkpoint restore)
+		if (key.ctrl && input === 'z') {
+			if (overlayMode === 'rewind') {
+				closeOverlay();
+			} else {
+				setOverlayMode('rewind');
+			}
+			return;
+		}
+
 		// Shift+Tab: Cycle mode
 		if (key.shift && key.tab) {
 			cycleMode();

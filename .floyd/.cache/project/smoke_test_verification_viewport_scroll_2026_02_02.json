@@ -1,0 +1,13 @@
+{
+  "key": "smoke_test_verification_viewport_scroll_2026_02_02",
+  "value": "{\n  \"feature\": \"Viewport Scroll Fix - Infinite Loop Prevention\",\n  \"test_date\": \"2026-02-02T14:00:00Z\",\n  \"test_environment\": \"floyd-terminal execute_code + vitest\",\n  \"bug_fixed\": \"useEffect circular dependency causing infinite re-renders when scrolling\",\n  \"root_cause\": \"handleScroll in useEffect deps while also being called inside effect, maxScrollTop state changes triggering handleScroll reference change\",\n  \"fix_applied\": \"Use maxScrollRef to break cycle, compute maxScrollTop directly instead of via state, bound visual scroll offset\",\n  \"files_modified\": [\"src/ui/crush/Viewport.tsx\"],\n  \"tests\": [\n    {\n      \"id\": \"SMOKE-1\",\n      \"name\": \"Negative scroll clamping\",\n      \"input\": \"scrollTop=-100\",\n      \"expected\": \"boundedScrollTop=0\",\n      \"actual\": \"boundedScrollTop=0\",\n      \"status\": \"PASS\"\n    },\n    {\n      \"id\": \"SMOKE-2\",\n      \"name\": \"Overflow scroll clamping\",\n      \"input\": \"scrollTop=1000, maxScrollTop=50\",\n      \"expected\": \"boundedScrollTop=50\",\n      \"actual\": \"boundedScrollTop=50\",\n      \"status\": \"PASS\"\n    },\n    {\n      \"id\": \"SMOKE-3\",\n      \"name\": \"maxScrollTop calculation\",\n      \"input\": \"contentHeight=100, viewportHeight=20\",\n      \"expected\": \"maxScrollTop=80\",\n      \"actual\": \"maxScrollTop=80\",\n      \"status\": \"PASS\"\n    },\n    {\n      \"id\": \"SMOKE-4\",\n      \"name\": \"No infinite loops\",\n      \"input\": \"5 contentKey changes\",\n      \"expected\": \"5 renders (no loops)\",\n      \"actual\": \"5 renders\",\n      \"status\": \"PASS\"\n    },\n    {\n      \"id\": \"SMOKE-5\",\n      \"name\": \"No scroll when content fits\",\n      \"input\": \"contentHeight=10, viewportHeight=20\",\n      \"expected\": \"maxScrollTop=0, needsScroll=false\",\n      \"actual\": \"maxScrollTop=0, needsScroll=false\",\n      \"status\": \"PASS\"\n    }\n  ],\n  \"unit_tests\": {\n    \"file\": \"src/__tests__/viewport-scroll.test.tsx\",\n    \"total\": 12,\n    \"passed\": 10,\n    \"skipped\": 2,\n    \"skipped_reason\": \"ink-testing-library stdin limitations\"\n  },\n  \"summary\": {\n    \"smoke_tests\": \"5/5 PASS\",\n    \"unit_tests\": \"10/10 PASS (2 skipped)\",\n    \"build\": \"PASS\"\n  },\n  \"signature\": \"OPUS2-VERIFIED-2026-02-02\"\n}",
+  "timestamp": 1770040746302,
+  "ttl": 86400000,
+  "tier": "project",
+  "metadata": {
+    "date": "2026-02-02",
+    "feature": "viewport-scroll-fix",
+    "tester": "opus2",
+    "type": "verification_receipt"
+  }
+}

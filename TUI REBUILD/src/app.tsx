@@ -11,6 +11,7 @@ import {BackgroundTasksOverlay} from './components/BackgroundTasksOverlay.js';
 import {CommandPalette} from './components/CommandPalette.js';
 import {HelpOverlay} from './components/HelpOverlay.js';
 import {ExternalEditorOverlay} from './components/ExternalEditorOverlay.js';
+import {RewindOverlay} from './components/RewindOverlay.js';
 import {TuiErrorBoundary} from './components/TuiErrorBoundary.js';
 
 function AppInternal() {
@@ -56,10 +57,12 @@ function AppInternal() {
 				{overlayMode === 'command' && <CommandPalette />}
 				{overlayMode === 'help' && <HelpOverlay />}
 				{overlayMode === 'editor' && <ExternalEditorOverlay />}
+				{overlayMode === 'rewind' && <RewindOverlay />}
 
 				{/* Unimplemented overlay modes - show placeholder */}
 				{(overlayMode === 'config' ||
-					overlayMode === 'context') && (
+					overlayMode === 'context' ||
+					overlayMode === 'diff') && (
 					<Ink.Box justifyContent="center" alignItems="center" flexGrow={1}>
 						<Ink.Text dimColor>
 							Overlay '{overlayMode}' not yet implemented

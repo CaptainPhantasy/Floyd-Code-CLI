@@ -1,0 +1,349 @@
+{
+  "timestamp": "2026-02-02T13:59:46.384Z",
+  "suites": [
+    "Store Propagation",
+    "Overlay Cascade",
+    "Message Lifecycle",
+    "Command Processing",
+    "Background Tasks",
+    "Mode Cycling",
+    "Thinking Toggle",
+    "Diff Viewer",
+    "State Consistency"
+  ],
+  "totalTests": 35,
+  "passed": 32,
+  "failed": 3,
+  "duration": 2,
+  "results": [
+    {
+      "suite": "Store Propagation",
+      "name": "setMode updates mode state",
+      "passed": true,
+      "expected": "plan",
+      "actual": "plan"
+    },
+    {
+      "suite": "Store Propagation",
+      "name": "setModel updates model state",
+      "passed": true,
+      "expected": "gpt-4",
+      "actual": "gpt-4"
+    },
+    {
+      "suite": "Store Propagation",
+      "name": "setProvider updates provider state",
+      "passed": true,
+      "expected": "openai",
+      "actual": "openai"
+    },
+    {
+      "suite": "Store Propagation",
+      "name": "setConnectionStatus updates status",
+      "passed": true,
+      "expected": "connecting",
+      "actual": "connecting"
+    },
+    {
+      "suite": "Store Propagation",
+      "name": "setThinking updates isThinking and whimsicalPhrase",
+      "passed": true,
+      "expected": "isThinking=true, phrase=Testing phrase",
+      "actual": "isThinking=true, phrase=Testing phrase"
+    },
+    {
+      "suite": "Store Propagation",
+      "name": "setInput updates input state",
+      "passed": true,
+      "expected": "Hello world",
+      "actual": "Hello world"
+    },
+    {
+      "suite": "Overlay Cascade",
+      "name": "setOverlayMode('help') opens overlay",
+      "passed": true,
+      "expected": "help",
+      "actual": "help"
+    },
+    {
+      "suite": "Overlay Cascade",
+      "name": "setOverlayMode('command') opens overlay",
+      "passed": true,
+      "expected": "command",
+      "actual": "command"
+    },
+    {
+      "suite": "Overlay Cascade",
+      "name": "setOverlayMode('transcript') opens overlay",
+      "passed": true,
+      "expected": "transcript",
+      "actual": "transcript"
+    },
+    {
+      "suite": "Overlay Cascade",
+      "name": "setOverlayMode('history') opens overlay",
+      "passed": true,
+      "expected": "history",
+      "actual": "history"
+    },
+    {
+      "suite": "Overlay Cascade",
+      "name": "setOverlayMode('background') opens overlay",
+      "passed": true,
+      "expected": "background",
+      "actual": "background"
+    },
+    {
+      "suite": "Overlay Cascade",
+      "name": "setOverlayMode('editor') opens overlay",
+      "passed": true,
+      "expected": "editor",
+      "actual": "editor"
+    },
+    {
+      "suite": "Overlay Cascade",
+      "name": "setOverlayMode('diff') opens overlay",
+      "passed": true,
+      "expected": "diff",
+      "actual": "diff"
+    },
+    {
+      "suite": "Overlay Cascade",
+      "name": "setOverlayMode('config') opens overlay",
+      "passed": true,
+      "expected": "config",
+      "actual": "config"
+    },
+    {
+      "suite": "Overlay Cascade",
+      "name": "setOverlayMode('context') opens overlay",
+      "passed": true,
+      "expected": "context",
+      "actual": "context"
+    },
+    {
+      "suite": "Overlay Cascade",
+      "name": "Opening new overlay closes previous (mutual exclusion)",
+      "passed": true,
+      "expected": "command (not help)",
+      "actual": "command"
+    },
+    {
+      "suite": "Overlay Cascade",
+      "name": "closeOverlay() sets overlayMode to none",
+      "passed": true,
+      "expected": "none",
+      "actual": "none"
+    },
+    {
+      "suite": "Message Lifecycle",
+      "name": "addMessage adds message to messages array",
+      "passed": true,
+      "expected": "1 message with content \"Hello\"",
+      "actual": "1 message(s), content: \"Hello\""
+    },
+    {
+      "suite": "Message Lifecycle",
+      "name": "Multiple addMessage calls accumulate",
+      "passed": true,
+      "expected": "2 messages",
+      "actual": "2 messages"
+    },
+    {
+      "suite": "Message Lifecycle",
+      "name": "clearMessages empties messages array",
+      "passed": true,
+      "expected": "0 messages",
+      "actual": "0 messages"
+    },
+    {
+      "suite": "Message Lifecycle",
+      "name": "setStreamingContent updates streaming state",
+      "passed": true,
+      "expected": "Streaming...",
+      "actual": "Streaming..."
+    },
+    {
+      "suite": "Command Processing",
+      "name": "! prefix creates background task"
+    },
+    {
+      "suite": "Command Processing",
+      "name": "/help opens help overlay"
+    },
+    {
+      "suite": "Command Processing",
+      "name": "/commit creates system message"
+    },
+    {
+      "suite": "Background Tasks",
+      "name": "addBackgroundTask creates task with ID",
+      "passed": true,
+      "expected": "task with command \"npm test\", status \"running\"",
+      "actual": "command: npm test, status: running"
+    },
+    {
+      "suite": "Background Tasks",
+      "name": "updateBackgroundTask modifies task",
+      "passed": true,
+      "expected": "status: done, exitCode: 0",
+      "actual": "status: done, exitCode: 0"
+    },
+    {
+      "suite": "Background Tasks",
+      "name": "Multiple tasks can coexist",
+      "passed": true,
+      "expected": "2 background tasks",
+      "actual": "2 tasks"
+    },
+    {
+      "suite": "Mode Cycling",
+      "name": "cycleMode follows correct order",
+      "passed": true,
+      "expected": "ask → plan → auto → discuss → fuckit",
+      "actual": "ask → plan → auto → discuss → fuckit"
+    },
+    {
+      "suite": "Mode Cycling",
+      "name": "cycleMode wraps from fuckit to ask",
+      "passed": true,
+      "expected": "ask",
+      "actual": "ask"
+    },
+    {
+      "suite": "Thinking Toggle",
+      "name": "toggleThinking disables when enabled",
+      "passed": true,
+      "expected": "thinkingEnabled: false",
+      "actual": "thinkingEnabled: false"
+    },
+    {
+      "suite": "Thinking Toggle",
+      "name": "toggleThinking enables when disabled",
+      "passed": true,
+      "expected": "thinkingEnabled: true",
+      "actual": "thinkingEnabled: true"
+    },
+    {
+      "suite": "Diff Viewer",
+      "name": "setDiffViewer sets diff data and opens overlay",
+      "passed": true,
+      "expected": "diffViewer with file1Path=\"/path/to/old.ts\"",
+      "actual": "file1Path=\"/path/to/old.ts\""
+    },
+    {
+      "suite": "Diff Viewer",
+      "name": "setDiffViewer(null) clears diff data",
+      "passed": true,
+      "expected": "diffViewer: null",
+      "actual": "diffViewer: null"
+    },
+    {
+      "suite": "State Consistency",
+      "name": "Rapid state changes maintain consistency",
+      "passed": true,
+      "expected": "mode=auto, overlay=none, thinking=true, messages=1, input=\"partial input\"",
+      "actual": "mode=auto, overlay=none, thinking=true, messages=1, input=\"partial input\""
+    },
+    {
+      "suite": "State Consistency",
+      "name": "State changes are isolated",
+      "passed": true,
+      "expected": "mode unchanged (auto), messages unchanged (1)",
+      "actual": "mode: auto, messages: 1"
+    }
+  ],
+  "connectionMatrix": [
+    {
+      "source": "setMode()",
+      "target": "mode state",
+      "dataFlow": "mode: FloydMode",
+      "tested": true,
+      "passed": true
+    },
+    {
+      "source": "setConnectionStatus()",
+      "target": "StatusBar",
+      "dataFlow": "connectionStatus: ConnectionStatus",
+      "tested": true,
+      "passed": true
+    },
+    {
+      "source": "setThinking()",
+      "target": "CurrentExchange",
+      "dataFlow": "isThinking, whimsicalPhrase",
+      "tested": true,
+      "passed": true
+    },
+    {
+      "source": "setInput()",
+      "target": "InputArea",
+      "dataFlow": "input: string",
+      "tested": true,
+      "passed": true
+    },
+    {
+      "source": "setOverlayMode()",
+      "target": "App (overlay rendering)",
+      "dataFlow": "overlayMode: OverlayMode",
+      "tested": true,
+      "passed": true
+    },
+    {
+      "source": "addMessage()",
+      "target": "CurrentExchange, TranscriptOverlay",
+      "dataFlow": "messages: ChatMessage[]",
+      "tested": true,
+      "passed": true
+    },
+    {
+      "source": "setStreamingContent()",
+      "target": "CurrentExchange",
+      "dataFlow": "streamingContent: string",
+      "tested": true,
+      "passed": true
+    },
+    {
+      "source": "sendMessage(\"!\")",
+      "target": "BackgroundTasksOverlay",
+      "dataFlow": "backgroundTasks: BackgroundTask[]",
+      "tested": true,
+      "passed": true
+    },
+    {
+      "source": "sendMessage(\"/help\")",
+      "target": "HelpOverlay",
+      "dataFlow": "overlayMode → help",
+      "tested": true,
+      "passed": true
+    },
+    {
+      "source": "updateBackgroundTask()",
+      "target": "BackgroundTasksOverlay",
+      "dataFlow": "backgroundTasks update",
+      "tested": true,
+      "passed": true
+    },
+    {
+      "source": "cycleMode()",
+      "target": "StatusBar",
+      "dataFlow": "mode: FloydMode",
+      "tested": true,
+      "passed": true
+    },
+    {
+      "source": "toggleThinking()",
+      "target": "StatusBar, CurrentExchange",
+      "dataFlow": "thinkingEnabled: boolean",
+      "tested": true,
+      "passed": true
+    },
+    {
+      "source": "setDiffViewer()",
+      "target": "DiffOverlay → DiffViewer",
+      "dataFlow": "diffViewer: DiffData",
+      "tested": true,
+      "passed": true
+    }
+  ]
+}

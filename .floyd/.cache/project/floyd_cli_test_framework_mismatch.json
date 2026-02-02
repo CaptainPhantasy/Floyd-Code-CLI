@@ -1,0 +1,7 @@
+{
+  "key": "floyd_cli_test_framework_mismatch",
+  "value": "{\"issue\": \"prefix-parser.test.ts uses vitest imports but package.json scripts use ava\", \"root_cause\": \"Test file migrated to vitest but test runner not updated\", \"resolution\": \"Either: 1) Convert test to ava format, 2) Update package.json to use vitest, 3) Add vitest as dev dependency\", \"impact\": \"Tests cannot run, blocking CI/CD\", \"priority\": \"high\"}",
+  "timestamp": 1770037268587,
+  "ttl": 86400000,
+  "tier": "project"
+}

@@ -1,0 +1,13 @@
+{
+  "key": "research:test_time_training:mit",
+  "value": "Test-Time Training (MIT 2025) by Akyürek, Damani, Kim, Andreas. Temporarily updates model parameters DURING deployment using task-specific examples. Creates mini-dataset via data augmentation, fine-tunes via low-rank adaptation. Result: 6x accuracy boost on novel reasoning tasks. Temporary updates (revert after task) or permanent via SEAL integration. Enables instant specialization: unfamiliar task → expert in 5-10 minutes.",
+  "timestamp": 1770021324062,
+  "ttl": 604800000,
+  "tier": "vault",
+  "metadata": {
+    "accuracy_boost": "6x",
+    "date": "2025-07-08",
+    "impact": "instant_adaptation",
+    "source": "MIT News"
+  }
+}

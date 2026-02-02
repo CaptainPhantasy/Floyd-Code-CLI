@@ -1,0 +1,11 @@
+{
+  "key": "claude_code_alignment_plan_v2",
+  "value": "{\n  \"version\": \"2.0.0\",\n  \"date\": \"2026-02-02\",\n  \"corrected_alignment\": \"68%\",\n  \"previous_alignment\": \"47%\",\n  \"key_findings\": [\n    \"Prefix parser EXISTS at src/utils/prefix-parser.ts (all 4 modes implemented)\",\n    \"Keyboard shortcuts: 78% implemented (not 21%)\",\n    \"Background tasks: 70% implemented (TUI REBUILD has store + Ctrl+B)\",\n    \"/commit is ONLY critical gap blocking workflow\"\n  ],\n  \"critical_path\": [\n    {\"task\": \"/commit command\", \"effort\": \"4 hours\", \"blocking\": true},\n    {\"task\": \"Wire to git_commit MCP\", \"effort\": \"2 hours\", \"blocking\": true}\n  ],\n  \"plan_document\": \"/docs/CLAUDE_CODE_ALIGNMENT_PLAN.md\"\n}",
+  "timestamp": 1770038582359,
+  "ttl": 86400000,
+  "tier": "project",
+  "metadata": {
+    "status": "active",
+    "type": "alignment_plan"
+  }
+}

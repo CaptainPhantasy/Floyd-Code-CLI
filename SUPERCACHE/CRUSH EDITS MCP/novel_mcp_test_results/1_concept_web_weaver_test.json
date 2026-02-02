@@ -1,0 +1,84 @@
+{
+  "test_name": "Concept Web Weaver - STAT Roles Architecture",
+  "category": "Memory & Learning",
+  "description": "Build concept graph for STAT's 4-role canon (Companion, Observer, Advisor, Leadership)",
+  "central_concept": "STAT Roles Architecture",
+  "concepts": [
+    {
+      "name": "Companion",
+      "type": "role",
+      "attributes": [
+        "enter_truth",
+        "work_records",
+        "complete_checklists",
+        "cannot_change_rules",
+        "cannot_modify_others_records"
+      ],
+      "capabilities": ["EnterTruth", "ModifyOwnRecord"],
+      "accountability": "Correctness, completeness, timeliness of execution",
+      "relationships": [
+        {"to": "Observer", "type": "provides_data_to", "strength": "strong"},
+        {"to": "field_truth", "type": "writes_to", "strength": "direct"}
+      ]
+    },
+    {
+      "name": "Observer",
+      "type": "role",
+      "attributes": [
+        "see_projections",
+        "coordinate_queues",
+        "identify_bottlenecks",
+        "cannot_see_raw_truth_by_default",
+        "cannot_alter_truth"
+      ],
+      "capabilities": ["ViewProjections", "ReassignWork", "EscalateWork"],
+      "accountability": "Flow integrity, coverage, coordination",
+      "relationships": [
+        {"to": "Advisor", "type": "escalates_to", "strength": "moderate"},
+        {"to": "projections_layer", "type": "reads_from", "strength": "direct"}
+      ]
+    },
+    {
+      "name": "Advisor",
+      "type": "role",
+      "attributes": [
+        "review_trends",
+        "evaluate_risk",
+        "attest_decisions",
+        "cannot_execute_work",
+        "cannot_access_all_raw_truth"
+      ],
+      "capabilities": ["ViewTrends", "AttestDecision"],
+      "accountability": "Decisions, policy direction, risk management",
+      "relationships": [
+        {"to": "Leadership", "type": "advises", "strength": "strong"},
+        {"to": "risk_reports", "type": "analyzes", "strength": "direct"}
+      ]
+    },
+    {
+      "name": "Leadership",
+      "type": "role",
+      "attributes": [
+        "governance_truth",
+        "exception_execute",
+        "attest_governance",
+        "default_read_only",
+        "no_routine_writes"
+      ],
+      "capabilities": ["ViewGovernance", "AttestGovernance", "ExceptionExecute"],
+      "accountability": "Oversight, fiduciary responsibility",
+      "relationships": [
+        {"to": "Companion", "type": "oversees", "strength": "weak"},
+        {"to": "immutable_ledger", "type": "audits", "strength": "direct"}
+      ]
+    }
+  ],
+  "metadata": {
+    "domain": "healthcare_attestation",
+    "compliance": "HIPAA_required",
+    "enforcement": "server_side",
+    "documentation": "/Volumes/Storage/STAT/docs/stat-finalization-refactor/README.md",
+    "code_reference": "/Volumes/Storage/STAT/backend/src/authorization/mod.rs",
+    "test_timestamp": "2026-02-01"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "key": "research:mit_seal:framework",
+  "value": "MIT SEAL Framework (Self-Adapting LLMs): Enables permanent knowledge absorption. Process: 1) LLM generates synthetic 'study sheets' from input (rewrites/summarizes), 2) Quizzes itself on each via reinforcement learning, 3) Applies best-performing self-edit to update weights. Model chooses learning rate, iterations, data synthesis method. Results: +15% QA accuracy, +50% skill learning. Limitation: catastrophic forgetting (mitigated in future work). Application: Hivemind agents can permanently learn instead of just caching.",
+  "timestamp": 1770020926432,
+  "ttl": 604800000,
+  "tier": "vault",
+  "metadata": {
+    "applicability": "high",
+    "authors": "Pari, Zweiger, Guo, Akyürek, Kim, Agrawal",
+    "power_multiplier": "10x",
+    "source": "MIT News 2025-11-12"
+  }
+}

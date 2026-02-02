@@ -1,0 +1,41 @@
+{
+  "name": "floyd-devtools-server",
+  "version": "1.0.0",
+  "description": "MCP server with 6 development tools: dependency_analyzer, schema_migrator, benchmark_runner, secure_hook_executor, api_format_verifier, test_generator",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "node dist/test/test-client.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "devtools",
+    "dependency-analyzer",
+    "schema-migrator",
+    "benchmark",
+    "hook-executor",
+    "api-verifier",
+    "test-generator"
+  ],
+  "author": "Floyd DevTools",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}

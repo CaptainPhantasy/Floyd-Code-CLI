@@ -1,0 +1,13 @@
+{
+  "key": "global:patterns:typescript:mcp_server_structure",
+  "value": "{\n  \"pattern_name\": \"MCP Server Standard Structure\",\n  \"language\": \"TypeScript\",\n  \"domain\": \"MCP Protocol\",\n  \"structure\": {\n    \"entry_point\": \"src/index.ts\",\n    \"directories\": [\"src/tools/\", \"src/storage/\", \"test/\", \"dist/\"],\n    \"config_files\": [\"package.json\", \"tsconfig.json\"]\n  },\n  \"package_json_scripts\": {\n    \"build\": \"tsc\",\n    \"watch\": \"tsc --watch\",\n    \"start\": \"node dist/index.js\",\n    \"test\": \"node dist/test/test-client.js\"\n  },\n  \"tsconfig_critical\": {\n    \"module\": \"Node16\",\n    \"moduleResolution\": \"Node16\",\n    \"outDir\": \"./dist\",\n    \"rootDir\": \"./src\"\n  },\n  \"code_template\": \"#!/usr/bin/env node\\nimport { Server } from '@modelcontextprotocol/sdk/server/index.js';\\nimport { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';\\n// Tool imports\\nconst server = new Server({ name, version }, { capabilities });\\nserver.setRequestHandler(ListToolsRequestSchema, ...);\\nserver.setRequestHandler(CallToolRequestSchema, ...);\\nawait server.connect(new StdioServerTransport());\",\n  \"gotchas\": [\n    \"MUST use .js extension in imports even for .ts files\",\n    \"ES modules require 'type: module' in package.json\",\n    \"Storage directories need recursive: true\",\n    \"All errors should return structured JSON\",\n    \"Console.error for server-side logging (visible in Claude logs)\"\n  ],\n  \"tested_on\": \"Floyd V2 ecosystem (13 servers, 51 tools, 95% success rate)\"\n}",
+  "timestamp": 1770029619440,
+  "ttl": 604800000,
+  "tier": "vault",
+  "metadata": {
+    "quality": "diamond",
+    "reusability": "high",
+    "source": "AGENTS.md creation session",
+    "verified": true
+  }
+}

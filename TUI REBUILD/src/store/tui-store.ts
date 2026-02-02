@@ -21,7 +21,8 @@ export type OverlayMode =
 	| 'diff'
 	| 'config'
 	| 'context'
-	| 'editor';
+	| 'editor'
+	| 'rewind';
 
 export type FloydMode =
 	| 'ask'

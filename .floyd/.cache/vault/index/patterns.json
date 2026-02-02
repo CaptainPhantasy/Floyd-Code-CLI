@@ -11,5 +11,10 @@
   "express-middleware": [
     "express",
     "middleware"
+  ],
+  "prefix_mode_parser_pattern": [
+    "input-parsing",
+    "prefix-detection",
+    "floyd-cli"
   ]
 }

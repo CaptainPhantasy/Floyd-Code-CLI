@@ -1,0 +1,194 @@
+{
+  "timestamp": "2026-02-02T13:52:48.090Z",
+  "testSuite": "FLOYD TUI Puppet Smoke Test",
+  "totalTests": 20,
+  "passed": 20,
+  "failed": 0,
+  "duration": 2,
+  "results": [
+    {
+      "name": "Initial overlay state is none",
+      "passed": true,
+      "expected": "none",
+      "actual": "none",
+      "duration": 0
+    },
+    {
+      "name": "Ctrl+/ → help",
+      "passed": true,
+      "expected": "help",
+      "actual": "help",
+      "duration": 0
+    },
+    {
+      "name": "Ctrl+P → command",
+      "passed": true,
+      "expected": "command",
+      "actual": "command",
+      "duration": 0
+    },
+    {
+      "name": "Ctrl+O → transcript",
+      "passed": true,
+      "expected": "transcript",
+      "actual": "transcript",
+      "duration": 0
+    },
+    {
+      "name": "Ctrl+B → background",
+      "passed": true,
+      "expected": "background",
+      "actual": "background",
+      "duration": 0
+    },
+    {
+      "name": "Ctrl+R → history",
+      "passed": true,
+      "expected": "history",
+      "actual": "history",
+      "duration": 0
+    },
+    {
+      "name": "Ctrl+G → editor",
+      "passed": true,
+      "expected": "editor",
+      "actual": "editor",
+      "duration": 0
+    },
+    {
+      "name": "Esc closes help",
+      "passed": true,
+      "expected": "none",
+      "actual": "none",
+      "duration": 0
+    },
+    {
+      "name": "Esc closes command",
+      "passed": true,
+      "expected": "none",
+      "actual": "none",
+      "duration": 0
+    },
+    {
+      "name": "Esc closes transcript",
+      "passed": true,
+      "expected": "none",
+      "actual": "none",
+      "duration": 0
+    },
+    {
+      "name": "Esc closes background",
+      "passed": true,
+      "expected": "none",
+      "actual": "none",
+      "duration": 0
+    },
+    {
+      "name": "Esc closes history",
+      "passed": true,
+      "expected": "none",
+      "actual": "none",
+      "duration": 0
+    },
+    {
+      "name": "Esc closes editor",
+      "passed": true,
+      "expected": "none",
+      "actual": "none",
+      "duration": 0
+    },
+    {
+      "name": "Shift+Tab cycles mode",
+      "passed": true,
+      "expected": "plan",
+      "actual": "plan",
+      "duration": 0
+    },
+    {
+      "name": "Full mode cycle returns to start",
+      "passed": true,
+      "expected": "plan",
+      "actual": "plan",
+      "duration": 0
+    },
+    {
+      "name": "Tab toggles thinking",
+      "passed": true,
+      "expected": "false",
+      "actual": "false",
+      "duration": 0
+    },
+    {
+      "name": "Double Tab restores thinking state",
+      "passed": true,
+      "expected": "true",
+      "actual": "true",
+      "duration": 0
+    },
+    {
+      "name": "Ctrl+/ toggles (open→close)",
+      "passed": true,
+      "expected": "help→none",
+      "actual": "help→none",
+      "duration": 0
+    },
+    {
+      "name": "Ctrl+P toggles (open→close)",
+      "passed": true,
+      "expected": "command→none",
+      "actual": "command→none",
+      "duration": 0
+    },
+    {
+      "name": "Ctrl+O toggles (open→close)",
+      "passed": true,
+      "expected": "transcript→none",
+      "actual": "transcript→none",
+      "duration": 0
+    }
+  ],
+  "hotkeyMatrix": [
+    {
+      "hotkey": "Ctrl+/",
+      "description": "Help overlay toggle",
+      "expectedOverlay": "help",
+      "testedAt": "2026-02-02T13:52:48.088Z",
+      "passed": true
+    },
+    {
+      "hotkey": "Ctrl+P",
+      "description": "Command palette toggle",
+      "expectedOverlay": "command",
+      "testedAt": "2026-02-02T13:52:48.089Z",
+      "passed": true
+    },
+    {
+      "hotkey": "Ctrl+O",
+      "description": "Transcript overlay toggle",
+      "expectedOverlay": "transcript",
+      "testedAt": "2026-02-02T13:52:48.089Z",
+      "passed": true
+    },
+    {
+      "hotkey": "Ctrl+B",
+      "description": "Background tasks toggle",
+      "expectedOverlay": "background",
+      "testedAt": "2026-02-02T13:52:48.089Z",
+      "passed": true
+    },
+    {
+      "hotkey": "Ctrl+R",
+      "description": "History search toggle",
+      "expectedOverlay": "history",
+      "testedAt": "2026-02-02T13:52:48.089Z",
+      "passed": true
+    },
+    {
+      "hotkey": "Ctrl+G",
+      "description": "External editor toggle",
+      "expectedOverlay": "editor",
+      "testedAt": "2026-02-02T13:52:48.089Z",
+      "passed": true
+    }
+  ]
+}

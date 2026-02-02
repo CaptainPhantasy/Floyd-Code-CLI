@@ -4,3 +4,4 @@ dist
 .serena/
 .backup
 *.backup
+.DS_Store

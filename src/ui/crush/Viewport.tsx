@@ -9,6 +9,8 @@
  * - Content clipping
  * - Scroll indicators
  * - Keyboard scroll support
+ *
+ * @module ui/crush/Viewport
  */
 
 import {useState, useCallback, useEffect, useRef, type ReactNode} from 'react';
@@ -39,10 +41,15 @@ export interface ViewportProps {
 
 	/** Content key to detect changes (for auto-scroll) */
 	contentKey?: string | number;
+
+	/** Actual content height in rows (for accurate scrolling) */
+	contentHeight?: number;
 }
 
 /**
  * Viewport - Scrollable content area with auto-scroll support
+ *
+ * Fixed: Removed circular dependency that caused infinite scroll loops
  */
 export function Viewport({
 	children,
@@ -53,40 +60,66 @@ export function Viewport({
 	autoScroll = true,
 	isStreaming = false,
 	contentKey,
+	contentHeight,
 }: ViewportProps) {
 	const [internalScrollTop, setInternalScrollTop] = useState(0);
-	const [maxScrollTop, setMaxScrollTop] = useState(0);
 	const [userScrolled, setUserScrolled] = useState(false);
 	const previousContentKey = useRef<string | number | undefined>(contentKey);
+
+	// Use controlled or internal scroll position
 	const scrollTop = controlledScrollTop ?? internalScrollTop;
 
+	// Calculate max scroll - use provided contentHeight or estimate from contentKey
+	const estimatedContentHeight =
+		contentHeight ?? (typeof contentKey === 'number' ? contentKey : height);
+	const maxScrollTop = Math.max(0, estimatedContentHeight - height);
+
+	// Stable ref for max scroll to avoid dependency cycles
+	const maxScrollRef = useRef(maxScrollTop);
+	maxScrollRef.current = maxScrollTop;
+
+	// Handle scroll with bounds checking
 	const handleScroll = useCallback(
 		(newScrollTop: number, isUserAction = false) => {
 			if (isUserAction) {
 				setUserScrolled(true);
 			}
 
-			// Clamp to max scroll
-			const clampedScroll = Math.max(0, Math.min(newScrollTop, maxScrollTop));
+			// Clamp to valid range [0, maxScrollTop]
+			const clampedScroll = Math.max(
+				0,
+				Math.min(newScrollTop, maxScrollRef.current),
+			);
 
 			if (controlledScrollTop === undefined) {
 				setInternalScrollTop(clampedScroll);
 			}
 			onScroll?.(clampedScroll);
 		},
-		[controlledScrollTop, onScroll, maxScrollTop],
+		[controlledScrollTop, onScroll],
 	);
 
 	// Auto-scroll to bottom when streaming and content changes
+	// Uses maxScrollRef to avoid dependency on maxScrollTop (which would cause loops)
 	useEffect(() => {
-		if (autoScroll && isStreaming && contentKey !== previousContentKey.current) {
-			// Reset user scroll flag if we're auto-scrolling
-			setUserScrolled(false);
-			// Scroll to bottom
-			handleScroll(maxScrollTop, false);
+		if (
+			autoScroll &&
+			isStreaming &&
+			!userScrolled &&
+			contentKey !== previousContentKey.current
+		) {
+			// Scroll to bottom without marking as user action
+			const clampedScroll = Math.max(
+				0,
+				Math.min(maxScrollRef.current, maxScrollRef.current),
+			);
+			if (controlledScrollTop === undefined) {
+				setInternalScrollTop(clampedScroll);
+			}
+			onScroll?.(clampedScroll);
 			previousContentKey.current = contentKey;
 		}
-	}, [autoScroll, isStreaming, contentKey, maxScrollTop, handleScroll]);
+	}, [autoScroll, isStreaming, contentKey, userScrolled, controlledScrollTop, onScroll]);
 
 	// Reset user scroll flag when streaming stops
 	useEffect(() => {
@@ -94,22 +127,6 @@ export function Viewport({
 			setUserScrolled(false);
 		}
 	}, [isStreaming]);
-
-	// Calculate max scroll based on content height
-	// This is a simplified calculation - in a real implementation,
-	// you'd measure the actual content height
-	useEffect(() => {
-		// Estimate content height (this would need actual measurement in production)
-		// For now, we'll use a reasonable default that increases with content
-		const estimatedHeight = typeof contentKey === 'number' ? contentKey : 100;
-		const newMaxScroll = Math.max(0, estimatedHeight - height);
-		setMaxScrollTop(newMaxScroll);
-
-		// Auto-scroll if streaming and user hasn't manually scrolled
-		if (autoScroll && isStreaming && !userScrolled && newMaxScroll > scrollTop) {
-			handleScroll(newMaxScroll, false);
-		}
-	}, [contentKey, height, autoScroll, isStreaming, userScrolled, scrollTop, handleScroll]);
 
 	// Keyboard scroll support
 	useInput((_input, key) => {
@@ -125,18 +142,21 @@ export function Viewport({
 		if (key.pageUp) {
 			handleScroll(Math.max(0, scrollTop - height), true);
 		}
-		// Ctrl+Home or Ctrl+A - scroll to top (if supported)
+		// Ctrl+Home or Ctrl+A - scroll to top
 		if (key.ctrl && _input === 'a') {
 			handleScroll(0, true);
 		}
-		// Ctrl+End or Ctrl+E - scroll to bottom (if supported)
+		// Ctrl+End or Ctrl+E - scroll to bottom
 		if (key.ctrl && _input === 'e') {
 			handleScroll(maxScrollTop, true);
 		}
 	});
 
-	const isAtBottom = scrollTop >= maxScrollTop - 1;
-	const showAutoScrollIndicator = autoScroll && isStreaming && !isAtBottom && !userScrolled;
+	// Bound the visual scroll offset to prevent infinite negative margin
+	const boundedScrollTop = Math.max(0, Math.min(scrollTop, maxScrollTop));
+	const isAtBottom = boundedScrollTop >= maxScrollTop - 1;
+	const showAutoScrollIndicator =
+		autoScroll && isStreaming && !isAtBottom && !userScrolled;
 
 	return (
 		<Box
@@ -146,21 +166,19 @@ export function Viewport({
 			borderStyle="single"
 			borderColor={floydTheme.colors.border}
 		>
-			{/* Scrollable content */}
-			<Box flexDirection="column" marginTop={-scrollTop}>
+			{/* Scrollable content - uses bounded scroll to prevent runaway negative margins */}
+			<Box flexDirection="column" marginTop={-boundedScrollTop}>
 				{children}
 			</Box>
 
 			{/* Scroll indicator */}
 			{showScrollbar && (
 				<Box flexDirection="column" justifyContent="flex-end" width={1}>
-					{scrollTop > 0 && (
-						<Text color={floydTheme.colors.fgMuted}>▐</Text>
+					{boundedScrollTop > 0 && (
+						<Text color={floydTheme.colors.fgMuted}>▲</Text>
 					)}
-					{showAutoScrollIndicator && (
-						<Text color={floydTheme.colors.fgMuted} dimColor>
-							↓
-						</Text>
+					{boundedScrollTop < maxScrollTop && (
+						<Text color={floydTheme.colors.fgMuted}>▼</Text>
 					)}
 				</Box>
 			)}

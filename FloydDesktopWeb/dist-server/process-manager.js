@@ -53,7 +53,7 @@ export class ProcessManager extends EventEmitter {
                 // Capture stderr
                 proc.stderr?.on('data', (data) => {
                     const lines = data.toString().split('\n');
-                    session.output.push(...lines.map((l) => `[stderr] ${l}`));
+                    session.output.push(...lines.map(l => `[stderr] ${l}`));
                     if (session.output.length > this.maxOutputLines) {
                         session.output = session.output.slice(-this.maxOutputLines);
                     }
@@ -140,26 +140,12 @@ export class ProcessManager extends EventEmitter {
             return { success: true, message: 'Process already terminated' };
         }
         try {
-            // Try SIGTERM first for graceful shutdown
-            session.process.kill('SIGTERM');
-            // If still running after 100ms, use SIGKILL
-            const timeout = setTimeout(() => {
-                if (session.isRunning) {
-                    try {
-                        session.process.kill('SIGKILL');
-                    }
-                    catch { }
-                }
-            }, 100);
-            // Clean up timeout reference
-            timeout.unref();
+            session.process.kill('SIGKILL');
             session.isRunning = false;
             return { success: true, message: `Terminated session ${sessionId}` };
         }
         catch (err) {
-            // Process may have already exited
-            session.isRunning = false;
-            return { success: true, message: `Session ${sessionId} terminated (already exited)` };
+            return { success: false, message: err.message };
         }
     }
     /**
@@ -241,22 +227,19 @@ export class ProcessManager extends EventEmitter {
         let command;
         switch (language) {
             case 'python':
-                // Check if python3 exists, fallback to python
-                command = `python3 -c ${JSON.stringify(code)} 2>/dev/null || python -c ${JSON.stringify(code)}`;
+                command = `python3 -c ${JSON.stringify(code)}`;
                 break;
             case 'node':
-                // Use node with -e flag for code evaluation
                 command = `node -e ${JSON.stringify(code)}`;
                 break;
             case 'bash':
-                // Use bash -c with proper quoting for safety
-                command = `bash -c ${JSON.stringify(code)}`;
+                command = code;
                 break;
             default:
                 return { success: false, output: '', error: `Unsupported language: ${language}` };
         }
         try {
-            const { stdout, stderr } = await execAsync(command, { timeout, maxBuffer: 10 * 1024 * 1024 });
+            const { stdout, stderr } = await execAsync(command, { timeout });
             return {
                 success: true,
                 output: stdout,
@@ -284,23 +267,4 @@ export class ProcessManager extends EventEmitter {
         }
         return cleaned;
     }
-    /**
-     * Get active session count
-     */
-    getActiveSessionCount() {
-        return Array.from(this.sessions.values()).filter(s => s.isRunning).length;
-    }
-    /**
-     * Get total session count
-     */
-    getSessionCount() {
-        return this.sessions.size;
-    }
 }
-// Singleton instance
-const processManager = new ProcessManager();
-// Auto-cleanup every 5 minutes to prevent memory leaks
-setInterval(() => {
-    processManager.cleanup();
-}, 5 * 60 * 1000);
-export default processManager;

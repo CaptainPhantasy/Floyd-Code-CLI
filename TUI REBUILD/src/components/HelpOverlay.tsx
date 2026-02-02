@@ -39,6 +39,10 @@ export function HelpOverlay() {
             <Ink.Text>Open overlays menu</Ink.Text>
           </Ink.Box>
           <Ink.Box>
+            <Ink.Text color="#82AAFF">Ctrl+Z      </Ink.Text>
+            <Ink.Text>Rewind / restore checkpoint</Ink.Text>
+          </Ink.Box>
+          <Ink.Box>
             <Ink.Text color="#82AAFF">Esc         </Ink.Text>
             <Ink.Text>Close overlay / cancel</Ink.Text>
           </Ink.Box>

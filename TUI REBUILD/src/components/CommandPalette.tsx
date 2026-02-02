@@ -53,6 +53,21 @@ const getCommands = (store: ReturnType<typeof useTuiStore.getState>): Command[] 
     shortcut: 'Ctrl+O',
     action: () => store.setOverlayMode('background'),
   },
+  {
+    id: 'rewind',
+    label: 'Rewind / Restore Checkpoint',
+    shortcut: 'Ctrl+Z',
+    action: () => store.setOverlayMode('rewind'),
+  },
+  {
+    id: 'create-checkpoint',
+    label: 'Create Manual Checkpoint',
+    shortcut: '',
+    action: async () => {
+      // This would need project context - placeholder for now
+      console.log('Checkpoint creation would go here');
+    },
+  },
 ];
 
 export function CommandPalette() {

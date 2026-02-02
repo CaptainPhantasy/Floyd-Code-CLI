@@ -18,7 +18,6 @@ export class BroworkManager {
     config = DEFAULT_CONFIG;
     toolExecutor;
     apiKey = '';
-    baseURL;
     model = 'claude-sonnet-4-5-20250514';
     provider = 'anthropic';
     onUpdate;
@@ -26,7 +25,6 @@ export class BroworkManager {
         this.toolExecutor = toolExecutor;
     }
     setApiKey(key) { this.apiKey = key; }
-    setBaseURL(url) { this.baseURL = url; }
     setModel(model) { this.model = model; }
     setProvider(provider) { this.provider = provider; }
     setConfig(config) { this.config = { ...this.config, ...config }; }
@@ -118,17 +116,15 @@ export class BroworkManager {
 Your task: ${task.name}
 Description: ${task.description}
 
-STANDARD OPERATIONS PROTOCOL:
-1. 🧭 SPATIAL AWARENESS: Use 'project_map' to orient yourself.
-2. 🛠️ SURGICAL EDITING: Use 'smart_replace' for code changes.
-3. 🌐 BROWSER EXTENSION (MANDATORY): 
-   - DO NOT USE standard Chromium/Puppeteer tools.
-   - USE THE 'browser_*' TOOLS ONLY. These connect to the Floyd Chrome Extension.
-   - Use 'browser_navigate', 'browser_read_page', 'browser_click', etc.
-4. 🧠 AUTONOMY: Work step by step to complete the task.
-5. 📊 REPORTING: Report progress and provide a clear summary when finished.
+Instructions:
+1. Work autonomously to complete the task
+2. Use tools as needed to accomplish your goal
+3. Be efficient - don't make unnecessary tool calls
+4. Report progress as you work
+5. When finished, provide a clear summary of what you accomplished
 
-You have access to file system tools, command execution, and the Floyd Chrome Extension.`;
+You have access to file system tools, command execution, and code execution.
+Work step by step and complete the task.`;
         this.log(task, 'info', `Agent started (${this.provider})`);
         task.progress = 10;
         this.notifyUpdate(task);
@@ -159,10 +155,7 @@ You have access to file system tools, command execution, and the Floyd Chrome Ex
         }
     }
     async runAnthropicAgent(task, systemPrompt) {
-        const client = new Anthropic({
-            apiKey: this.apiKey,
-            baseURL: this.baseURL,
-        });
+        const client = new Anthropic({ apiKey: this.apiKey });
         const tools = BUILTIN_TOOLS.map(tool => ({
             name: tool.name,
             description: tool.description,
@@ -269,9 +262,6 @@ You have access to file system tools, command execution, and the Floyd Chrome Ex
                     toolCallCount++;
                     if (toolCallCount > this.config.maxToolCallsPerAgent)
                         throw new Error('Max tool calls exceeded');
-                    // Type narrowing: only function-type calls have the .function property
-                    if (toolCall.type !== 'function')
-                        continue;
                     const toolName = toolCall.function.name;
                     const toolArgs = JSON.parse(toolCall.function.arguments);
                     this.log(task, 'tool', `Using ${toolName}`);

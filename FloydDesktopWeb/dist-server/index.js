@@ -19,7 +19,6 @@ import { SkillsManager } from './skills-manager.js';
 import { ProjectsManager } from './projects-manager.js';
 import { BroworkManager } from './browork-manager.js';
 import { WebSocketMCPServer } from './ws-mcp-server.js';
-import { buildSuggestedSystemPrompt } from './prompts/suggested-prompt.js';
 // Load .env.local
 config({ path: '.env.local' });
 // Initialize WebSocket MCP server for Chrome extension
@@ -39,8 +38,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 app.use(express.json());
-// Serve static files from dist directory
-app.use(express.static(path.join(__dirname, '../dist')));
+// Serve static frontend files from dist/
+const distPath = path.join(__dirname, '../dist');
+app.use(express.static(distPath));
 // Data directory for sessions and settings
 const DATA_DIR = path.join(__dirname, '../.floyd-data');
 // Provider configurations
@@ -89,7 +89,6 @@ let settings = {
     provider: 'anthropic-compatible',
     apiKey: process.env.GLM_API_KEY || process.env.ANTHROPIC_API_KEY || process.env.OPENAI_API_KEY || '',
     model: 'glm-4.7',
-    promptStyle: 'suggested', // DEFAULT: Use SUGGESTED prompt profile
     maxTokens: 16384,
     baseURL: 'https://api.z.ai/api/anthropic',
 };
@@ -196,27 +195,6 @@ function getClient() {
     }
     return null;
 }
-// Build system prompt based on prompt style
-function buildSystemPrompt(projectContext) {
-    const promptStyle = settings.promptStyle || 'suggested';
-    if (promptStyle === 'suggested') {
-        return buildSuggestedSystemPrompt({
-            agentName: 'Floyd-Desktop',
-            workingDirectory: process.cwd(),
-            projectContext,
-        });
-    }
-    // Custom or fallback prompt
-    if (settings.systemPrompt) {
-        return settings.systemPrompt;
-    }
-    // Fallback to suggested if no custom prompt
-    return buildSuggestedSystemPrompt({
-        agentName: 'Floyd-Desktop',
-        workingDirectory: process.cwd(),
-        projectContext,
-    });
-}
 // ============ API Routes ============
 // Health check
 app.get('/api/health', (req, res) => {
@@ -247,14 +225,13 @@ app.get('/api/settings', (req, res) => {
         hasApiKey: !!settings.apiKey,
         apiKeyPreview: settings.apiKey ? `${settings.apiKey.slice(0, 10)}...${settings.apiKey.slice(-4)}` : null,
         systemPrompt: settings.systemPrompt,
-        promptStyle: settings.promptStyle,
         maxTokens: settings.maxTokens,
         baseURL: settings.baseURL,
     });
 });
 // Update settings
 app.post('/api/settings', async (req, res) => {
-    const { provider, apiKey, model, systemPrompt, promptStyle, maxTokens, baseURL } = req.body;
+    const { provider, apiKey, model, systemPrompt, maxTokens, baseURL } = req.body;
     if (provider !== undefined)
         settings.provider = provider;
     if (apiKey !== undefined)
@@ -263,8 +240,6 @@ app.post('/api/settings', async (req, res) => {
         settings.model = model;
     if (systemPrompt !== undefined)
         settings.systemPrompt = systemPrompt;
-    if (promptStyle !== undefined)
-        settings.promptStyle = promptStyle;
     if (maxTokens !== undefined)
         settings.maxTokens = maxTokens;
     if (baseURL !== undefined)
@@ -677,15 +652,17 @@ app.post('/api/sessions/:id/regenerate', async (req, res) => {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
     let fullResponse = '';
+    // Build system prompt
+    let systemPrompt = settings.systemPrompt || 'You are Floyd, a helpful AI assistant with access to tools for file system operations and command execution. Use tools when needed to help the user.';
     // Add active skills
     const skillsContext = skillsManager.getSystemPromptAdditions();
+    if (skillsContext) {
+        systemPrompt += skillsContext;
+    }
     // Add project context
     const projectContext = await projectsManager.getProjectContext();
-    // Build system prompt using the configured prompt style (default: suggested)
-    let systemPrompt = buildSystemPrompt(projectContext);
-    // Add skills context if present
-    if (skillsContext) {
-        systemPrompt += '\n\n' + skillsContext;
+    if (projectContext) {
+        systemPrompt += projectContext;
     }
     try {
         // Build API messages (excluding tools for regeneration)
@@ -804,15 +781,15 @@ app.post('/api/sessions/:id/continue', async (req, res) => {
         if (!client) {
             return res.status(400).json({ error: 'API key not configured' });
         }
-        // Add active skills
+        // Build system prompt with context
+        let systemPrompt = settings.systemPrompt || 'You are Floyd, a helpful AI assistant.';
         const skillsContext = skillsManager.getSystemPromptAdditions();
-        // Add project context
-        const projectContext = await projectsManager.getProjectContext();
-        // Build system prompt using the configured prompt style (default: suggested)
-        let systemPrompt = buildSystemPrompt(projectContext);
-        // Add skills context if present
         if (skillsContext) {
-            systemPrompt += '\n\n' + skillsContext;
+            systemPrompt += skillsContext;
+        }
+        const projectContext = await projectsManager.getProjectContext();
+        if (projectContext) {
+            systemPrompt += projectContext;
         }
         // Build messages array, excluding the last incomplete assistant message
         const apiMessages = session.messages.slice(0, -1).map(m => ({
@@ -961,19 +938,11 @@ app.post('/api/chat', async (req, res) => {
         content: message,
         timestamp: Date.now(),
     });
-    // Add active skills and project context
-    const skillsContext = skillsManager.getSystemPromptAdditions();
-    const projectContext = await projectsManager.getProjectContext();
-    // Build system prompt
-    let systemPrompt = buildSystemPrompt(projectContext);
-    if (skillsContext) {
-        systemPrompt += '\n\n' + skillsContext;
-    }
     try {
         const response = await client.messages.create({
             model: settings.model,
             max_tokens: settings.maxTokens || 8192,
-            system: systemPrompt,
+            system: settings.systemPrompt,
             messages: session.messages.map(m => ({
                 role: m.role,
                 content: m.content,
@@ -1072,15 +1041,17 @@ app.post('/api/chat/stream', async (req, res) => {
     let fullResponse = '';
     let turnCount = 0;
     const maxTurns = 10;
+    // Build system prompt with skills and project context
+    let systemPrompt = settings.systemPrompt || 'You are Floyd, a helpful AI assistant with access to tools for file system operations and command execution. Use tools when needed to help the user.';
     // Add active skills
     const skillsContext = skillsManager.getSystemPromptAdditions();
+    if (skillsContext) {
+        systemPrompt += skillsContext;
+    }
     // Add project context
     const projectContext = await projectsManager.getProjectContext();
-    // Build system prompt using the configured prompt style (default: suggested)
-    let systemPrompt = buildSystemPrompt(projectContext);
-    // Add skills context if present
-    if (skillsContext) {
-        systemPrompt += '\n\n' + skillsContext;
+    if (projectContext) {
+        systemPrompt += projectContext;
     }
     try {
         if (settings.provider === 'openai' || settings.provider === 'glm') {
@@ -1238,6 +1209,14 @@ app.post('/api/chat/stream', async (req, res) => {
         res.end();
     }
 });
+// SPA catch-all - serve index.html for non-API routes
+app.get('*', (req, res) => {
+    // Don't catch API routes
+    if (req.path.startsWith('/api/')) {
+        return res.status(404).json({ error: 'Not found' });
+    }
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
 // Start server
 const PORT = process.env.PORT || 3001;
 // Also start WebSocket MCP server for Chrome extension
@@ -1251,8 +1230,6 @@ initDataDir().then(async () => {
     try {
         wsMcpServer = new WebSocketMCPServer(3005);
         wsMcpServer.registerTools(BUILTIN_TOOLS);
-        // Link the tool executor to the websocket server
-        toolExecutor.setWsMcpServer(wsMcpServer);
         await wsMcpServer.start();
         console.log('[Floyd Web Server] WebSocket MCP server started on port 3005 for Chrome extension');
     }

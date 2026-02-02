@@ -1,0 +1,14 @@
+{
+  "key": "prefix_mode_parser_pattern",
+  "value": "// Prefix Mode Parser Pattern\ninterface PrefixMode {\n  prefix: '!' | '/' | '@' | '&';\n  mode: 'bash' | 'command' | 'file' | 'background';\n  handler: (input: string) => Promise<void>;\n}\n\nconst parsePrefixMode = (input: string): { mode: PrefixMode['mode'] | null; content: string } => {\n  const prefixMap: Record<string, PrefixMode['mode']> = {\n    '!': 'bash',\n    '/': 'command',\n    '@': 'file',\n    '&': 'background'\n  };\n  \n  const firstChar = input[0];\n  if (firstChar in prefixMap) {\n    return { mode: prefixMap[firstChar], content: input.slice(1).trim() };\n  }\n  return { mode: null, content: input };\n};",
+  "timestamp": 1770019372695,
+  "ttl": 604800000,
+  "tier": "vault",
+  "metadata": {
+    "tags": [
+      "input-parsing",
+      "prefix-detection",
+      "floyd-cli"
+    ]
+  }
+}

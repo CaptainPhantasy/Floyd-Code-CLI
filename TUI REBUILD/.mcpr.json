@@ -8,6 +8,22 @@
       "command": "node",
       "args": ["/Volumes/Storage/FLOYD_CLI/INK/floyd-cli/tools/mcp-runner-server/dist/index.js"]
     },
+    "floyd-supercache": {
+      "command": "node",
+      "args": ["/Volumes/Storage/MCP/floyd-supercache-server/dist/index.js"]
+    },
+    "floyd-safe-ops": {
+      "command": "node",
+      "args": ["/Volumes/Storage/MCP/floyd-safe-ops-server/dist/index.js"]
+    },
+    "floyd-terminal": {
+      "command": "node",
+      "args": ["/Volumes/Storage/MCP/floyd-terminal-server/dist/index.js"]
+    },
+    "novel-concepts": {
+      "command": "node",
+      "args": ["/Volumes/Storage/MCP/novel-concepts-server/dist/index.js"]
+    },
     "web-reader": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-web-reader"]
