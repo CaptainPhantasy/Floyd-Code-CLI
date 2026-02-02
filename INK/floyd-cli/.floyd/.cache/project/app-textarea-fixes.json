@@ -1,0 +1,16 @@
+{
+  "key": "app-textarea-fixes",
+  "value": "\n# Text Input Fixes - Jan 28, 2026\n\n**File Modified:** `FloydDesktopWeb/src/App.tsx`\n\n## Problem\n- Text input box was too narrow, making it hard to type\n- Cursor was being cut off at the bottom half\n\n## Changes Made\n\n### Width Fixes\n- Added `min-w-0` class to allow flexible shrinking\n- Added `w-full` class to take full available width\n- Added inline `style={{ minWidth: '200px' }}` to ensure minimum width\n\n### Height/Visibility Fixes\n- Changed `rows={1}` to `rows={3}` for more typing space\n- Increased vertical padding from `py-3` to `py-4`\n- Increased minimum height from `80px` to `100px`\n- Set `height: 'auto'` for flexible sizing\n\n### Result\nText input now:\n- Expands to fill available space\n- Has minimum 200px width and 100px height\n- Has adequate padding for cursor visibility\n- Comfortable typing experience\n\n## Code Location\nLines ~831-847 in App.tsx (textarea element with className and style props)\n",
+  "timestamp": 1769577787089,
+  "lastAccess": 1769577884064,
+  "ttl": 86400000,
+  "tier": "project",
+  "metadata": {
+    "type": "code-fix",
+    "file": "src/App.tsx",
+    "component": "ChatInput",
+    "date": "2026-01-28T04:55:10.348Z",
+    "issue": "textarea width and cursor clipping"
+  },
+  "version": 1
+}

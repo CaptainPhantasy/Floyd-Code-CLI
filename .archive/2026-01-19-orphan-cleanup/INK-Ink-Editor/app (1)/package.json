@@ -1,0 +1,43 @@
+{
+  "name": "ink-cli-designer",
+  "version": "1.0.0",
+  "description": "CLI tool to design Ink layouts visually",
+  "main": "dist/cli.js",
+  "bin": {
+    "ink-cli-designer": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.js",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ink",
+    "react",
+    "cli",
+    "design",
+    "layout"
+  ],
+  "author": "Floyd",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "fs-extra": "^11.1.1",
+    "ink": "^4.4.1",
+    "ink-select-input": "^5.0.0",
+    "ink-text-input": "^5.0.1",
+    "meow": "^12.1.1",
+    "react": "^18.2.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.2",
+    "@types/node": "^20.6.2",
+    "@types/react": "^18.2.22",
+    "eslint": "^8.49.0",
+    "typescript": "^5.2.2"
+  },
+  "type": "module"
+}

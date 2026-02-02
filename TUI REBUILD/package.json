@@ -1,0 +1,58 @@
+{
+	"name": "@floyd/tui",
+	"version": "0.1.0",
+	"description": "FLOYD TUI - Provider-Agnostic Terminal UI for FLOYD GOD TIER Agent",
+	"type": "module",
+	"main": "./dist/app.js",
+	"bin": {
+		"floyd-tui": "./dist/cli.js"
+	},
+	"scripts": {
+		"dev": "tsx watch src/cli.ts",
+		"build": "tsc",
+		"build:check": "tsc --noEmit",
+		"start": "node dist/cli.js",
+		"lint": "eslint src",
+		"lint:fix": "eslint src --fix",
+		"typecheck": "tsc --noEmit",
+		"clean": "rm -rf dist node_modules",
+		"verify": "npm run typecheck && npm run lint && npm run build",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage"
+	},
+	"dependencies": {
+		"@inkjs/ui": "2.0.0",
+		"chalk": "5.4.1",
+		"dotenv": "16.4.7",
+		"ink": "6.6.0",
+		"ink-text-input": "6.0.0",
+		"inquirer": "^9.3.8",
+		"react": "19.1.0",
+		"zod": "3.24.1",
+		"zustand": "5.0.2"
+	},
+	"devDependencies": {
+		"@types/inquirer": "9.0.7",
+		"@types/node": "22.10.5",
+		"@types/react": "19.1.5",
+		"@typescript-eslint/eslint-plugin": "8.19.1",
+		"@typescript-eslint/parser": "8.19.1",
+		"eslint": "^9.39.2",
+		"tsx": "^4.21.0",
+		"typescript": "5.7.3"
+	},
+	"engines": {
+		"node": ">=20.0.0",
+		"npm": ">=10.0.0"
+	},
+	"keywords": [
+		"ai",
+		"cli",
+		"tui",
+		"terminal",
+		"floyd"
+	],
+	"author": "FLOYD",
+	"license": "PROPRIETARY"
+}

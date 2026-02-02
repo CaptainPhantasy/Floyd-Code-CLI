@@ -1,0 +1,24 @@
+{
+  "projects": [
+    {
+      "id": "project_1768851085627",
+      "name": "Floyd Test",
+      "description": "Test project for verification",
+      "rootPath": "/Volumes/Storage/FLOYD_CLI/FloydDesktopWeb",
+      "files": [],
+      "created": 1768851085627,
+      "updated": 1768851085627
+    },
+    {
+      "id": "project_1768857596074",
+      "name": "Cloud Generalist",
+      "description": "",
+      "rootPath": "Volume/Storage/CloudGen Notes",
+      "instructions": "Test",
+      "files": [],
+      "created": 1768857596074,
+      "updated": 1768857596074
+    }
+  ],
+  "active": "project_1768857596074"
+}

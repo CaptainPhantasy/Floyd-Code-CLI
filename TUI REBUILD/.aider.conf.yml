@@ -1,0 +1,30 @@
+# Main Config: Opus 4.5 (Plan) + Sonnet 4.5 (Code)
+architect: true
+model: openrouter/anthropic/claude-opus-4.5
+editor-model: openrouter/anthropic/claude-sonnet-4.5
+editor-edit-format: editor-whole
+
+# Performance Settings
+thinking-tokens: 4096
+auto-lint: true
+auto-commits: false
+dark-mode: true
+suggest-shell-commands: true
+
+# Repomap - focused on src/ only
+map-tokens: 2048
+map-multiplier: 1
+
+# ONLY scan src/ for context (ignore phase docs, node_modules, etc.)
+# Use /add to include specific files from outside src/
+read: src/
+
+# Git settings
+gitignore: true
+
+# File handling
+watch-files: false
+
+# MCP Servers - Floyd Tools
+mcp: .mcpr.json
+

@@ -1,0 +1,50 @@
+Great edit this for me to comply wiht best practices,/Volumes/Storage/FLOYD_CLI/RepoGod/TUI_2_JSON
+disabledfound or cache not Server
+(main)> floyddouglastalley@Mac /V/S/F/RepoGod
+##:::::::: ##::##:::: ##:::..:: ####::: ##:::: ##:::: ##::. ##::::::: ##:::::::
+##:::::::. ##::##::::'##... ##: ##:'##:: ##.... ##:::::::'##.... ##:.  ##.....::
+##:::::::: ##::##:::: ##::::::: ##:::: ##:::: ##:::: ##:::. ######::: ##:::::::
+##:::::::: ##::##:::: ##::::::: ##:::: ##:::: ##:::: ##:::: ##...:::: ##:::::::
+##::##: ##:::::::: ##:::: ##::: ##:::: ##:::: ##:::: ##:::: ##::::::: ##:::::::
+######:: ########:'####:##:::: ########:::::. ########:. #######:::::  ##:::::::
+'########:'##::::::::'#######::'##:::'##:'########::::::'######::'##:::::::'####:
+..::::::::........:::.......::::::..:::::........:::::::......:::........::....::
+v0.1.0
+to exit.Press Ctrl+C message below. Type your
+for this.been waiting help. I've ready to Floyd here, Hey Douglas! Floyd:
+this.waiting for I've been to help. here, ready Douglas! Floyd  Hey
+torage/FLOYD_CLI/RepoGod/TUI_2_JSON best practices,/Volumes/Scomply wiht me to this for Great edit You:
+>
+attempt failedGLM stream 2026-01-27T23:53:29.464Z [ERROR] >
+StreamHandler.processStream (file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/streaming/stream-handler.js:66:50) at
+(file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/agent/execution-engine.js:308:9)async FloydAgentEngine.processStream  at
+Object][object
+was abortedThis operation Error:
+file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/agent/execution-engine.js:205:30at async
+FloydAgentEngine.execute (file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/agent/execution-engine.js:295:16)at async
+file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/cli.js:366:25at async
+Stream error2026-01-27T23:53:29.464Z [ERROR]
+process.processTicksAndRejections (node:internal/process/task_queues:105:5) at
+(file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/cli.js:898:13)async FloydCLI.processInput  at
+cess (file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/ui/message-queue.js:45:4)MessageQueue.proat async
+(file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/agent/execution-engine.js:482:46)at Object.onError
+FloydAgentEngine.processStream (file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/agent/execution-engine.js:308:9)at async
+async file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/agent/execution-engine.js:205:30 at
+error[ERROR] Stream 2026-01-27T23:53:29.465Z
+abortedoperation was Error: This
+(file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/agent/execution-engine.js:295:16)async FloydAgentEngine.execute  at
+FloydCLI.processInput (file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/cli.js:898:13)at async
+(node:internal/process/task_queues:105:5)at process.processTicksAndRejections
+(file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/streaming/stream-handler.js:67:40)at StreamHandler.processStream
+I/floyd-wrapper-main/dist/cli.js:366:25async file:///Volumes/Storage/FLOYD_CL at
+stream processingError during 2026-01-27T23:53:29.465Z [ERROR]
+(node:events:507:17)at StreamHandler.emit
+aborted')operation was error. ('This [ERR_UNHANDLED_ERROR]: Unhandled Error
+(file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/streaming/stream-handler.js:68:26)at StreamHandler.processStream
+(node:internal/process/task_queues:105:5)at process.processTicksAndRejections
+FloydAgentEngine.processStream (file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/agent/execution-engine.js:308:9)at async
+(file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/cli.js:898:13)async FloydCLI.processInput  at
+file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/cli.js:366:25at async
+async file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/agent/execution-engine.js:205:30 at
+(file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/ui/message-queue.js:45:4)async MessageQueue.process  at
+ocess (file:///Volumes/Storage/FLOYD_CLI/floyd-wrapper-main/dist/ui/message-queue.js:45:4)MessageQueue.prat async

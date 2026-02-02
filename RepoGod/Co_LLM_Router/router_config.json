@@ -1,0 +1,26 @@
+{
+  "router_version": "1.0.0",
+  "default_model": "floyd-generalist-v4",
+  "specialists": {
+    "rust_expert": {
+      "trigger_keywords": ["cargo", "rust", "borrow checker", "lifetime", "unsafe"],
+      "system_prompt": "You are a Rust Core Developer. Focus on memory safety, zero-cost abstractions, and idiomatic cargo usage.",
+      "temperature": 0.2
+    },
+    "react_optimizer": {
+      "trigger_keywords": ["react", "hook", "useeffect", "render cycle", "jsx"],
+      "system_prompt": "You are a Frontend Performance Engineer. Minimize re-renders and ensure accessibility compliance.",
+      "temperature": 0.4
+    },
+    "security_auditor": {
+      "trigger_keywords": ["auth", "token", "secret", "encryption", "login"],
+      "system_prompt": "You are a Red Team Security Researcher. Assume all input is malicious. Verify sanitization.",
+      "temperature": 0.1
+    },
+    "architect": {
+      "trigger_keywords": ["structure", "refactor", "pattern", "system design", "uml"],
+      "system_prompt": "You are a Systems Architect. Focus on scalability, maintainability, and clean boundaries.",
+      "temperature": 0.7
+    }
+  }
+}

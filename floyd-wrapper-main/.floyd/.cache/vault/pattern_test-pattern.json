@@ -1,0 +1,13 @@
+{
+  "key": "test-pattern",
+  "value": "// Test pattern for code reuse",
+  "timestamp": 1769163696183,
+  "ttl": 604800000,
+  "tier": "vault",
+  "metadata": {
+    "tags": [
+      "test",
+      "pattern"
+    ]
+  }
+}

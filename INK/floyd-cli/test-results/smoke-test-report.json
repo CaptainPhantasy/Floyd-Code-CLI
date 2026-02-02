@@ -1,0 +1,126 @@
+{
+  "timestamp": "2026-01-27T12:48:20.006Z",
+  "summary": {
+    "passed": 0,
+    "total": 6,
+    "percentage": 0
+  },
+  "tests": [
+    {
+      "name": "Test 1: Basic Startup",
+      "passed": false,
+      "duration": 1,
+      "output": [
+        "Starting floyd-cli...",
+        "Error: posix_spawnp failed."
+      ],
+      "error": "posix_spawnp failed."
+    },
+    {
+      "name": "Test 2: Help Overlay",
+      "passed": false,
+      "duration": 0,
+      "output": [
+        "Triggering help overlay with Ctrl+/",
+        "Error: Cannot read properties of undefined (reading 'write')"
+      ],
+      "error": "Cannot read properties of undefined (reading 'write')"
+    },
+    {
+      "name": "Test 3: Command Palette",
+      "passed": false,
+      "duration": 0,
+      "output": [
+        "Triggering command palette with Ctrl+P",
+        "Error: Cannot read properties of undefined (reading 'write')"
+      ],
+      "error": "Cannot read properties of undefined (reading 'write')"
+    },
+    {
+      "name": "Test 4: Message Submission",
+      "passed": false,
+      "duration": 0,
+      "output": [
+        "Sending test message...",
+        "Error: Cannot read properties of undefined (reading 'write')"
+      ],
+      "error": "Cannot read properties of undefined (reading 'write')"
+    },
+    {
+      "name": "Test 5: Safety Mode Toggle",
+      "passed": false,
+      "duration": 0,
+      "output": [
+        "Cycling safety mode with Shift+Tab",
+        "Error: Cannot read properties of undefined (reading 'write')"
+      ],
+      "error": "Cannot read properties of undefined (reading 'write')"
+    },
+    {
+      "name": "Test 6: Quit Sequence",
+      "passed": false,
+      "duration": 0,
+      "output": [
+        "Testing quit with Ctrl+Q",
+        "Error: Cannot read properties of undefined (reading 'write')"
+      ],
+      "error": "Cannot read properties of undefined (reading 'write')"
+    }
+  ],
+  "turns": [
+    {
+      "description": "TUI starts and displays greeting",
+      "expected": "FLOYD greeting message appears",
+      "action": "Start CLI and wait for render",
+      "actual": "",
+      "passed": false,
+      "turn": 1,
+      "timestamp": "2026-01-27T12:48:20.005Z"
+    },
+    {
+      "description": "Help overlay appears on Ctrl+/",
+      "expected": "Keyboard shortcuts overlay shown",
+      "action": "Press Ctrl+/",
+      "actual": "",
+      "passed": false,
+      "turn": 2,
+      "timestamp": "2026-01-27T12:48:20.005Z"
+    },
+    {
+      "description": "Command palette appears on Ctrl+P",
+      "expected": "Command list overlay shown",
+      "action": "Press Ctrl+P",
+      "actual": "",
+      "passed": false,
+      "turn": 3,
+      "timestamp": "2026-01-27T12:48:20.005Z"
+    },
+    {
+      "description": "Message can be submitted and response appears",
+      "expected": "User message shown, Floyd response starts",
+      "action": "Type \"hello\" and press Enter",
+      "actual": "",
+      "passed": false,
+      "turn": 4,
+      "timestamp": "2026-01-27T12:48:20.006Z"
+    },
+    {
+      "description": "Safety mode cycles on Shift+Tab",
+      "expected": "Mode indicator changes (yolo/ask/plan)",
+      "action": "Press Shift+Tab",
+      "actual": "",
+      "passed": false,
+      "turn": 5,
+      "timestamp": "2026-01-27T12:48:20.006Z"
+    },
+    {
+      "description": "CLI exits on Ctrl+Q",
+      "expected": "Process terminates",
+      "action": "Press Ctrl+Q",
+      "actual": "",
+      "passed": false,
+      "turn": 6,
+      "timestamp": "2026-01-27T12:48:20.006Z"
+    }
+  ]
+}

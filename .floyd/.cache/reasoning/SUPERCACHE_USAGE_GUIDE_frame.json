@@ -1,0 +1,32 @@
+{
+  "frame_id": "supercache_usage_guide_2024-02-01",
+  "task_id": "supercache_documentation",
+  "created": "2026-02-01T00:00:00Z",
+  "title": "FLOYD SUPERCACHE Usage Guide Documentation",
+  "purpose": "Provide comprehensive instructions on effective SUPERCACHE usage across all Floyd documentation locations",
+  "locations_updated": [
+    "/Volumes/Storage/FLOYD_CLI/CLAUDE.md",
+    "/Volumes/Storage/FLOYD_CLI/FLOYD.MD",
+    "/Volumes/Storage/FLOYD_CLI/SUPERCACHE/EFFECTIVE_USAGE_GUIDE.md",
+    "/Volumes/Storage/FLOYD_CLI/INK/floyd-agent-sandbox/docs/# FLOYD-S SUPERCACHE TECHNICAL IMPLEMENTATION BLUEPRINT.md",
+    "/Volumes/Storage/MCP/novel_mcp_test_results/cache_keys_and_summary.md",
+    "/Volumes/Storage/MIT SCAFFOLDING/SUPERCACHE_USAGE.md",
+    "/Volumes/Storage/FLOYD_CLI/.floyd/.cache/vault/SUPERCACHE_USAGE_GUIDE.json"
+  ],
+  "key_points": {
+    "tools": "12 tools available for cache operations",
+    "architecture": "Three-tier: reasoning (hours-days), project (days-weeks), vault (permanent)",
+    "naming": "Use pattern: category:entity:version",
+    "best_practice": "Before work: search; During: store reasoning; After: extract patterns"
+  },
+  "quick_reference": [
+    "cache_store - Save any data with optional TTL",
+    "cache_retrieve - Get stored data by key",
+    "cache_search - Find cached content by query",
+    "cache_store_reasoning - Capture decision logic (context, reasoning, conclusion)",
+    "cache_load_reasoning - Recall past decision-making",
+    "cache_store_pattern - Save reusable code solutions",
+    "cache_stats - Check cache health and size",
+    "cache_prune - Remove old entries by age"
+  ]
+}

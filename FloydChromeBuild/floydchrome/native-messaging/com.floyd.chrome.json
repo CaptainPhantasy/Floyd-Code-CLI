@@ -1,0 +1,9 @@
+{
+  "name": "com.floyd.chrome",
+  "description": "FloydChrome Native Messaging Host",
+  "path": "/Volumes/Storage/FLOYD_CLI/INK/floyd-cli/bin/floyd-chrome-host.js",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://*"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "key": "tui-scroll-up-fix-priority",
+  "value": "🚨 CRITICAL TUI FIX NEEDED - SCROLLING ISSUE\n\nPROBLEM: Text scrolls DOWN into the input box instead of UP away from it\nUSER: Douglas Talley - \"crushing me\" with text flowing into typing area\n\nROOT CAUSE IDENTIFIED:\n- File: INK/floyd-cli/src/ui/panels/TranscriptPanel.tsx\n- Line: displayMessages = uniqueMessages.slice(-maxMessages)\n- Messages render oldest → newest (line 48: messages.map)\n- When new content arrives, viewport scrolls to show content at BOTTOM\n- In TUI with input at bottom, this means content grows DOWN into input\n\nFIX REQUIRED:\n1. Reverse message order: render newest → oldest\n2. OR reverse the viewport scroll direction so \"scroll to bottom\" means show content at TOP of viewport\n3. Viewport.tsx uses marginTop={-scrollTop} to move content UP, but it's not working correctly\n\nKEY FILES:\n- INK/floyd-cli/src/ui/panels/TranscriptPanel.tsx (message rendering order)\n- INK/floyd-cli/src/ui/crush/Viewport.tsx (scroll calculation, line 116: marginTop={-scrollTop})\n\nDESIRED BEHAVIOR:\n- Newest messages appear at TOP of viewport\n- Content grows UP away from input box\n- Never scrolls DOWN into input area\n\nSTATUS: READY TO FIX IN YOLO MODE",
+  "timestamp": 1769540328616,
+  "lastAccess": 1769544985251,
+  "ttl": 604800000,
+  "tier": "vault",
+  "version": 1
+}

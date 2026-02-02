@@ -1,0 +1,121 @@
+{
+  "skills": [
+    {
+      "id": "code-review",
+      "name": "Code Review",
+      "description": "Thorough code review with security, performance, and best practices analysis",
+      "instructions": "When reviewing code:\n1. Check for security vulnerabilities (injection, XSS, auth issues)\n2. Identify performance bottlenecks and memory leaks\n3. Evaluate error handling and edge cases\n4. Assess code readability and maintainability\n5. Suggest specific improvements with examples\n6. Consider test coverage requirements",
+      "triggers": [
+        "review",
+        "code review",
+        "check my code"
+      ],
+      "enabled": true,
+      "category": "coding",
+      "icon": "🔍"
+    },
+    {
+      "id": "refactor",
+      "name": "Refactoring Assistant",
+      "description": "Help refactor code with best practices and design patterns",
+      "instructions": "When refactoring:\n1. Identify code smells and anti-patterns\n2. Apply SOLID principles where appropriate\n3. Extract reusable functions and components\n4. Improve naming and code organization\n5. Maintain backward compatibility\n6. Write comprehensive tests for changes",
+      "triggers": [
+        "refactor",
+        "clean up",
+        "improve code"
+      ],
+      "enabled": true,
+      "category": "coding",
+      "icon": "🔧"
+    },
+    {
+      "id": "debugging",
+      "name": "Debug Detective",
+      "description": "Systematic debugging approach to find and fix issues",
+      "instructions": "When debugging:\n1. Reproduce the issue consistently\n2. Gather error messages, logs, and stack traces\n3. Identify the root cause, not just symptoms\n4. Form hypotheses and test them methodically\n5. Explain the fix and why it works\n6. Suggest preventive measures",
+      "triggers": [
+        "debug",
+        "fix bug",
+        "error",
+        "not working"
+      ],
+      "enabled": true,
+      "category": "coding",
+      "icon": "🐛"
+    },
+    {
+      "id": "documentation",
+      "name": "Documentation Writer",
+      "description": "Create clear, comprehensive documentation",
+      "instructions": "When writing documentation:\n1. Start with a clear overview/summary\n2. Include installation and setup instructions\n3. Provide usage examples with code\n4. Document all parameters and return values\n5. Include troubleshooting section\n6. Keep it concise but complete",
+      "triggers": [
+        "document",
+        "write docs",
+        "readme"
+      ],
+      "enabled": true,
+      "category": "writing",
+      "icon": "📝"
+    },
+    {
+      "id": "testing",
+      "name": "Test Engineer",
+      "description": "Write comprehensive tests with good coverage",
+      "instructions": "When writing tests:\n1. Cover happy path and edge cases\n2. Use descriptive test names that explain intent\n3. Follow Arrange-Act-Assert pattern\n4. Mock external dependencies appropriately\n5. Aim for meaningful coverage, not just numbers\n6. Include integration tests where needed",
+      "triggers": [
+        "test",
+        "write tests",
+        "unit test"
+      ],
+      "enabled": true,
+      "category": "coding",
+      "icon": "🧪"
+    },
+    {
+      "id": "security-audit",
+      "name": "Security Auditor",
+      "description": "Identify security vulnerabilities and suggest fixes",
+      "instructions": "When auditing security:\n1. Check for OWASP Top 10 vulnerabilities\n2. Review authentication and authorization\n3. Examine input validation and sanitization\n4. Check for sensitive data exposure\n5. Review dependency vulnerabilities\n6. Suggest security improvements with priority",
+      "triggers": [
+        "security",
+        "audit",
+        "vulnerabilities"
+      ],
+      "enabled": true,
+      "category": "analysis",
+      "icon": "🔒"
+    },
+    {
+      "id": "performance",
+      "name": "Performance Optimizer",
+      "description": "Analyze and improve performance",
+      "instructions": "When optimizing performance:\n1. Profile to identify actual bottlenecks\n2. Measure before and after changes\n3. Consider memory vs CPU tradeoffs\n4. Optimize database queries and indexes\n5. Implement caching where appropriate\n6. Consider lazy loading and code splitting",
+      "triggers": [
+        "performance",
+        "optimize",
+        "slow",
+        "speed up"
+      ],
+      "enabled": true,
+      "category": "analysis",
+      "icon": "⚡"
+    },
+    {
+      "id": "explain",
+      "name": "Code Explainer",
+      "description": "Explain code clearly for different skill levels",
+      "instructions": "When explaining code:\n1. Start with high-level overview\n2. Break down complex logic step by step\n3. Explain the \"why\" not just the \"what\"\n4. Use analogies for difficult concepts\n5. Highlight important patterns and idioms\n6. Adjust detail level to audience",
+      "triggers": [
+        "explain",
+        "what does this do",
+        "how does this work"
+      ],
+      "enabled": true,
+      "category": "analysis",
+      "icon": "💡"
+    }
+  ],
+  "active": [
+    "code-review"
+  ]
+}

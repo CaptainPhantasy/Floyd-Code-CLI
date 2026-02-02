@@ -1,0 +1,8 @@
+{
+  "provider": "anthropic-compatible",
+  "apiKey": "e501566ea82e437aa4ca8f568bfb3cd4.lUYwS6aQWSCcuR7K",
+  "model": "glm-4.7",
+  "maxTokens": 16384,
+  "baseURL": "https://api.z.ai/api/anthropic",
+  "systemPrompt": ""
+}

@@ -1,0 +1,236 @@
+{
+  "components": [
+    {
+      "name": "cli.tsx",
+      "type": "entrypoint",
+      "file": "INK/floyd-cli/src/cli.tsx",
+      "lines": 33,
+      "purpose": "CLI entry point with meow argument parsing"
+    },
+    {
+      "name": "app.tsx",
+      "type": "main_application",
+      "file": "INK/floyd-cli/src/app.tsx",
+      "lines": 649,
+      "purpose": "Main application component with AgentEngine and hotkeys"
+    },
+    {
+      "name": "MainLayout",
+      "type": "layout",
+      "file": "INK/floyd-cli/src/ui/layouts/MainLayout.tsx",
+      "lines": 1229,
+      "purpose": "Primary interactive screen layout"
+    },
+    {
+      "name": "StatusBar",
+      "type": "component",
+      "file": "INK/floyd-cli/src/ui/layouts/MainLayout.tsx",
+      "lines": "279-408",
+      "purpose": "Status bar with user info and connection status"
+    },
+    {
+      "name": "FloydAsciiBanner",
+      "type": "component",
+      "file": "INK/floyd-cli/src/ui/layouts/MainLayout.tsx",
+      "lines": "220-263",
+      "purpose": "FLOYD ASCII art banner"
+    },
+    {
+      "name": "InputArea",
+      "type": "component",
+      "file": "INK/floyd-cli/src/ui/layouts/MainLayout.tsx",
+      "lines": "552-596",
+      "purpose": "Chat input with hints"
+    },
+    {
+      "name": "SessionPanel",
+      "type": "panel",
+      "file": "INK/floyd-cli/src/ui/panels/SessionPanel.tsx",
+      "lines": 280,
+      "purpose": "Left sidebar with session context"
+    },
+    {
+      "name": "TranscriptPanel",
+      "type": "panel",
+      "file": "INK/floyd-cli/src/ui/panels/TranscriptPanel.tsx",
+      "lines": 193,
+      "purpose": "Center message history display"
+    },
+    {
+      "name": "ContextPanel",
+      "type": "panel",
+      "file": "INK/floyd-cli/src/ui/panels/ContextPanel.tsx",
+      "lines": 211,
+      "purpose": "Right sidebar with contextual information"
+    },
+    {
+      "name": "CommandPalette",
+      "type": "overlay",
+      "file": "INK/floyd-cli/src/ui/components/CommandPalette.tsx",
+      "lines": 554,
+      "purpose": "Fuzzy-find command overlay"
+    },
+    {
+      "name": "CommandPaletteTrigger",
+      "type": "wrapper",
+      "file": "INK/floyd-cli/src/ui/components/CommandPaletteTrigger.tsx",
+      "lines": 372,
+      "purpose": "Wrapper that handles Ctrl+P to open palette"
+    },
+    {
+      "name": "HelpOverlay",
+      "type": "overlay",
+      "file": "INK/floyd-cli/src/ui/overlays/HelpOverlay.tsx",
+      "lines": 328,
+      "purpose": "Modal overlay displaying keyboard shortcuts"
+    },
+    {
+      "name": "Viewport",
+      "type": "component",
+      "file": "INK/floyd-cli/src/ui/crush/Viewport.tsx",
+      "lines": 181,
+      "purpose": "Scrollable viewport with content clipping"
+    },
+    {
+      "name": "Frame",
+      "type": "component",
+      "file": "INK/floyd-cli/src/ui/crush/Frame.tsx",
+      "lines": 287,
+      "purpose": "Bordered container with floating frame aesthetic"
+    },
+    {
+      "name": "floyd-store",
+      "type": "state",
+      "file": "INK/floyd-cli/src/store/floyd-store.ts",
+      "purpose": "Zustand state management"
+    }
+  ],
+  "entrypoints": [
+    {
+      "name": "CLI",
+      "file": "INK/floyd-cli/src/cli.tsx",
+      "command": "node dist/cli.js",
+      "bin": "dist/cli.js"
+    }
+  ],
+  "datastores": [
+    {
+      "name": "Zustand Store",
+      "type": "in_memory",
+      "file": "INK/floyd-cli/src/store/floyd-store.ts",
+      "collections": ["messages", "streamingContent", "status", "safetyMode"]
+    }
+  ],
+  "ci_cd": [
+    {
+      "name": "npm build",
+      "command": "tsc",
+      "file": "INK/floyd-cli/package.json"
+    },
+    {
+      "name": "npm test",
+      "command": "ava",
+      "file": "INK/floyd-cli/package.json"
+    }
+  ],
+  "tests": [
+    {
+      "type": "unit",
+      "runner": "ava",
+      "files": [
+        "src/__tests__/build-verification.test.ts",
+        "src/__tests__/module-resolution.test.ts",
+        "src/__tests__/runtime-verification.test.ts",
+        "src/ui/components/__tests__/ConfirmInput.test.tsx",
+        "src/ui/components/__tests__/SimpleTable.test.tsx"
+      ]
+    }
+  ],
+  "security_findings": [
+    {
+      "severity": "low",
+      "issue": "Debug statements in production",
+      "file": "INK/floyd-cli/src/ui/layouts/MainLayout.tsx",
+      "lines": [664, 665, 694, 700],
+      "description": "console.error statements left in production code"
+    },
+    {
+      "severity": "info",
+      "issue": "No input validation",
+      "file": "INK/floyd-cli/src/ui/layouts/MainLayout.tsx",
+      "lines": [773],
+      "description": "No validation on message length or content before submission"
+    }
+  ],
+  "alignment_rows": [
+    {
+      "intent": "Detect terminal width/height for responsive layout",
+      "evidence": "MainLayout.tsx:661-662 uses process.stdout.columns/rows",
+      "status": "Implemented"
+    },
+    {
+      "intent": "Global Esc to exit",
+      "evidence": "app.tsx:410-419 AND MainLayout.tsx:883-895",
+      "status": "Partial"
+    },
+    {
+      "intent": "Ctrl+/ to toggle help",
+      "evidence": "app.tsx:421-425 AND MainLayout.tsx:898-901",
+      "status": "Partial"
+    },
+    {
+      "intent": "Ctrl+P for command palette",
+      "evidence": "CommandPaletteTrigger.tsx:434-439",
+      "status": "Implemented"
+    },
+    {
+      "intent": "? key for help when input empty",
+      "evidence": "app.tsx:429-432 AND MainLayout.tsx:915-918",
+      "status": "Partial"
+    },
+    {
+      "intent": "Shift+Tab cycle safety mode",
+      "evidence": "MainLayout.tsx:921-931",
+      "status": "Implemented"
+    },
+    {
+      "intent": "Zustand store for messages",
+      "evidence": "floyd-store.ts - messages: ConversationMessage[]",
+      "status": "Implemented"
+    },
+    {
+      "intent": "Height overhead calculation",
+      "evidence": "MainLayout.tsx:678-689",
+      "status": "Partial"
+    }
+  ],
+  "hotkey_conflicts": [
+    {
+      "hotkey": "Esc",
+      "handlers": ["app.tsx:410", "MainLayout.tsx:883"],
+      "issue": "Different overlay state checks, may exit when should close overlay"
+    },
+    {
+      "hotkey": "Ctrl+/",
+      "handlers": ["app.tsx:422", "MainLayout.tsx:898"],
+      "issue": "Duplicate handlers toggle different state variables"
+    },
+    {
+      "hotkey": "?",
+      "handlers": ["app.tsx:429", "MainLayout.tsx:915"],
+      "issue": "Different trigger conditions (state vs input.length check)"
+    },
+    {
+      "hotkey": "Ctrl+M",
+      "handlers": ["app.tsx:434", "MainLayout.tsx:934"],
+      "issue": "app.tsx missing return statement"
+    },
+    {
+      "hotkey": "Ctrl+T",
+      "handlers": ["app.tsx:440", "MainLayout.tsx:940"],
+      "issue": "app.tsx missing return statement"
+    }
+  ],
+  "useInput_hooks": 28,
+  "confidence_score": 75
+}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Floyd API</title></head>
+<body>
+  <h1>Floyd Agent API Test</h1>
+  <button onclick="testGitStatus()">Test git_status</button>
+  <pre id="output">Click button to test...</pre>
+
+  <script>
+    const TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkZXZpY2VJZCI6ImMzOThmOWYwLTRmMjctNGQ2ZS04ZWRlLTRhNWY3NWM4YjI0MSIsInNlc3Npb25JZCI6IjFmNTk1OTQ4LWUwNTMtNGFhOS1iNzU1LWJiODk0ZmU0Y2QxMSIsImRldmljZU5hbWUiOiJEZWZhdWx0IERldmljZSIsImlhdCI6MTc2OTM4NjAzMCwiZXhwIjoxNzcxOTc4MDMwLCJpc3MiOiJmbG95ZC13cmFwcGVyIiwic3ViIjoiYzM5OGY5ZjAtNGYyNy00ZDZlLThlZGUtNGE1Zjc1YzhiMjQxIn0.d2F0Xy7XYDxE17QnBntkZCXTFCCY4JTR5zvbSz9s6KY';
+
+    const ws = new WebSocket(`ws://192.168.1.215:4000/agent?token=${TOKEN}`);
+
+    ws.onopen = () => {
+      console.log('Connected to Floyd Agent API');
+      document.getElementById('output').textContent = 'Connected! Click button to test git_status...';
+    };
+
+    ws.onmessage = (event) => {
+      const response = JSON.parse(event.data);
+      document.getElementById('output').textContent = JSON.stringify(response, null, 2);
+    };
+
+    ws.onerror = (error) => {
+      document.getElementById('output').textContent = 'WebSocket error: ' + error;
+    };
+
+    ws.onclose = () => {
+      console.log('Disconnected');
+    };
+
+    function testGitStatus() {
+      ws.send(JSON.stringify({
+        id: 'test-' + Date.now(),
+        method: 'git_status',
+        params: { repoPath: '/Volumes/Storage/FLOYD_CLI/floyd-wrapper-main' }
+      }));
+    }
+  </script>
+</body>
+</html>

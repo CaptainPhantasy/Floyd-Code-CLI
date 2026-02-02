@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "name": "Example 3-panel",
+    "createdAt": "2026-01-17T00:00:00.000Z",
+    "cols": 80,
+    "rows": 24,
+    "imagePath": "./mock.png"
+  },
+  "theme": {
+    "preset": "floyd-neon"
+  },
+  "nodes": [
+    {
+      "id": "panel_header",
+      "name": "Header",
+      "type": "header",
+      "rect": { "x": 0, "y": 0, "w": 80, "h": 3 },
+      "style": { "border": true, "borderStyle": "double", "padding": 0, "color": "magenta" },
+      "content": { "title": "FLOYD" }
+    },
+    {
+      "id": "panel_sidebar",
+      "name": "Sidebar",
+      "type": "list",
+      "rect": { "x": 0, "y": 3, "w": 24, "h": 18 },
+      "style": { "border": true, "borderStyle": "round", "padding": 1, "color": "cyan" },
+      "content": { "title": "NAV" }
+    },
+    {
+      "id": "panel_main",
+      "name": "Main",
+      "type": "log",
+      "rect": { "x": 24, "y": 3, "w": 56, "h": 18 },
+      "style": { "border": true, "borderStyle": "round", "padding": 1, "color": "green" },
+      "content": { "title": "LOG STREAM" }
+    },
+    {
+      "id": "panel_status",
+      "name": "StatusBar",
+      "type": "status",
+      "rect": { "x": 0, "y": 21, "w": 80, "h": 3 },
+      "style": { "border": true, "borderStyle": "single", "padding": 0, "color": "yellow" },
+      "content": { "title": "STATUS" }
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "key": "critical-fix-scroll-direction",
+  "value": "Douglas: MESSAGES MUST FLOW UP FROM INPUT LINE, NEVER DOWN! The backup file needs chat UI fixed so new messages appear ABOVE the input line, not below it. This is the most critical issue - it's crushing him!",
+  "timestamp": 1769541773045,
+  "lastAccess": 1769541773045,
+  "ttl": 300000,
+  "tier": "reasoning",
+  "version": 1
+}

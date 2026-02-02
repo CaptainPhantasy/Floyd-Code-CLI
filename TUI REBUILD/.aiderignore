@@ -1,0 +1,16 @@
+# Ignore build artifacts
+dist/
+node_modules/
+
+# Ignore phase receipts (noise)
+*.receipt.md
+*.log
+
+# Ignore test artifacts
+coverage/
+*.test.ts.snap
+
+# Ignore .DS_Store
+.DS_Store
+
+# Keep focus on source code only

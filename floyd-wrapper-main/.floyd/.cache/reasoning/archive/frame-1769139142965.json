@@ -1,0 +1,17 @@
+{
+  "cog_steps": [
+    {
+      "step": 1,
+      "content": "Analyze problem"
+    },
+    {
+      "step": 2,
+      "content": "Generate solution"
+    }
+  ],
+  "glm_context": {
+    "thinking_mode": "preserved",
+    "last_cog_step_hash": 1127410255,
+    "session_continuity_token": "1769139142962-kmci7"
+  }
+}

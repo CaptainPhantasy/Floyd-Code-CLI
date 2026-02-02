@@ -1,0 +1,178 @@
+
+================================================================================
+                    FLOYD WRAPPER - SMOKE TEST VALIDATION RECEIPT
+================================================================================
+
+Test Run: 2026-01-25T10:26:19.499Z
+Duration: 367ms
+Node Version: v24.10.0
+Platform: darwin arm64
+
+--------------------------------------------------------------------------------
+                                   SUMMARY
+--------------------------------------------------------------------------------
+
+Total Tests: 28
+✅ Passed: 22
+❌ Failed: 6
+⏭️ Skipped: 0
+
+Pass Rate: 78.6%
+
+--------------------------------------------------------------------------------
+                              COMPONENT BREAKDOWN
+--------------------------------------------------------------------------------
+
+✅ interrupts      5/5 passed
+✅ rewind          7/7 passed
+⚠️ sandbox         3/6 passed
+✅ integration     3/3 passed
+✅ commands        4/4 passed
+⚠️ exports         0/3 passed
+
+--------------------------------------------------------------------------------
+                              DETAILED RESULTS
+--------------------------------------------------------------------------------
+
+[PASS] interrupts/InterruptManager singleton exists
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] interrupts/InterruptManager state transitions
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] interrupts/InterruptManager AbortController
+       Duration: 1ms
+       Test completed successfully
+
+[PASS] interrupts/InterruptManager event subscription
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] interrupts/InterruptManager getStats method
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] rewind/CheckpointManager singleton exists
+       Duration: 1ms
+       Test completed successfully
+
+[PASS] rewind/DANGEROUS_TOOLS list populated
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] rewind/FileSnapshotManager creates snapshots
+       Duration: 2ms
+       Test completed successfully
+
+[PASS] rewind/CheckpointManager creates checkpoint
+       Duration: 2ms
+       Test completed successfully
+
+[PASS] rewind/CheckpointManager lists checkpoints
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] rewind/CheckpointManager auto-checkpoint
+       Duration: 3ms
+       Test completed successfully
+
+[PASS] rewind/CheckpointManager getStats
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] sandbox/SandboxManager singleton exists
+       Duration: 1ms
+       Test completed successfully
+
+[PASS] sandbox/SandboxManager initial state
+       Duration: 0ms
+       Test completed successfully
+
+[FAIL] sandbox/SandboxManager start/discard cycle
+       Duration: 3ms
+       Error: Cannot read properties of null (reading 'id')
+
+[FAIL] sandbox/SandboxManager path translation
+       Duration: 1ms
+       Error: Cannot read properties of null (reading 'id')
+
+[FAIL] sandbox/SandboxManager change tracking
+       Duration: 5ms
+       Error: Cannot read properties of null (reading 'id')
+
+[PASS] sandbox/DryRunSandbox exists and works
+       Duration: 1ms
+       Test completed successfully
+
+[PASS] integration/toolRegistry has isDangerousTool method
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] integration/toolRegistry has executeWithAutoCheckpoint method
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] integration/toolRegistry has executeWithReceipt method
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] commands/rewindCommands array exists
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] commands//checkpoint command exists
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] commands//rewind command exists
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] commands//sandbox command exists
+       Duration: 0ms
+       Test completed successfully
+
+[FAIL] exports/interrupts module exports
+       Duration: 294ms
+       Error: The requested module './interrupts/index.js' does not provide an export named 'InterruptAction'
+
+[FAIL] exports/rewind module exports
+       Duration: 0ms
+       Error: The requested module './interrupts/index.js' does not provide an export named 'InterruptAction'
+
+[FAIL] exports/sandbox module exports
+       Duration: 0ms
+       Error: The requested module './interrupts/index.js' does not provide an export named 'InterruptAction'
+
+--------------------------------------------------------------------------------
+                              VALIDATION STATUS
+--------------------------------------------------------------------------------
+
+❌ 6 TESTS FAILED - Review errors before deployment
+
+--------------------------------------------------------------------------------
+                                FEATURE MATRIX
+--------------------------------------------------------------------------------
+
+| Feature             | Component    | Status    | Validated |
+|---------------------|--------------|-----------|-----------|
+| InterruptManager    | interrupts   | Singleton | ✅ |
+| State Transitions   | interrupts   | Working   | ✅ |
+| AbortController     | interrupts   | Available | ✅ |
+| CheckpointManager   | rewind       | Singleton | ✅ |
+| FileSnapshots       | rewind       | Working   | ✅ |
+| Auto-Checkpoint     | rewind       | Working   | ✅ |
+| SandboxManager      | sandbox      | Singleton | ✅ |
+| Path Translation    | sandbox      | Working   | ❌ |
+| Change Tracking     | sandbox      | Working   | ❌ |
+| DryRunSandbox       | sandbox      | Working   | ✅ |
+| /checkpoint cmd     | commands     | Registered| ✅ |
+| /rewind cmd         | commands     | Registered| ✅ |
+| /sandbox cmd        | commands     | Registered| ✅ |
+| Main Exports        | exports      | Complete  | ❌ |
+
+================================================================================
+                               END OF RECEIPT
+================================================================================

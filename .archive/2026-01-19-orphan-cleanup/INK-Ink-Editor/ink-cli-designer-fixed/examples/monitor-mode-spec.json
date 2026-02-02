@@ -1,0 +1,91 @@
+{
+  "meta": {
+    "name": "FLOYD Monitor Mode",
+    "createdAt": "2026-01-18T00:00:00.000Z",
+    "cols": 160,
+    "rows": 45
+  },
+  "theme": { "preset": "floyd-neon" },
+  "nodes": [
+    {
+      "id": "header",
+      "name": "Header",
+      "type": "header",
+      "rect": { "x": 0, "y": 0, "w": 160, "h": 5 },
+      "style": { "border": true, "borderStyle": "double", "padding": 0, "color": "magenta" },
+      "content": { "title": "FLOYD MONITOR" }
+    },
+    {
+      "id": "system",
+      "name": "System",
+      "type": "status",
+      "rect": { "x": 0, "y": 5, "w": 100, "h": 4 },
+      "style": { "border": true, "borderStyle": "round", "padding": 0, "color": "cyan" },
+      "content": { "title": "SYSTEM" }
+    },
+    {
+      "id": "errors",
+      "name": "Errors",
+      "type": "log",
+      "rect": { "x": 100, "y": 5, "w": 60, "h": 6 },
+      "style": { "border": true, "borderStyle": "round", "padding": 0, "color": "yellow" },
+      "content": { "title": "ERRORS" }
+    },
+    {
+      "id": "events",
+      "name": "Events",
+      "type": "log",
+      "rect": { "x": 0, "y": 9, "w": 100, "h": 20 },
+      "style": { "border": true, "borderStyle": "round", "padding": 1, "color": "green" },
+      "content": { "title": "EVENTS" }
+    },
+    {
+      "id": "workers",
+      "name": "Workers",
+      "type": "table",
+      "rect": { "x": 100, "y": 11, "w": 60, "h": 10 },
+      "style": { "border": true, "borderStyle": "round", "padding": 0, "color": "magenta" },
+      "content": { "title": "WORKERS" }
+    },
+    {
+      "id": "alerts",
+      "name": "Alerts",
+      "type": "list",
+      "rect": { "x": 100, "y": 21, "w": 60, "h": 8 },
+      "style": { "border": true, "borderStyle": "round", "padding": 0, "color": "yellow" },
+      "content": { "title": "ALERTS" }
+    },
+    {
+      "id": "git_fs",
+      "name": "Git/FS",
+      "type": "list",
+      "rect": { "x": 0, "y": 29, "w": 50, "h": 10 },
+      "style": { "border": true, "borderStyle": "round", "padding": 1, "color": "cyan" },
+      "content": { "title": "GIT/FS" }
+    },
+    {
+      "id": "browser",
+      "name": "Browser",
+      "type": "list",
+      "rect": { "x": 50, "y": 29, "w": 50, "h": 10 },
+      "style": { "border": true, "borderStyle": "round", "padding": 1, "color": "green" },
+      "content": { "title": "BROWSER" }
+    },
+    {
+      "id": "controls",
+      "name": "Controls",
+      "type": "input",
+      "rect": { "x": 100, "y": 29, "w": 60, "h": 10 },
+      "style": { "border": true, "borderStyle": "round", "padding": 0, "color": "white" },
+      "content": { "title": "CONTROLS" }
+    },
+    {
+      "id": "status_bar",
+      "name": "StatusBar",
+      "type": "status",
+      "rect": { "x": 0, "y": 39, "w": 160, "h": 3 },
+      "style": { "border": true, "borderStyle": "single", "padding": 0, "color": "gray" },
+      "content": { "title": "STATUS" }
+    }
+  ]
+}

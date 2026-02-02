@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "floyd-patch": {
+      "command": "node",
+      "args": ["/Volumes/Storage/FLOYD_CLI/INK/floyd-cli/tools/mcp-patch-server/dist/index.js"]
+    },
+    "floyd-runner": {
+      "command": "node",
+      "args": ["/Volumes/Storage/FLOYD_CLI/INK/floyd-cli/tools/mcp-runner-server/dist/index.js"]
+    },
+    "web-reader": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-web-reader"]
+    }
+  }
+}

@@ -1,0 +1,178 @@
+
+================================================================================
+                    FLOYD WRAPPER - SMOKE TEST VALIDATION RECEIPT
+================================================================================
+
+Test Run: 2026-01-25T10:28:03.455Z
+Duration: 468ms
+Node Version: v24.10.0
+Platform: darwin arm64
+
+--------------------------------------------------------------------------------
+                                   SUMMARY
+--------------------------------------------------------------------------------
+
+Total Tests: 28
+✅ Passed: 28
+❌ Failed: 0
+⏭️ Skipped: 0
+
+Pass Rate: 100.0%
+
+--------------------------------------------------------------------------------
+                              COMPONENT BREAKDOWN
+--------------------------------------------------------------------------------
+
+✅ interrupts      5/5 passed
+✅ rewind          7/7 passed
+✅ sandbox         6/6 passed
+✅ integration     3/3 passed
+✅ commands        4/4 passed
+✅ exports         3/3 passed
+
+--------------------------------------------------------------------------------
+                              DETAILED RESULTS
+--------------------------------------------------------------------------------
+
+[PASS] interrupts/InterruptManager singleton exists
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] interrupts/InterruptManager state transitions
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] interrupts/InterruptManager AbortController
+       Duration: 1ms
+       Test completed successfully
+
+[PASS] interrupts/InterruptManager event subscription
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] interrupts/InterruptManager getStats method
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] rewind/CheckpointManager singleton exists
+       Duration: 1ms
+       Test completed successfully
+
+[PASS] rewind/DANGEROUS_TOOLS list populated
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] rewind/FileSnapshotManager creates snapshots
+       Duration: 2ms
+       Test completed successfully
+
+[PASS] rewind/CheckpointManager creates checkpoint
+       Duration: 6ms
+       Test completed successfully
+
+[PASS] rewind/CheckpointManager lists checkpoints
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] rewind/CheckpointManager auto-checkpoint
+       Duration: 2ms
+       Test completed successfully
+
+[PASS] rewind/CheckpointManager getStats
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] sandbox/SandboxManager singleton exists
+       Duration: 1ms
+       Test completed successfully
+
+[PASS] sandbox/SandboxManager initial state
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] sandbox/SandboxManager start/discard cycle
+       Duration: 7ms
+       Test completed successfully
+
+[PASS] sandbox/SandboxManager path translation
+       Duration: 4ms
+       Test completed successfully
+
+[PASS] sandbox/SandboxManager change tracking
+       Duration: 3ms
+       Test completed successfully
+
+[PASS] sandbox/DryRunSandbox exists and works
+       Duration: 1ms
+       Test completed successfully
+
+[PASS] integration/toolRegistry has isDangerousTool method
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] integration/toolRegistry has executeWithAutoCheckpoint method
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] integration/toolRegistry has executeWithReceipt method
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] commands/rewindCommands array exists
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] commands//checkpoint command exists
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] commands//rewind command exists
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] commands//sandbox command exists
+       Duration: 0ms
+       Test completed successfully
+
+[PASS] exports/interrupts module exports
+       Duration: 329ms
+       Test completed successfully
+
+[PASS] exports/rewind module exports
+       Duration: 1ms
+       Test completed successfully
+
+[PASS] exports/sandbox module exports
+       Duration: 1ms
+       Test completed successfully
+
+--------------------------------------------------------------------------------
+                              VALIDATION STATUS
+--------------------------------------------------------------------------------
+
+✅ ALL TESTS PASSED - Features validated for production
+
+--------------------------------------------------------------------------------
+                                FEATURE MATRIX
+--------------------------------------------------------------------------------
+
+| Feature             | Component    | Status    | Validated |
+|---------------------|--------------|-----------|-----------|
+| InterruptManager    | interrupts   | Singleton | ✅ |
+| State Transitions   | interrupts   | Working   | ✅ |
+| AbortController     | interrupts   | Available | ✅ |
+| CheckpointManager   | rewind       | Singleton | ✅ |
+| FileSnapshots       | rewind       | Working   | ✅ |
+| Auto-Checkpoint     | rewind       | Working   | ✅ |
+| SandboxManager      | sandbox      | Singleton | ✅ |
+| Path Translation    | sandbox      | Working   | ✅ |
+| Change Tracking     | sandbox      | Working   | ✅ |
+| DryRunSandbox       | sandbox      | Working   | ✅ |
+| /checkpoint cmd     | commands     | Registered| ✅ |
+| /rewind cmd         | commands     | Registered| ✅ |
+| /sandbox cmd        | commands     | Registered| ✅ |
+| Main Exports        | exports      | Complete  | ✅ |
+
+================================================================================
+                               END OF RECEIPT
+================================================================================

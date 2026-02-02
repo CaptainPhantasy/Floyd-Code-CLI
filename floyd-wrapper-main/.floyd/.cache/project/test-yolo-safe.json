@@ -1,0 +1,9 @@
+{
+  "key": "test-yolo-safe",
+  "value": "hello from yolo mode",
+  "timestamp": 1769359293991,
+  "lastAccess": 1769359315768,
+  "ttl": 86400000,
+  "tier": "project",
+  "version": 1
+}

@@ -1,0 +1,9 @@
+{
+  "key": "test-yolo-file",
+  "value": "hello from yolo mode - file simulation",
+  "timestamp": 1769359318546,
+  "lastAccess": 1769359318546,
+  "ttl": 604800000,
+  "tier": "vault",
+  "version": 1
+}

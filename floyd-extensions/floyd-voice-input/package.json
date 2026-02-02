@@ -1,0 +1,91 @@
+{
+  "name": "floyd-voice-input",
+  "displayName": "FLOYD Voice Input",
+  "description": "Voice-to-text input for AI chat in FLOYD CURSE'M",
+  "version": "1.0.0",
+  "publisher": "floyd-cursem",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "floyd.voiceInput.toggle",
+        "title": "Toggle Voice Input",
+        "category": "FLOYD",
+        "icon": {
+          "light": "assets/mic-light.svg",
+          "dark": "assets/mic-dark.svg"
+        }
+      },
+      {
+        "command": "floyd.voiceInput.checkPermission",
+        "title": "Check Microphone Permission",
+        "category": "FLOYD"
+      },
+      {
+        "command": "floyd.voiceInput.insert",
+        "title": "Start Voice Input & Insert Text",
+        "category": "FLOYD"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "floyd.voiceInput.toggle",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v"
+      }
+    ],
+    "configuration": {
+      "title": "FLOYD Voice Input",
+      "properties": {
+        "floyd.voiceInput.language": {
+          "type": "string",
+          "default": "en-US",
+          "description": "Language for speech recognition (e.g., en-US, es-ES, fr-FR)"
+        },
+        "floyd.voiceInput.pythonPath": {
+          "type": "string",
+          "default": "python3",
+          "description": "Python executable path used for voice input (e.g., /usr/bin/python3)"
+        },
+        "floyd.voiceInput.continuous": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable continuous listening until manually stopped"
+        },
+        "floyd.voiceInput.autoSubmit": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically submit after voice input ends"
+        },
+        "floyd.voiceInput.showInterimResults": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show interim (partial) results while speaking"
+        }
+      }
+    }
+  },
+  "icon": "extension.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/douglastalley/floyd-extensions"
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}

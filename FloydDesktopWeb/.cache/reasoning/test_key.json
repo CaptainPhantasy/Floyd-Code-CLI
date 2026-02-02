@@ -1,0 +1,9 @@
+{
+  "key": "test_key",
+  "value": "test_value",
+  "timestamp": 1769657040244,
+  "lastAccess": 1769657040259,
+  "ttl": 300000,
+  "tier": "reasoning",
+  "version": 1
+}

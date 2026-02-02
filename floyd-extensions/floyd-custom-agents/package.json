@@ -1,0 +1,109 @@
+{
+  "name": "floyd-custom-agents",
+  "displayName": "FLOYD Custom AI Agents",
+  "description": "Create and manage custom AI agents with custom prompts for FLOYD CURSE'M",
+  "version": "1.0.0",
+  "publisher": "floyd-cursem",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Machine Learning", "Other"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "floyd.customAgents.new",
+        "title": "Create New Custom Agent",
+        "category": "FLOYD"
+      },
+      {
+        "command": "floyd.customAgents.list",
+        "title": "List All Custom Agents",
+        "category": "FLOYD"
+      },
+      {
+        "command": "floyd.customAgents.delete",
+        "title": "Delete Custom Agent",
+        "category": "FLOYD"
+      },
+      {
+        "command": "floyd.customAgents.edit",
+        "title": "Edit Custom Agent",
+        "category": "FLOYD"
+      },
+      {
+        "command": "floyd.customAgents.import",
+        "title": "Import Agent from File",
+        "category": "FLOYD"
+      },
+      {
+        "command": "floyd.customAgents.export",
+        "title": "Export Agent to File",
+        "category": "FLOYD"
+      }
+    ],
+    "configuration": {
+      "title": "FLOYD Custom Agents",
+      "properties": {
+        "floyd.customAgents.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable custom AI agents"
+        },
+        "floyd.customAgents.storageLocation": {
+          "type": "string",
+          "enum": ["global", "workspace"],
+          "default": "global",
+          "description": "Where to store custom agent definitions"
+        },
+        "floyd.customAgents.defaultAgent": {
+          "type": "string",
+          "default": "",
+          "description": "Default agent to use when opening chat"
+        },
+        "floyd.customAgents.templatesPath": {
+          "type": "string",
+          "default": "",
+          "description": "Custom path for agent templates (JSON file)"
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "floydAgentsContainer",
+          "title": "FLOYD Agents",
+          "icon": "assets/terminal-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "floydAgentsContainer": [
+        {
+          "id": "floydAgents",
+          "name": "Custom Agents",
+          "when": "config.floyd.customAgents.enabled"
+        }
+      ]
+    }
+  },
+  "icon": "extension.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/douglastalley/floyd-extensions"
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}

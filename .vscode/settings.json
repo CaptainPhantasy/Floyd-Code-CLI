@@ -1,0 +1,14 @@
+{
+  "git.ignoreLimitWarning": true,
+  "cSpell.words": [
+    "Browork",
+    "floydchrome",
+    "modelcontextprotocol",
+    "SSOT",
+    "SUPERCACHE",
+    "uuidv"
+  ],
+  "floyd.voiceInput.autoSubmit": true,
+  "floyd.voiceInput.continuous": true,
+  "floyd.customAgents.enabled": true
+}

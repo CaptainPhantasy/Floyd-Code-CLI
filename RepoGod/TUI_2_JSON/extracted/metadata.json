@@ -1,0 +1,5 @@
+{
+  "name": "TUI-to-JSON Converter",
+  "description": "A developer tool that analyzes terminal UI screenshots using Gemini 3 Pro Vision and converts them into structured JSON specifications for UI generation.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,103 @@
+#!/bin/bash
+# Floyd Wrapper - Quick launcher for Floyd TUI
+
+set -e
+
+# Colors
+CYAN='\033[0;36m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+# Default mode
+MODE="${FLOYD_MODE:-ask}"
+MODEL_FLAG=""
+SHOW_HEADER=true
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --yolo|--yo)
+      MODE="yolo"
+      shift
+      ;;
+    --fuckit|--fi)
+      MODE="fuckit"
+      shift
+      ;;
+    --plan)
+      MODE="plan"
+      shift
+      ;;
+    --flash)
+      MODEL_FLAG="--flash"
+      shift
+      ;;
+    --floyd47|--f47)
+      MODEL_FLAG="--floyd47"
+      shift
+      ;;
+    --claude)
+      MODEL_FLAG="--claude"
+      shift
+      ;;
+    --hardened)
+      MODEL_FLAG="--hardened"
+      shift
+      ;;
+    --tui)
+      # Skip header for TUI mode - Ink will handle rendering
+      SHOW_HEADER=false
+      MODEL_FLAG="--tui"
+      shift
+      ;;
+    *)
+      # Pass remaining args to floyd
+      break
+      ;;
+  esac
+done
+
+export FLOYD_MODE="$MODE"
+
+# Floyd CLI paths
+FLOYD_CLI="/Volumes/Storage/FLOYD_CLI/INK/floyd-cli"
+FLOYD_WRAPPER="/Volumes/Storage/FLOYD_CLI/floyd-wrapper-main"
+TUI_REBUILD="/Volumes/Storage/FLOYD_CLI/TUI REBUILD"
+
+# Show header only if not in TUI mode
+if [[ "$SHOW_HEADER" == "true" ]]; then
+  echo -e "${CYAN}╔════════════════════════════════════════╗${NC}"
+  echo -e "${CYAN}║      ${GREEN}FLOYD${CYAN} - GOD TIER LEVEL 5 AGENT    ${CYAN}║${NC}"
+  echo -e "${CYAN}║  Creator: Douglas Allen Talley         ${CYAN}║${NC}"
+  echo -e "${CYAN}╚════════════════════════════════════════╝${NC}"
+  echo ""
+  echo -e "  Mode: ${YELLOW}$MODE${NC}"
+  echo -e "  Args: ${GREEN}$MODEL_FLAG $*${NC}"
+  echo ""
+fi
+
+# Route to appropriate CLI
+if [[ "$MODEL_FLAG" == "--tui" ]]; then
+  # Launch TUI REBUILD directly
+  if [[ -f "$TUI_REBUILD/dist/cli.js" ]]; then
+    exec node "$TUI_REBUILD/dist/cli.js" "$@"
+  elif [[ -f "$TUI_REBUILD/src/cli.tsx" ]]; then
+    exec npx tsx "$TUI_REBUILD/src/cli.tsx" "$@"
+  else
+    echo -e "${RED}Error: TUI REBUILD not found${NC}"
+    exit 1
+  fi
+elif command -v floyd &> /dev/null; then
+  exec floyd $MODEL_FLAG "$@"
+elif [[ -f "$FLOYD_CLI/dist/cli.js" ]]; then
+  exec node "$FLOYD_CLI/dist/cli.js" $MODEL_FLAG "$@"
+elif [[ -f "$FLOYD_WRAPPER/dist/cli.js" ]]; then
+  exec node "$FLOYD_WRAPPER/dist/cli.js" $MODEL_FLAG "$@"
+else
+  echo -e "${RED}Error: Floyd CLI not found${NC}"
+  echo "Build Floyd first:"
+  echo "  cd $FLOYD_CLI && npm run build"
+  exit 1
+fi

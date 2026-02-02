@@ -1,0 +1,20 @@
+{
+  "key": "healthcare-conversational-ai-project",
+  "value": "# Healthcare Conversational AI Project\n**Status**: Discovery Phase - Research & Analysis\n**Date**: 2026-01-28\n**Client**: Legacy AI (Internal Product)\n**Category**: Healthcare-Focused Offerings\n\n## Project Overview\nConversational AI platform/agent being developed as part of Legacy AI's healthcare vertical expansion.\n\n## Research Questions to Answer\n- What is the platform's core functionality?\n- What healthcare use cases does it target?\n- How does it differentiate from existing solutions?\n- What integrations are required (EHR, HIPAA compliance, etc.)?\n- What is the target market (providers, patients, admin)?\n- What is the technical architecture?\n- What are the compliance requirements (HIPAA, HITECH, state regulations)?\n- What are the monetization models?\n\n## Data Sources\n- [ ] Platform documentation (to be provided by Douglas)\n- [ ] Technical specifications\n- [ ] Competitor analysis\n- [ ] Market research\n- [ ] Compliance requirements\n- [ ] Integration capabilities\n\n## Analysis Framework\n1. **Product Fit**: How does this align with Legacy AI's knowledge preservation ethos?\n2. **Market Positioning**: Where does this fit in healthcare AI landscape?\n3. **Integration Strategy**: How does it connect with existing healthcare systems?\n4. **Compliance Path**: What regulatory hurdles must be cleared?\n5. **Go-to-Market**: How do we sell/pilot this with healthcare providers?\n6. **Website Positioning**: How do we present this on legacy-ai.com?\n\n## Status\n🟡 Awaiting platform data from Douglas...\n\n---\n*Last Updated: 2026-01-28T18:46:08.045Z*\n",
+  "timestamp": 1769626691156,
+  "lastAccess": 1769626691156,
+  "ttl": 604800000,
+  "tier": "vault",
+  "metadata": {
+    "category": "healthcare",
+    "type": "project-research",
+    "priority": "high",
+    "tags": [
+      "healthcare",
+      "conversational-ai",
+      "HIPAA",
+      "product-development"
+    ]
+  },
+  "version": 1
+}

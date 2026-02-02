@@ -1,0 +1,9 @@
+{
+  "key": "healthcare-conversational-ai-project/context",
+  "value": "# Healthcare Conversational AI Project - Context & Strategy\n\n**Project Status:** 🟡 INITIAL INFORMATION GATHERING\n\n---\n\n## Project Overview\nThis is a healthcare-focused conversational AI project that will be part of Legacy AI's healthcare service offerings.\n\n---\n\n## Information Needed (Waiting for Douglas to provide):\n1. Platform name and core functionality\n2. Target users (clinicians, patients, administrators, etc.)\n3. Key features and capabilities\n4. Integration requirements (EHR, telehealth platforms, etc.)\n5. Compliance requirements (HIPAA, etc.)\n6. Competitive landscape or similar platforms\n7. Current project status (concept, in development, deployed?)\n8. Technical stack or architectural decisions\n9. Business model (SaaS, custom implementation, licensing?)\n10. Unique value proposition vs. existing solutions\n\n---\n\n## Strategic Questions (to be answered after info ingestion):\n- How does this fit with Legacy AI's existing CRM-AI Pro offering?\n- Is this a standalone product or integrated solution?\n- What are the healthcare workflows this will address?\n- What differentiates this from generic chatbot solutions?\n- How does this leverage Legacy AI's knowledge preservation expertise?\n\n---\n\n## Project Files:\n- [context](#) - This file (project overview and context)\n- [competitive-analysis](#) - To be created after info gathering\n- [requirements](#) - To be created after info gathering\n- [positioning-strategy](#) - To be created after info gathering\n- [technical-architecture](#) - To be created after info gathering\n\n---\n\n**Created:** 2026-01-28\n**Next Action:** Awaiting project information from Douglas Talley",
+  "timestamp": 1769626699901,
+  "lastAccess": 1769626699901,
+  "ttl": 604800000,
+  "tier": "vault",
+  "version": 1
+}

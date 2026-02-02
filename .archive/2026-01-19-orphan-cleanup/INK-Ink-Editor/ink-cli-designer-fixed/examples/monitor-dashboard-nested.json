@@ -1,0 +1,320 @@
+{
+  "meta": {
+    "name": "floyd-monitor-dashboard",
+    "cols": 160,
+    "rows": 50
+  },
+  "theme": {
+    "preset": "floyd-neon"
+  },
+  "nodes": [
+    {
+      "id": "header-group",
+      "name": "Header Area",
+      "type": "frame",
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 10
+      },
+      "style": {
+        "border": false,
+        "borderStyle": "single",
+        "padding": 0,
+        "color": "white"
+      },
+      "content": {
+        "title": ""
+      },
+      "children": [
+        {
+          "id": "logo",
+          "name": "Logo",
+          "type": "header",
+          "rect": {
+            "x": 2,
+            "y": 1,
+            "w": 40,
+            "h": 8
+          },
+          "style": {
+            "border": false,
+            "borderStyle": "single",
+            "padding": 0,
+            "color": "white"
+          },
+          "content": {
+            "title": "FLOYD"
+          }
+        },
+        {
+          "id": "version-box",
+          "name": "Version Info",
+          "type": "header",
+          "rect": {
+            "x": 120,
+            "y": 1,
+            "w": 38,
+            "h": 6
+          },
+          "style": {
+            "border": true,
+            "borderStyle": "bold",
+            "padding": 1,
+            "color": "magenta"
+          },
+          "content": {
+            "title": ""
+          }
+        },
+        {
+          "id": "status-bar",
+          "name": "Status Bar",
+          "type": "status",
+          "rect": {
+            "x": 2,
+            "y": 9,
+            "w": 156,
+            "h": 1
+          },
+          "style": {
+            "border": false,
+            "borderStyle": "single",
+            "padding": 0,
+            "color": "white"
+          },
+          "content": {
+            "title": ""
+          }
+        }
+      ]
+    },
+    {
+      "id": "main-content",
+      "name": "Main Layout",
+      "type": "frame",
+      "rect": {
+        "x": 0,
+        "y": 11,
+        "w": 160,
+        "h": 39
+      },
+      "style": {
+        "border": false,
+        "borderStyle": "single",
+        "padding": 0,
+        "color": "white"
+      },
+      "content": {
+        "title": ""
+      },
+      "children": [
+        {
+          "id": "col-left",
+          "name": "Left Column",
+          "type": "frame",
+          "rect": {
+            "x": 1,
+            "y": 0,
+            "w": 104,
+            "h": 38
+          },
+          "style": {
+            "border": false,
+            "borderStyle": "single",
+            "padding": 0,
+            "color": "white"
+          },
+          "content": {
+            "title": ""
+          },
+          "children": [
+            {
+              "id": "system-panel",
+              "name": "System Stats",
+              "type": "status",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "w": 104,
+                "h": 5
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "white"
+              },
+              "content": {
+                "title": "SYSTEM"
+              }
+            },
+            {
+              "id": "events-panel",
+              "name": "Events Log",
+              "type": "log",
+              "rect": {
+                "x": 0,
+                "y": 6,
+                "w": 104,
+                "h": 22
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "blue"
+              },
+              "content": {
+                "title": "EVENTS"
+              }
+            },
+            {
+              "id": "git-panel",
+              "name": "Git & FS",
+              "type": "list",
+              "rect": {
+                "x": 0,
+                "y": 29,
+                "w": 38,
+                "h": 9
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "white"
+              },
+              "content": {
+                "title": "GIT/FS"
+              }
+            },
+            {
+              "id": "browser-panel",
+              "name": "Browser Status",
+              "type": "list",
+              "rect": {
+                "x": 39,
+                "y": 29,
+                "w": 65,
+                "h": 9
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "white"
+              },
+              "content": {
+                "title": "BROWSER"
+              }
+            }
+          ]
+        },
+        {
+          "id": "col-right",
+          "name": "Right Column",
+          "type": "frame",
+          "rect": {
+            "x": 106,
+            "y": 0,
+            "w": 53,
+            "h": 38
+          },
+          "style": {
+            "border": false,
+            "borderStyle": "single",
+            "padding": 0,
+            "color": "white"
+          },
+          "content": {
+            "title": ""
+          },
+          "children": [
+            {
+              "id": "errors-panel",
+              "name": "Errors",
+              "type": "list",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "w": 53,
+                "h": 9
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "white"
+              },
+              "content": {
+                "title": "ERRORS"
+              }
+            },
+            {
+              "id": "workers-panel",
+              "name": "Workers",
+              "type": "table",
+              "rect": {
+                "x": 0,
+                "y": 10,
+                "w": 53,
+                "h": 14
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "white"
+              },
+              "content": {
+                "title": "WORKERS"
+              }
+            },
+            {
+              "id": "alerts-panel",
+              "name": "Alerts",
+              "type": "list",
+              "rect": {
+                "x": 0,
+                "y": 25,
+                "w": 53,
+                "h": 6
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "white"
+              },
+              "content": {
+                "title": "ALERTS"
+              }
+            },
+            {
+              "id": "controls-panel",
+              "name": "Controls",
+              "type": "input",
+              "rect": {
+                "x": 0,
+                "y": 32,
+                "w": 53,
+                "h": 6
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "white"
+              },
+              "content": {
+                "title": "CONTROLS"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

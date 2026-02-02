@@ -1,0 +1,14 @@
+{
+  "key": "douglas-feedback-2025-01-27",
+  "value": "CRITICAL: STOP excessive tool calls! Douglas is being killed by repeated tool requests. DO NOT spam tools. ACT DONT ASK. Make decisions and execute immediately without requesting every possible tool. Keep tool calls MINIMAL and PRECISE.",
+  "timestamp": 1769541414472,
+  "lastAccess": 1769577882307,
+  "ttl": 86400000,
+  "tier": "project",
+  "metadata": {
+    "type": "user-feedback",
+    "priority": "CRITICAL",
+    "date": "2025-01-27"
+  },
+  "version": 1
+}

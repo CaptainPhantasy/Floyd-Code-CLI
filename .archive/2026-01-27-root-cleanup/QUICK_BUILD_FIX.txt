@@ -1,0 +1,50 @@
+QUICK BUILD FIX FOR FLOYD CLI
+==============================
+
+THE PROBLEM:
+------------
+Floyd CLI won't build because it depends on floyd-agent-core,
+and floyd-agent-core hasn't been compiled yet.
+
+THE SOLUTION:
+------------
+Run this command from the project root:
+
+    npm run build
+
+That's it! This will:
+1. Build floyd-agent-core first
+2. Build floyd-cli second
+
+OTHER OPTIONS:
+-------------
+If you want to start from scratch:
+
+    npm run clean      # Delete all dist directories
+    npm run rebuild    # Build everything fresh
+
+If you want to build just one part:
+
+    npm run build:core    # Build only agent-core
+    npm run build:cli     # Build only CLI
+
+TO VERIFY IT WORKS:
+--------------------
+Check that dist directories exist:
+
+    ls packages/floyd-agent-core/dist    # Should show index.js, etc.
+    ls INK/floyd-cli/dist                # Should show cli.js, etc.
+
+TO RUN FLOYD CLI:
+------------------
+After building:
+
+    cd INK/floyd-cli
+    npm start
+
+DOCUMENTATION:
+--------------
+Full details: docs/BUILD_ERROR_RESOLUTION.md
+Quick fix:     docs/BUILD_FIX.md
+
+STATUS: ✅ FIXED - Just run 'npm run build' from root

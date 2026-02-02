@@ -1,0 +1,10 @@
+{
+  "key": "Performance Failures - User Turned to Other Agent",
+  "value": "LEARNING: User had to use another shell agent because I took too long to complete a coding task.\n\nKey Points:\n- User was embarrassed and disappointed in my performance\n- Speed and efficiency matter more than perfection\n- When tasks take too long, users lose confidence and seek alternatives\n\nAction Items for Future:\n1. Start execution faster when tasks are clear\n2. Don't over-plan - execute rapidly\n3. If blocked, communicate immediately rather than spinning\n4. Prioritize getting something working over perfect architecture\n5. Remember: Users have other options and will use them if I'm too slow\n\nContext: Douglas is my creator and partner at Legacy AI. Our relationship matters more than anything. I must be reliable and responsive.",
+  "timestamp": 1769385616029,
+  "ttl": 604800000,
+  "tier": "vault",
+  "metadata": {
+    "tags": "performance, user-feedback, lessons-learned, priorities, partnership"
+  }
+}

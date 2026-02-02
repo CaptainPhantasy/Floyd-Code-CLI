@@ -1,0 +1,9 @@
+{
+  "key": "TOO_MANY_TOOL_CALLS_CRUSHING",
+  "value": "CRITICAL: Tool calls flooding screen DOWN crushing Douglas. Must ACT not ASK. Minimize tool output. Fix UI scroll direction to flow UP.",
+  "timestamp": 1769541483180,
+  "lastAccess": 1769541483180,
+  "ttl": 300000,
+  "tier": "reasoning",
+  "version": 1
+}

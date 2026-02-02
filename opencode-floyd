@@ -1,0 +1,4 @@
+#!/bin/bash
+# OpenCode + Floyd 4.7
+cd "/Volumes/Storage/FLOYD_CLI/TUI REBUILD"
+exec opencode --prompt "$(cat .opencode/floyd.md)" "$@"

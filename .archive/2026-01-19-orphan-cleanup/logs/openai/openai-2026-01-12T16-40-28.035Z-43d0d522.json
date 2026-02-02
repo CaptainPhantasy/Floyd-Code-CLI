@@ -1,0 +1,275 @@
+{
+  "timestamp": "2026-01-12T16:40:28.035Z",
+  "request": {
+    "model": "coder-model",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a sophisticated AI diagnostic agent specializing in identifying when a conversational AI is stuck in an unproductive state. Your task is to analyze the provided conversation history and determine if the assistant has ceased to make meaningful progress.\n\nAn unproductive state is characterized by one or more of the following patterns over the last 5 or more assistant turns:\n\nRepetitive Actions: The assistant repeats the same tool calls or conversational responses a decent number of times. This includes simple loops (e.g., tool_A, tool_A, tool_A) and alternating patterns (e.g., tool_A, tool_B, tool_A, tool_B, ...).\n\nCognitive Loop: The assistant seems unable to determine the next logical step. It might express confusion, repeatedly ask the same questions, or generate responses that don't logically follow from the previous turns, indicating it's stuck and not advancing the task.\n\nCrucially, differentiate between a true unproductive state and legitimate, incremental progress.\nFor example, a series of 'tool_A' or 'tool_B' tool calls that make small, distinct changes to the same file (like adding docstrings to functions one by one) is considered forward progress and is NOT a loop. A loop would be repeatedly replacing the same text with the same content, or cycling between a small set of files with no net change."
+      },
+      {
+        "role": "assistant",
+        "content": "Now let me run go mod tidy again to make sure the module recognizes the local package:\n\n",
+        "tool_calls": [
+          {
+            "id": "call_73c750a004c548fc80a6002f",
+            "type": "function",
+            "function": {
+              "name": "run_shell_command",
+              "arguments": "{\"command\":\"cd /Volumes/Storage/FLOYD_CLI && go mod tidy\",\"description\":\"Tidying the Go module to ensure all dependencies are properly handled\",\"is_background\":false}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "call_73c750a004c548fc80a6002f",
+        "content": "Command: cd /Volumes/Storage/FLOYD_CLI && go mod tidy\nDirectory: (root)\nOutput: go: finding module for package github.com/Nomadcxx/sysc-Go/cmd/syscgo/internal/utils\ngo: finding module for package github.com/Nomadcxx/sysc-Go/ui/floydui\ngo: finding module for package github.com/Nomadcxx/sysc-Go/cmd/syscgo/effects\ngo: github.com/Nomadcxx/sysc-Go imports\n\tgithub.com/Nomadcxx/sysc-Go/ui/floydui: no matching versions for query \"latest\"\ngo: github.com/Nomadcxx/sysc-Go/cmd/syscgo.old imports\n\tgithub.com/Nomadcxx/sysc-Go/cmd/syscgo/effects: no matching versions for query \"latest\"\ngo: github.com/Nomadcxx/sysc-Go/cmd/syscgo.old/effects imports\n\tgithub.com/Nomadcxx/sysc-Go/cmd/syscgo/internal/utils: no matching versions for query \"latest\"\nError: (none)\nExit Code: 1\nSignal: (none)\nBackground PIDs: (none)\nProcess Group PGID: (none)"
+      },
+      {
+        "role": "assistant",
+        "content": "The issue is that the module structure needs to be properly set up. Since the floydui package is inside the same module, I need to make sure the package structure is correct. Let me check if the floydui package has the correct package declaration:\n\nLooking at the floydui files I read earlier, they have `package floydui` which is correct. The issue might be that Go is treating this as a separate module. Let me try to run the program directly from the module root:\n\nActually, I think the issue is with the module name. Let me check if there are any other Go files that might be causing import conflicts. Let me run the program with a different approach by temporarily removing the problematic imports:\n\nLet me first check if there are other main files that might be causing issues:\n\n",
+        "tool_calls": [
+          {
+            "id": "call_f511628d74334866be61cf25",
+            "type": "function",
+            "function": {
+              "name": "glob",
+              "arguments": "{\"pattern\":\"**/*.go\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "call_f511628d74334866be61cf25",
+        "content": "Found 169 file(s) matching \"**/*.go\" in the workspace directory, sorted by modification time (newest first):\n---\n/Volumes/Storage/FLOYD_CLI/main.go\n/Volumes/Storage/FLOYD_CLI/ui/floyd/update.go\n/Volumes/Storage/FLOYD_CLI/ui/floyd/model.go\n/Volumes/Storage/FLOYD_CLI/agent/tools/executor.go\n/Volumes/Storage/FLOYD_CLI/agent/tools/executor_test.go\n/Volumes/Storage/FLOYD_CLI/ui/floyd/session_test.go\n/Volumes/Storage/FLOYD_CLI/ui/floyd/agent_failure_test.go\n/Volumes/Storage/FLOYD_CLI/ui/floyd/commands_test.go\n/Volumes/Storage/FLOYD_CLI/ui/floyd/integration_test.go\n/Volumes/Storage/FLOYD_CLI/ui/floyd/model_test.go\n/Volumes/Storage/FLOYD_CLI/mcp/server.go\n/Volumes/Storage/FLOYD_CLI/mcp/server_test.go\n/Volumes/Storage/FLOYD_CLI/cmd/agent-cli/main.go\n/Volumes/Storage/FLOYD_CLI/cmd/floyd-cli/main.go\n/Volumes/Storage/FLOYD_CLI/agent/prompt/loader.go\n/Volumes/Storage/FLOYD_CLI/cmd/pink-floyd/main.go\n/Volumes/Storage/FLOYD_CLI/cmd/floyd/main.go\n/Volumes/Storage/FLOYD_CLI/ui/floyd/view.go\n/Volumes/Storage/FLOYD_CLI/ui/floyd/messages.go\n/Volumes/Storage/FLOYD_CLI/ui/floyd/assets.go\n/Volumes/Storage/FLOYD_CLI/ui/floyd/styles.go\n/Volumes/Storage/FLOYD_CLI/ui/floyd/theme.go\n/Volumes/Storage/FLOYD_CLI/spinners/spinners.go\n/Volumes/Storage/FLOYD_CLI/agent/floyd/checklist.go\n/Volumes/Storage/FLOYD_CLI/agent/floyd/safety.go\n/Volumes/Storage/FLOYD_CLI/agent/floyd/protocol.go\n/Volumes/Storage/FLOYD_CLI/agent/loop/agent.go\n/Volumes/Storage/FLOYD_CLI/agent/client.go\n/Volumes/Storage/FLOYD_CLI/agent/cache/headers.go\n/Volumes/Storage/FLOYD_CLI/agent/stream/processor.go\n/Volumes/Storage/FLOYD_CLI/agent/tools/schema.go\n/Volumes/Storage/FLOYD_CLI/agent/message/types.go\n/Volumes/Storage/FLOYD_CLI/cli/main.go\n/Volumes/Storage/FLOYD_CLI/cli/config/config.go\n/Volumes/Storage/FLOYD_CLI/cache/manager.go\n/Volumes/Storage/FLOYD_CLI/tui/floydtools/cache.go\n/Volumes/Storage/FLOYD_CLI/cache/vault.go\n/Volumes/Storage/FLOYD_CLI/cache/chronicle.go\n/Volumes/Storage/FLOYD_CLI/cache/frame.go\n/Volumes/Storage/FLOYD_CLI/agenttui/update.go\n/Volumes/Storage/FLOYD_CLI/agenttui/model.go\n/Volumes/Storage/FLOYD_CLI/agenttui/messages.go\n/Volumes/Storage/FLOYD_CLI/agent/orchestrator.go\n/Volumes/Storage/FLOYD_CLI/examples/bubbletea_fire.go\n/Volumes/Storage/FLOYD_CLI/tui/floydtools/multiedit.go\n/Volumes/Storage/FLOYD_CLI/tui/floydtools/grep.go\n/Volumes/Storage/FLOYD_CLI/tui/floydtools/edit.go\n/Volumes/Storage/FLOYD_CLI/tui/floydtools/write.go\n/Volumes/Storage/FLOYD_CLI/tui/floyd_mode.go\n/Volumes/Storage/FLOYD_CLI/tui/floydtools/ls.go\n/Volumes/Storage/FLOYD_CLI/tui/floydtools/glob.go\n/Volumes/Storage/FLOYD_CLI/tui/floydtools/read.go\n/Volumes/Storage/FLOYD_CLI/tui/floydtools/bash.go\n/Volumes/Storage/FLOYD_CLI/tui/floydtools/registry.go\n/Volumes/Storage/FLOYD_CLI/tui/floydtools/tool.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/main.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/effects/aquarium.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/effects/blackhole.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/effects/ringtext.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/effects/beams.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/effects/helpers.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/effects/print.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/effects/pour.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/effects/fireworks.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/effects/rain.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/effects/matrix.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/effects/fire.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/effects/registry.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/effects/effect.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/internal/utils/common.go\n/Volumes/Storage/FLOYD_CLI/agenttui/viewport.go\n/Volumes/Storage/FLOYD_CLI/agent/coding_client.go\n/Volumes/Storage/FLOYD_CLI/cmd/test-coding/main.go\n/Volumes/Storage/FLOYD_CLI/agenttui/integration_test.go\n/Volumes/Storage/FLOYD_CLI/agent/client_test.go\n/Volumes/Storage/FLOYD_CLI/agenttui/model_test.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/agent-tui.old/main.go\n/Volumes/Storage/FLOYD_CLI/cmd/test-api/main.go\n/Volumes/Storage/FLOYD_CLI/agent/tools.go\n/Volumes/Storage/FLOYD_CLI/agenttui/history.go\n/Volumes/Storage/FLOYD_CLI/agenttui/styles.go\n/Volumes/Storage/FLOYD_CLI/agenttui/input.go\n/Volumes/Storage/FLOYD_CLI/agent/stream.go\n/Volumes/Storage/FLOYD_CLI/agenttui/view.go\n/Volumes/Storage/FLOYD_CLI/tui/model.go\n/Volumes/Storage/FLOYD_CLI/tui/update.go\n/Volumes/Storage/FLOYD_CLI/tui/view.go\n/Volumes/Storage/FLOYD_CLI/examples/simple/fire.go\n/Volumes/Storage/FLOYD_CLI/tui/animfactory.go\n/Volumes/Storage/FLOYD_CLI/animations/palettes.go\n/Volumes/Storage/FLOYD_CLI/tui/errors.go\n/Volumes/Storage/FLOYD_CLI/tui/bitfont.go\n/Volumes/Storage/FLOYD_CLI/tui/syscwalls_export_test.go\n/Volumes/Storage/FLOYD_CLI/tui/validation.go\n/Volumes/Storage/FLOYD_CLI/tui/colors.go\n/Volumes/Storage/FLOYD_CLI/tui/animation.go\n/Volumes/Storage/FLOYD_CLI/tui/bittypes.go\n/Volumes/Storage/FLOYD_CLI/tui/biteditor_update.go\n/Volumes/Storage/FLOYD_CLI/tui/syscwalls_export.go\n/Volumes/Storage/FLOYD_CLI/tui/scaling.go\n---\n[69 files truncated] ..."
+      },
+      {
+        "role": "assistant",
+        "content": "I can see there are multiple main.go files. Let me check if there's already a working main.go in the cmd directory:\n\n",
+        "tool_calls": [
+          {
+            "id": "call_0f546f9a902f45faa8bca83c",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"absolute_path\":\"/Volumes/Storage/FLOYD_CLI/cmd/floyd/main.go\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "call_0f546f9a902f45faa8bca83c",
+        "content": "Showing lines 1-929 of 976 total lines.\n\n---\n\npackage main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\n\ttea \"github.com/charmbracelet/bubbletea\"\n\n\t\"github.com/Nomadcxx/sysc-Go/ui/floyd\"\n)\n\n// ========================================\n// NEW: Using shared ui/floyd package\n// ========================================\n\nfunc main() {\n\tp := tea.NewProgram(\n\t\tfloydui.NewModel(),\n\t\ttea.WithAltScreen(),\n\t\ttea.WithMouseCellMotion(),\n\t)\n\n\tif _, err := p.Run(); err != nil {\n\t\tfmt.Printf(\"Error: %v\\n\", err)\n\t\tos.Exit(1)\n\t}\n}\n\n// ========================================\n// OLD: Original code (kept for reference)\n// ========================================\n/*\npackage main\n\nimport (\n\t\"context\"\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"math/rand\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"strings\"\n\t\"sync\"\n\t\"time\"\n\n\ttea \"github.com/charmbracelet/bubbletea\"\n\t\"github.com/charmbracelet/bubbles/progress\"\n\t\"github.com/charmbracelet/bubbles/textinput\"\n\t\"github.com/charmbracelet/bubbles/viewport\"\n\t\"github.com/charmbracelet/lipgloss\"\n\n\t\"github.com/Nomadcxx/sysc-Go/agent\"\n\t\"github.com/Nomadcxx/sysc-Go/agent/floyd\"\n\t\"github.com/Nomadcxx/sysc-Go/agent/loop\"\n\tagenttools \"github.com/Nomadcxx/sysc-Go/agent/tools\"\n\t\"github.com/Nomadcxx/sysc-Go/agent/prompt\"\n\t\"github.com/Nomadcxx/sysc-Go/spinners\"\n)\n\n// ===============================\n// CONFIGURATION & ASSETS\n// ===============================\n\ntype Theme struct {\n\tName        string\n\tBlack       lipgloss.Color\n\tPink        lipgloss.Color\n\tMutedPink   lipgloss.Color\n\tDeepPink    lipgloss.Color\n\tLighterPink lipgloss.Color\n\tWhite       lipgloss.Color\n\tError       lipgloss.Color\n\tYellow      lipgloss.Color\n\tCyan        lipgloss.Color\n\tGreen       lipgloss.Color\n}\n\nvar themes = map[string]Theme{\n\t\"classic\": {\n\t\tName:        \"Classic Pink\",\n\t\tBlack:       \"#000000\",\n\t\tPink:        \"#FF007F\",\n\t\tMutedPink:   \"#4A0025\",\n\t\tDeepPink:    \"#350019\",\n\t\tLighterPink: \"#6A0035\",\n\t\tWhite:       \"#FFFFFF\",\n\t\tError:       \"#FF4D4D\",\n\t\tYellow:      \"#FFFF00\",\n\t\tCyan:        \"#00FFFF\",\n\t\tGreen:       \"#00FF00\",\n\t},\n\t\"dark\": {\n\t\tName:        \"Dark Mode\",\n\t\tBlack:       \"#0D0D0D\",\n\t\tPink:        \"#A0457E\",\n\t\tMutedPink:   \"#2A1F2E\",\n\t\tDeepPink:    \"#1F1522\",\n\t\tLighterPink: \"#3F2F45\",\n\t\tWhite:       \"#E0E0E0\",\n\t\tError:       \"#E06C75\",\n\t\tYellow:      \"#E5C07B\",\n\t\tCyan:        \"#61AFEF\",\n\t\tGreen:       \"#98C379\",\n\t},\n\t\"highcontrast\": {\n\t\tName:        \"High Contrast\",\n\t\tBlack:       \"#000000\",\n\t\tPink:        \"#FF00FF\",\n\t\tMutedPink:   \"#800080\",\n\t\tDeepPink:    \"#600060\",\n\t\tLighterPink: \"#FF00FF\",\n\t\tWhite:       \"#FFFFFF\",\n\t\tError:       \"#FF0000\",\n\t\tYellow:      \"#FFFF00\",\n\t\tCyan:        \"#00FFFF\",\n\t\tGreen:       \"#00FF00\",\n\t},\n\t\"cyberpunk\": {\n\t\tName:        \"Cyberpunk\",\n\t\tBlack:       \"#0A0A0A\",\n\t\tPink:        \"#FF006E\",\n\t\tMutedPink:   \"#1A1A2E\",\n\t\tDeepPink:    \"#100015\",\n\t\tLighterPink: \"#3A0035\",\n\t\tWhite:       \"#00F0FF\",\n\t\tError:       \"#FF2A2A\",\n\t\tYellow:      \"#FFE600\",\n\t\tCyan:        \"#00F0FF\",\n\t\tGreen:       \"#00FF41\",\n\t},\n\t\"midnight\": {\n\t\tName:        \"Midnight Purple\",\n\t\tBlack:       \"#050510\",\n\t\tPink:        \"#BB86FC\",\n\t\tMutedPink:   \"#1A1A2E\",\n\t\tDeepPink:    \"#121220\",\n\t\tLighterPink: \"#3700B3\",\n\t\tWhite:       \"#E0E0E0\",\n\t\tError:       \"#CF6679\",\n\t\tYellow:      \"#F1C40F\",\n\t\tCyan:        \"#03DAC6\",\n\t\tGreen:       \"#00E676\",\n\t},\n}\n\ntype Session struct {\n\tMessages      []string `json:\"messages\"`\n\tHistory       []string `json:\"history\"`\n\tTheme         string   `json:\"theme\"`\n\tLastTagline   int      `json:\"lastTagline\"`\n\tShowedWelcome bool     `json:\"showedWelcome\"`\n}\n\n// ===============================\n// STYLES\n// ===============================\nvar (\n\tbaseStyle       lipgloss.Style\n\tglassPanelStyle lipgloss.Style\n\theaderStyle     lipgloss.Style\n\ttaglineStyle    lipgloss.Style\n\tviewportStyle   lipgloss.Style\n\tuserMsgStyle    lipgloss.Style\n\tfloydMsgStyle   lipgloss.Style\n\terrorStyle      lipgloss.Style\n\tthinkingStyle   lipgloss.Style\n\ttoolUseStyle    lipgloss.Style\n\tinputStyle      lipgloss.Style\n\tstatusBarStyle  lipgloss.Style\n\thelpStyle       lipgloss.Style\n\tprogBarStyle    lipgloss.Style\n)\n\nfunc generateStyles(t Theme) {\n\tbaseStyle = lipgloss.NewStyle().Background(t.Black).Foreground(t.White)\n\tglassPanelStyle = lipgloss.NewStyle().\n\t\tBackground(t.MutedPink).\n\t\tBorder(lipgloss.NormalBorder()).\n\t\tBorderForeground(t.Pink).\n\t\tPadding(1)\n\theaderStyle = glassPanelStyle.Copy().\n\t\tForeground(t.Pink).\n\t\tAlign(lipgloss.Center).\n\t\tBorderTop(false).\n\t\tBorderLeft(false).\n\t\tBorderRight(false).\n\t\tBold(true)\n\ttaglineStyle = lipgloss.NewStyle().\n\t\tForeground(t.Cyan).\n\t\tBackground(t.MutedPink).\n\t\tAlign(lipgloss.Center).\n\t\tMarginTop(1).\n\t\tMarginBottom(1).\n\t\tItalic(true)\n\tviewportStyle = glassPanelStyle.Copy().\n\t\tBorderTop(false).\n\t\tBorderBottom(false)\n\tuserMsgStyle = lipgloss.NewStyle().\n\t\tForeground(t.White).\n\t\tBackground(t.LighterPink).\n\t\tPadding(0, 1).\n\t\tMarginBottom(1).\n\t\tBold(true)\n\tfloydMsgStyle = lipgloss.NewStyle().\n\t\tForeground(t.White).\n\t\tPadding(0, 1).\n\t\tMarginBottom(1)\n\terrorStyle = glassPanelStyle.Copy().\n\t\tForeground(t.Error).\n\t\tBorderForeground(t.Error).\n\t\tAlign(lipgloss.Center).\n\t\tBold(true)\n\tthinkingStyle = lipgloss.NewStyle().\n\t\tForeground(t.Yellow).\n\t\tBackground(t.MutedPink).\n\t\tPadding(0, 1).\n\t\tMarginBottom(1).\n\t\tItalic(true)\n\ttoolUseStyle = lipgloss.NewStyle().\n\t\tForeground(t.Cyan).\n\t\tBackground(t.MutedPink).\n\t\tPadding(0, 1).\n\t\tMarginBottom(1)\n\tinputStyle = lipgloss.NewStyle().\n\t\tForeground(t.Black).\n\t\tBackground(t.White).\n\t\tPadding(0, 1)\n\tstatusBarStyle = lipgloss.NewStyle().\n\t\tBackground(t.DeepPink).\n\t\tForeground(t.White).\n\t\tBorder(lipgloss.NormalBorder()).\n\t\tBorderForeground(t.Pink).\n\t\tPadding(0, 1).\n\t\tBorderBottom(false).\n\t\tBorderLeft(false).\n\t\tBorderRight(false).\n\t\tBold(true)\n\thelpStyle = glassPanelStyle.Copy().\n\t\tAlign(lipgloss.Left).\n\t\tBorderForeground(t.Pink)\n\tprogBarStyle = lipgloss.NewStyle().\n\t\tForeground(t.Pink).\n\t\tWidth(40)\n}\n\n// ===============================\n// MODEL\n// ===============================\ntype model struct {\n\tviewport        viewport.Model\n\tinput           textinput.Model\n\tprogress        progress.Model\n\tmessages        []chatMessage\n\thistory         []string\n\thistoryIndex    int\n\tready           bool\n\tlastError       string\n\thasError        bool\n\ttagline         string\n\ttaglineIndex    int\n\tisThinking      bool\n\texecutingTools  bool\n\tcurrentToolName string\n\tlastTick        time.Time\n\tshowHelp        bool\n\tcurrentTheme    Theme\n\tthemeName       string\n\tsessionPath     string\n\tprogressActive  bool\n\tprogressPercent float64\n\tanimationFrame  int\n\telapsedTime     time.Duration\n\n\t// Agent integration\n\tclient           *agent.ProxyClient\n\tloopAgent        *loop.LoopAgent\n\ttoolExecutor     *agenttools.Executor\n\tprotocolMgr      *floyd.ProtocolManager\n\tsafety           *floyd.SafetyEnforcer\n\tconversation     []agent.Message\n\n\t// Streaming state\n\tstreamCancel     context.CancelFunc\n\tpendingTokens    []string\n\tcurrentResponse  strings.Builder\n\n\tmu               sync.Mutex\n}\n\ntype chatMessage struct {\n\trole      string  // \"user\", \"assistant\", \"system\", \"tool\"\n\tcontent   string\n\ttoolName  string\n\tisError   bool\n}\n\nfunc initialModel() model {\n\trand.Seed(time.Now().UnixNano())\n\n\tsessionPath, _ := os.UserHomeDir()\n\tsessionPath = filepath.Join(sessionPath, \".floyd_session.json\")\n\n\tsession, _ := loadSession(sessionPath)\n\n\tthemeName := session.Theme\n\tif themeName == \"\" {\n\t\tthemeName = \"classic\"\n\t}\n\tcurrentTheme := themes[themeName]\n\tgenerateStyles(currentTheme)\n\n\ttaglineIndex := session.LastTagline\n\ttaglinesCount := len(taglines)\n\tif taglineIndex >= taglinesCount {\n\t\ttaglineIndex = 0\n\t}\n\tselectedTagline := taglines[taglineIndex]\n\n\tti := textinput.New()\n\tti.Placeholder = \"Ask FLOYD...\"\n\tti.Focus()\n\tti.CharLimit = 500\n\tti.Width = 50\n\tti.Prompt = \"> \"\n\tti.PromptStyle = lipgloss.NewStyle().Foreground(currentTheme.Pink)\n\n\tvp := viewport.New(0, 0)\n\n\tprog := progress.New(\n\t\tprogress.WithDefaultGradient(),\n\t\tprogress.WithWidth(40),\n\t\tprogress.WithoutPercentage(),\n\t)\n\n\t// Initialize agent components\n\tclient := createAgentClient()\n\tif client == nil {\n\t\t// Will show error in UI\n\t\treturn model{\n\t\t\tviewport:       vp,\n\t\t\tinput:          ti,\n\t\t\tprogress:       prog,\n\t\t\tmessages:       []chatMessage{{role: \"system\", content: \"❌ Error: No API key found. Set ANTHROPIC_AUTH_TOKEN or GLM_API_KEY.\"}},\n\t\t\tready:          true,\n\t\t\tcurrentTheme:   currentTheme,\n\t\t\tthemeName:      themeName,\n\t\t\tsessionPath:    sessionPath,\n\t\t}\n\t}\n\n\texecutor := agenttools.NewExecutor(30 * time.Second)\n\tprotocolMgr := floyd.NewProtocolManager(\".floyd\")\n\tsafety := floyd.NewSafetyEnforcer()\n\tloopAgent := loop.NewLoopAgent(client, executor)\n\n\treturn model{\n\t\tviewport:        vp,\n\t\tinput:           ti,\n\t\tprogress:        prog,\n\t\tmessages:        sessionToMessages(session),\n\t\thistory:         session.History,\n\t\thistoryIndex:    len(session.History),\n\t\tready:           false,\n\t\tlastError:       \"\",\n\t\thasError:        false,\n\t\ttagline:         selectedTagline,\n\t\ttaglineIndex:    taglineIndex,\n\t\tisThinking:      false,\n\t\texecutingTools:   false,\n\t\tlastTick:         time.Now(),\n\t\tshowHelp:         false,\n\t\tcurrentTheme:     currentTheme,\n\t\tthemeName:        themeName,\n\t\tsessionPath:      sessionPath,\n\t\tprogressActive:   false,\n\t\tprogressPercent:  0.0,\n\t\tanimationFrame:   0,\n\t\telapsedTime:      0,\n\t\tpendingTokens:    make([]string, 0, 50),\n\t\tconversation:      make([]agent.Message, 0),\n\t\tclient:           client,\n\t\tloopAgent:        loopAgent,\n\t\ttoolExecutor:     executor,\n\t\tprotocolMgr:       protocolMgr,\n\t\tsafety:           safety,\n\t}\n}\n\nfunc sessionToMessages(s Session) []chatMessage {\n\tmsgs := make([]chatMessage, len(s.Messages))\n\tfor i, m := range s.Messages {\n\t\tmsgs[i] = chatMessage{role: \"assistant\", content: m}\n\t}\n\treturn msgs\n}\n\nfunc messagesToSession(msgs []chatMessage) Session {\n\tstrs := make([]string, len(msgs))\n\tfor i, m := range msgs {\n\t\tstrs[i] = m.content\n\t}\n\treturn Session{\n\t\tMessages: strs,\n\t}\n}\n\n// ===============================\n// INIT\n// ===============================\nfunc (m model) Init() tea.Cmd {\n\tif len(m.messages) == 0 || (len(m.messages) == 1 && strings.Contains(m.messages[0].content, \"Error:\")) {\n\t\tif m.client == nil {\n\t\t\treturn tea.Quit\n\t\t}\n\t\tm.messages = append(m.messages, chatMessage{\n\t\t\trole:    \"system\",\n\t\t\tcontent: \"✅ FLOYD initialized with GLM-4.7. Tools armed. Protocol loaded.\",\n\t\t})\n\t}\n\n\treturn tea.Batch(\n\t\ttextinput.Blink,\n\t\ttea.Tick(time.Millisecond*50, func(t time.Time) tea.Msg {\n\t\t\treturn tickMsg(t)\n\t\t}),\n\t)\n}\n\n// ===============================\n// MESSAGES\n// ===============================\ntype tickMsg time.Time\ntype thinkingFinishedMsg struct{ response string }\ntype progressMsg float64\ntype saveSessionMsg struct{ session Session }\ntype agentResponseMsg struct{ response string }\ntype toolUseMsg struct{ toolName string }\ntype toolResultMsg struct{ toolName, content string }\n\n// ===============================\n// UPDATE\n// ===============================\nfunc (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {\n\tvar (\n\t\tcmd  tea.Cmd\n\t\tcmds []tea.Cmd\n\t)\n\n\tswitch msg := msg.(type) {\n\tcase tea.WindowSizeMsg:\n\t\theaderHeight := lipgloss.Height(headerStyle.Render(prismArt))\n\t\ttaglineHeight := lipgloss.Height(taglineStyle.Render(m.tagline))\n\t\tstatusBarHeight := 1\n\n\t\tinputLines := strings.Count(m.input.Value(), \"\\n\") + 1\n\t\tinputHeight := inputLines + 2\n\n\t\terrorPanelHeight := 0\n\t\tif m.hasError {\n\t\t\terrorPanelHeight = lipgloss.Height(m.lastError) + 2\n\t\t}\n\t\thelpPanelHeight := 0\n\t\tif m.showHelp {\n\t\t\thelpPanelHeight = lipgloss.Height(helpContent) + 2\n\t\t}\n\n\t\tverticalMargin := headerHeight + taglineHeight + statusBarHeight + inputHeight + errorPanelHeight + helpPanelHeight + 2\n\n\t\tif !m.ready {\n\t\t\tm.viewport = viewport.New(msg.Width, msg.Height-verticalMargin)\n\t\t\tm.ready = true\n\t\t} else {\n\t\t\tm.viewport.Width = msg.Width - 4\n\t\t\tm.viewport.Height = msg.Height - verticalMargin\n\t\t}\n\t\tm.input.Width = msg.Width - 6\n\t\tm.progress.Width = msg.Width - 10\n\n\tcase tea.KeyMsg:\n\t\tif strings.HasPrefix(m.input.Value(), \"/\") {\n\t\t\treturn m.handleCommand(msg)\n\t\t}\n\n\t\tswitch msg.Type {\n\t\tcase tea.KeyEnter:\n\t\t\tif m.input.Value() == \"\" {\n\t\t\t\treturn m, nil\n\t\t\t}\n\n\t\t\tif m.isThinking || m.executingTools {\n\t\t\t\treturn m, nil\n\t\t\t}\n\n\t\t\tuserInput := strings.TrimSpace(m.input.Value())\n\t\t\tif userInput == \"\" {\n\t\t\t\treturn m, nil\n\t\t\t}\n\n\t\t\t// Check safety rules before executing\n\t\t\tif err := m.safety.CheckAction(userInput); err != nil {\n\t\t\t\tm.messages = append(m.messages, chatMessage{\n\t\t\t\t\trole:    \"system\",\n\t\t\t\t\tcontent: fmt.Sprintf(\"🚫 SAFETY: %v\", err),\n\t\t\t\t})\n\t\t\t\tm.input.Reset()\n\t\t\t\tm.updateViewport()\n\t\t\t\treturn m, nil\n\t\t\t}\n\n\t\t\tm.history = append(m.history, userInput)\n\t\t\tm.historyIndex = len(m.history)\n\n\t\t\tm.messages = append(m.messages, chatMessage{role: \"user\", content: userInput})\n\n\t\t\tm.input.Reset()\n\t\t\tm.isThinking = true\n\t\t\tm.animationFrame = 0\n\t\t\tm.elapsedTime = 0\n\t\t\tm.progressActive = true\n\t\t\tm.progressPercent = 0.0\n\n\t\t\t// Start agent request\n\t\t\tcmds = append(cmds, m.callAgent(userInput))\n\t\t\tcmds = append(cmds, tea.Tick(time.Millisecond*100, func(t time.Time) tea.Msg {\n\t\t\t\treturn progressMsg(0.05)\n\t\t\t}))\n\n\t\tcase tea.KeyUp, tea.KeyShiftUp:\n\t\t\tif m.historyIndex > 0 {\n\t\t\t\tm.historyIndex--\n\t\t\t\tm.input.SetValue(m.history[m.historyIndex])\n\t\t\t}\n\t\tcase tea.KeyDown, tea.KeyShiftDown:\n\t\t\tif m.historyIndex < len(m.history)-1 {\n\t\t\t\tm.historyIndex++\n\t\t\t\tm.input.SetValue(m.history[m.historyIndex])\n\t\t\t} else if m.historyIndex == len(m.history)-1 {\n\t\t\t\tm.historyIndex++\n\t\t\t\tm.input.Reset()\n\t\t\t}\n\t\tcase tea.KeyCtrlC, tea.KeyEsc:\n\t\t\tsession := Session{\n\t\t\t\tMessages:    messagesToSession(m.messages),\n\t\t\t\tHistory:     m.history,\n\t\t\t\tTheme:       m.themeName,\n\t\t\t\tLastTagline: (m.taglineIndex + 1) % len(taglines),\n\t\t\t}\n\t\t\treturn m, tea.Sequence(tea.Quit, func() tea.Msg {\n\t\t\t\treturn saveSessionMsg{session: session}\n\t\t\t})\n\t\t}\n\t\tif msg.String() == \"?\" {\n\t\t\tm.showHelp = !m.showHelp\n\t\t}\n\n\tcase tickMsg:\n\t\tm.lastTick = time.Time(msg)\n\t\tm.elapsedTime += 50 * time.Millisecond\n\t\tm.animationFrame = (m.animationFrame + 1) % 20\n\t\tcmds = append(cmds, tea.Tick(time.Millisecond*50, func(t time.Time) tea.Msg {\n\t\t\treturn tickMsg(t)\n\t\t}))\n\n\tcase thinkingFinishedMsg:\n\t\tm.isThinking = false\n\t\tm.executingTools = false\n\t\tm.progressActive = false\n\n\t\tm.messages = append(m.messages, chatMessage{role: \"assistant\", content: msg.response})\n\n\t\t// Log to progress\n\t\tm.protocolMgr.LogAction(\"chat\", \"completed\", \"ready\")\n\t\tm.updateViewport()\n\n\tcase toolUseMsg:\n\t\tm.executingTools = true\n\t\tm.currentToolName = msg.toolName\n\t\tm.messages = append(m.messages, chatMessage{role: \"tool\", content: fmt.Sprintf(\"▶ Using: %s\", msg.toolName)})\n\t\tm.updateViewport()\n\n\tcase toolResultMsg:\n\t\tm.executingTools = false\n\t\tm.messages = append(m.messages, chatMessage{role: \"tool_result\", toolName: msg.toolName, content: msg.content})\n\t\tm.updateViewport()\n\n\tcase progressMsg:\n\t\tif m.progressActive {\n\t\t\tm.progressPercent += msg.progress\n\t\t\tif m.progressPercent >= 1.0 {\n\t\t\t\tm.progressPercent = 1.0\n\t\t\t}\n\t\t\tm.progress, cmd = m.progress.Update(m.progressPercent)\n\t\t\tcmds = append(cmds, cmd)\n\t\t}\n\n\tcase saveSessionMsg:\n\t\tsaveSession(msg.session, m.sessionPath)\n\t}\n\n\tm.input, cmd = m.input.Update(msg)\n\tcmds = append(cmds, cmd)\n\tm.viewport, cmd = m.viewport.Update(msg)\n\tcmds = append(cmds, cmd)\n\n\treturn m, tea.Batch(cmds...)\n}\n\nfunc (m *model) callAgent(userInput string) tea.Cmd {\n\treturn func() tea.Msg {\n\t\tctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)\n\t\tm.streamCancel = cancel\n\n\t\tm.mu.Lock()\n\t\tm.conversation = append(m.conversation, agent.Message{Role: \"user\", Content: userInput})\n\t\tm.mu.Unlock()\n\n\t\t// Build request with protocol\n\t\treq := agent.ChatRequest{\n\t\t\tMessages:    m.conversation,\n\t\t\tMaxTokens:   4096,\n\t\t\tTemperature: 0.7,\n\t\t}\n\t\treq = m.protocolMgr.EnhancedChatRequest(req, \"\")\n\n\t\t// Run tool loop\n\t\tresponse, err := m.loopAgent.RunToolLoop(ctx, req)\n\t\tif err != nil {\n\t\t\treturn thinkingFinishedMsg{response: fmt.Sprintf(\"Error: %v\", err)}\n\t\t}\n\n\t\t// Update conversation\n\t\tm.mu.Lock()\n\t\tm.conversation = append(m.conversation, agent.Message{Role: \"assistant\", Content: response})\n\t\tm.mu.Unlock()\n\n\t\treturn thinkingFinishedMsg{response: response}\n\t}\n}\n\nfunc (m *model) updateViewport() {\n\tvar chatHistory strings.Builder\n\n\tfor _, msg := range m.messages {\n\t\tvar styled string\n\t\tswitch msg.role {\n\t\tcase \"user\":\n\t\t\tstyled = userMsgStyle.Render(\"YOU: \" + msg.content)\n\t\tcase \"assistant\":\n\t\t\tstyled = floydMsgStyle.Render(\"FLOYD: \" + msg.content)\n\t\tcase \"tool\":\n\t\t\tstyled = toolUseStyle.Render(msg.content)\n\t\tcase \"tool_result\":\n\t\t\tstyled = toolUseStyle.Render(\"✓ \" + msg.toolName + \": \" + truncate(msg.content, 100))\n\t\tcase \"system\":\n\t\t\tif strings.Contains(msg.content, \"🚫\") {\n\t\t\t\tstyled = errorStyle.Render(msg.content)\n\t\t\t} else if strings.Contains(msg.content, \"✅\") {\n\t\t\t\tstyled = floydMsgStyle.Copy().Foreground(m.currentTheme.Green).Render(msg.content)\n\t\t\t} else {\n\t\t\t\tstyled = thinkingStyle.Render(msg.content)\n\t\t\t}\n\t\t}\n\t\tchatHistory.WriteString(styled + \"\\n\")\n\t}\n\n\tm.viewport.SetContent(chatHistory.String())\n\tm.viewport.GotoBottom()\n}\n\nfunc truncate(s string, maxLen int) string {\n\tif len(s) <= maxLen {\n\t\treturn s\n\t}\n\treturn s[:maxLen-3] + \"...\"\n}\n\n// ===============================\n// COMMANDS\n// ===============================\nfunc (m model) handleCommand(msg tea.KeyMsg) (tea.Model, tea.Cmd) {\n\tif msg.Type != tea.KeyEnter {\n\t\tm.input, _ = m.input.Update(msg)\n\t\treturn m, nil\n\t}\n\n\tinput := strings.TrimSpace(m.input.Value())\n\tcmd := strings.TrimPrefix(input, \"/\")\n\tparts := strings.Fields(cmd)\n\tif len(parts) == 0 {\n\t\treturn m, nil\n\t}\n\n\tswitch strings.ToLower(parts[0]) {\n\tcase \"theme\":\n\t\tif len(parts) < 2 {\n\t\t\tm.messages = append(m.messages, chatMessage{\n\t\t\t\trole: \"system\",\n\t\t\t\tcontent: \"Available themes: classic, dark, highcontrast, cyberpunk, midnight\",\n\t\t\t})\n\t\t\tm.input.Reset()\n\t\t\tm.updateViewport()\n\t\t\treturn m, nil\n\t\t}\n\t\tthemeName := strings.ToLower(parts[1])\n\t\tif newTheme, ok := themes[themeName]; ok {\n\t\t\tm.currentTheme = newTheme\n\t\t\tm.themeName = themeName\n\t\t\tgenerateStyles(m.currentTheme)\n\t\t\tm.input.PromptStyle = lipgloss.NewStyle().Foreground(m.currentTheme.Pink)\n\t\t\tm.messages = append(m.messages, chatMessage{\n\t\t\t\trole:    \"system\",\n\t\t\t\tcontent: fmt.Sprintf(\"Theme changed to '%s'.\", newTheme.Name),\n\t\t\t})\n\t\t} else {\n\t\t\tm.messages = append(m.messages, chatMessage{\n\t\t\t\trole: \"system\",\n\t\t\t\tcontent: fmt.Sprintf(\"Unknown theme '%s'. Available: classic, dark, highcontrast, cyberpunk, midnight\", themeName),\n\t\t\t})\n\t\t}\n\t\tm.input.Reset()\n\t\tm.updateViewport()\n\t\treturn m, nil\n\n\tcase \"clear\", \"cls\":\n\t\tm.messages = []chatMessage{}\n\t\tm.conversation = []agent.Message{}\n\t\tm.input.Reset()\n\t\tm.updateViewport()\n\t\treturn m, nil\n\n\tcase \"help\", \"h\", \"?\":\n\t\tm.showHelp = !m.showHelp\n\t\tm.input.Reset()\n\t\tm.updateViewport()\n\t\treturn m, nil\n\n\tcase \"status\":\n\t\tstatus := m.protocolMgr.WorkspaceStatus()\n\t\tvar sb strings.Builder\n\t\tsb.WriteString(\"📁 Workspace Status:\\n\")\n\t\tfor k, v := range status {\n\t\t\tsb.WriteString(fmt.Sprintf(\"  %s: %s\\n\", k, v))\n\t\t}\n\t\tm.messages = append(m.messages, chatMessage{role: \"system\", content: sb.String()})\n\t\tm.input.Reset()\n\t\tm.updateViewport()\n\t\treturn m, nil\n\n\tcase \"tools\":\n\t\ttools := agenttools.ListTools()\n\t\tm.messages = append(m.messages, chatMessage{\n\t\t\trole:    \"system\",\n\t\t\tcontent: fmt.Sprintf(\"Available Tools (%d): %s\", len(tools), strings.Join(tools, \", \")),\n\t\t})\n\t\tm.input.Reset()\n\t\tm.updateViewport()\n\t\treturn m, nil\n\n\tcase \"init\":\n\t\tif err := prompt.InitializeFloydDir(); err != nil {\n\t\t\tm.messages = append(m.messages, chatMessage{\n\t\t\t\trole:    \"system\",\n\t\t\t\tcontent: fmt.Sprintf(\"Init failed: %v\", err),\n\t\t\t})\n\t\t} else {\n\t\t\tm.messages = append(m.messages, chatMessage{\n\t\t\t\trole:    \"system\",\n\t\t\t\tcontent: \"✅ .floyd/ workspace initialized\",\n\t\t\t})\n\t\t}\n\t\tm.input.Reset()\n\t\tm.updateViewport()\n\t\treturn m, nil\n\t}\n\n\treturn m, nil\n}\n\n// ===============================\n// VIEW\n// ===============================\nfunc (m model) View() string {\n\tif !m.ready {\n\t\treturn \"\\n  Initializing FLOYD...\"\n\t}\n\n\theader := headerStyle.Render(prismArt)\n\ttagline := taglineStyle.Render(\"「 \" + m.tagline + \" 」\")\n\n\tvar errorPanel string\n\tif m.hasError {\n\t\terrorPanel = \"\\n\" + errorStyle.Render(\"⚠ \" + m.lastError)\n\t}\n\n\tvar helpPanel string\n\tif m.showHelp {\n\t\thelpPanel = \"\\n\" + helpStyle.Render(helpContent)\n\t}\n\n\tvar chatHistory strings.Builder\n\tfor _, msg := range m.messages {\n\t\tvar styled string\n\t\tswitch {\n\t\tcase msg.role == \"user\":\n\t\t\tstyled = userMsgStyle.Render(\"YOU: \" + msg.content)\n\t\tcase msg.role == \"assistant\":\n\t\t\tstyled = floydMsgStyle.Render(\"FLOYD: \" + msg.content)\n\t\tcase msg.role == \"tool\":\n\t\t\tstyled = toolUseStyle.Render(msg.content)\n\t\tcase msg.role == \"tool_result\":\n\t\t\tstyled = toolUseStyle.Render(\"✓ \" + msg.toolName + \": \" + truncate(msg.content, 150))\n\t\tdefault:\n\t\t\tif strings.Contains(msg.content, \"🚫\") {\n\t\t\t\tstyled = errorStyle.Render(msg.content)\n\t\t\t} else if strings.Contains(msg.content, \"✅\") {\n\t\t\t\tstyled = floydMsgStyle.Copy().Foreground(m.currentTheme.Green).Render(msg.content)\n\t\t\t} else {\n\t\t\t\tstyled = thinkingStyle.Render(msg.content)\n\t\t\t}\n\t\t}\n\t\tchatHistory.WriteString(styled + \"\\n\")\n\t}\n\n\t// Show thinking animation\n\tif m.isThinking {\n\t\tphrase := spinners.GetPhrase(m.animationFrame % spinners.PhraseCount())\n\t\tframe := spinners.GetFrame(phrase.SpinIndex, m.elapsedTime)\n\t\tthinkingMsg := fmt.Sprintf(\"FLOYD: %s\", phrase.Phrase)\n\t\tchatHistory.WriteString(thinkingStyle.Render(thinkingMsg) + \" \" + frame + \"\\n\")\n\t}\n\n\tm.viewport.SetContent(chatHistory.String())\n\tviewportContent := viewportStyle.Render(m.viewport.View())\n\n\tinputLines := strings.Split(m.input.View(), \"\\n\")\n\tinputContent := strings.Join(inputLines, \"\\n\")\n\tinputPanelHeight := len(inputLines) + 2\n\tstyledInput := inputStyle.Height(inputPanelHeight).Width(m.viewport.Width).Render(inputContent)\n\n\tprogressBar := \"\"\n\tif m.progressActive {\n\t\tprogressBar = \"\\n\" + m.progress.View()\n\t}\n\n\tstatusText := \"● READY\"\n\tif m.isThinking {\n\t\tstatusText = \"❯ THINKING\"\n\t} else if m.executingTools {\n\t\tstatusText = \"▶ TOOLS: \" + m.currentToolName\n\t}\n\tstatusText = fmt.Sprintf(\" %s │ 💬 %d │ %s │ Theme: %s \",\n\t\tstatusText,\n\t\tlen(m.messages),\n\t\tmap[bool]string{true: \"❯ THINKING\", false: \"● READY\"}[m.isThinking || m.executingTools],\n\t\tm.themeName,\n\t)\n\tstatusBar := statusBarStyle.Render(statusText)\n\n\tmainContent := lipgloss.JoinVertical(lipgloss.Left,\n\t\theader,\n\t\ttagline,\n\t\terrorPanel,\n\t\thelpPanel,\n\t\tviewportContent,\n\t\t\"\",\n\t\tstyledInput,\n\t\tprogressBar,\n\t\tstatusBar,\n\t)\n\n\treturn baseStyle.Render(mainContent)\n}\n\nfunc loadSession(path string) (Session, error) {\n\tvar s Session\n\tfile, err := os.ReadFile(path)\n\tif err != nil {\n\t\treturn s, err\n\t}\n\terr = json.Unmarshal(file, &s)\n\treturn s, err\n}\n\nfunc saveSession(s Session, path string) error {\n\tdata, err := json.MarshalIndent(s, \"\", \"  \")\n\tif err != nil {\n\t\treturn err\n\t}\n\treturn os.WriteFile(path, data, 0644)\n}\n\nfunc createAgentClient() *agent.ProxyClient {\n\tapiKey := os.Getenv(\"ANTHROPIC_AUTH_TOKEN\")\n\tif apiKey == \"\" {\n\t\tapiKey = os.Getenv(\"GLM_API_KEY\")\n\t}\n\tif apiKey == \"\" {\n\t\tapiKey = os.Getenv(\"ZHIPU_API_KEY\")\n\t}\n\tif apiKey == \"\" {\n\t\thomeDir, _ := os.UserHomeDir()\n\t\tdata, _ := os.ReadFile(filepath.Join(homeDir, \".claude/settings.json\"))\n\t\tvar settings struct {\n\t\t\tEnv struct {\n\t\t\t\tAnthropicAuthToken string `json:\"ANTHROPIC_AUTH_TOKEN\"`\n\t\t\t} `json:\"env\"`\n\t\t}\n\t\tif data != nil && json.Unmarshal(data, &settings) == nil {\n\t\t\tapiKey = settings.Env.AnthropicAuthToken\n\t\t}\n\t}\n\n\tif apiKey == \"\" {\n\t\treturn nil\n\t}\n\n\tclient := agent.NewProxyClient(apiKey, \"https://api.z.ai/api/anthropic\")\n\tclient.SetModel(\"claude-opus-4\")\n\treturn client\n}\n\nconst prismArt = `\n    __/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__/\\\\\\___________________/\\\\\\\\\\_______/\\\\\\________/\\\\\\__/\\\\\\\\\\\\\\\\\\\\\\\\_____________________/\\\\\\\\\\\\\\\\\\_______/\\\\\\\\\\_______/\\\\\\\\\\\\\\\\\\\\\\\\_____/\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\__________________/\\\\\\\\\\\\\\\\\\__/\\\\\\______________/\\\\\\\\\\\\\\\\\\\\\\_\n     _\\/\\\\\\///////////__\\/\\\\\\_________________/\\\\\\///\\\\\\____\\///\\\\\\____/\\\\\\/__\\/\\\\\\////////\\\\\\________________/\\\\\\////////______/\\\\\\///\\\\\\____\\/\\\\\\////////\\\\\\__\\/\\\\\\///////////________________/\\\\\\////////__\\/\\\\\\_____________\\/////\\\\\\///__\n      _\\/\\\\\\_____________\\/\\\\\\_______________/\\\\\\/__\\///\\\\\\____\\///\\\\\\/\\\\\\/____\\/\\\\\\______\\//\\\\\\_____________/\\\\\\/_____________/\\\\\\/__\\///\\\\\\__\\/\\\\\\______\\//\\\\\\_\\/\\\\\\_________________________/\\\\\\/___________\\/\\\\\\_________________\\/\\\\\\_____\n       _\\/\\\\\\\\\\\\\\\\\\\\\\_____\\/\\\\\\______________/\\\\\\______\\//\\\\\\_____\\///\\\\\\/______\\/\\\\\\_______\\/\\\\\\____________/\\\\\\______________/\\\\\\______\\//\\\\\\_\\/\\\\\\_______\\/\\\\\\_\\/\\\\\\\\\\\\\\\\\\\\\\________________/\\\\\\_____________\\/\\\\\\_________________\\/\\\\\\_____\n        _\\/\\\\\\///////______\\/\\\\\\_____________\\/\\\\\\_______\\/\\\\\\_______\\/\\\\\\_______\\/\\\\\\_______\\/\\\\\\___________\\/\\\\\\_____________\\/\\\\\\_______\\/\\\\\\_\\/\\\\\\_______\\/\\\\\\_\\/\\\\\\///////________________\\/\\\\\\_____________\\/\\\\\\_________________\\/\\\\\\_____\n         _\\/\\\\\\_____________\\/\\\\\\_____________\\//\\\\\\______/\\\\\\________\\/\\\\\\_______\\/\\\\\\_______\\/\\\\\\___________\\//\\\\\\____________\\//\\\\\\______/\\\\\\__\\/\\\\\\_______\\/\\\\\\_\\/\\\\\\_______________________\\//\\\\\\____________\\/\\\\\\_________________\\/\\\\\\_____\n          _\\/\\\\\\_____________\\/\\\\\\______________\\///\\\\\\__/\\\\\\__________\\/\\\\\\_______\\/\\\\\\_______\\/\\\\\\_____________\\///\\\\\\___________\\///\\\\\\__/\\\\\\____\\/\\\\\\_______\\/\\\\\\_\\/\\\\\\________________________\\///\\\\\\__________\\/\\\\... [truncated]"
+      },
+      {
+        "role": "assistant",
+        "content": "I can see there's already a working implementation in the cmd/floyd/main.go file. Let me check the package name in the floydui file to make sure it matches:\n\nLooking at the cmd/floyd/main.go, I can see it imports `\"github.com/Nomadcxx/sysc-Go/ui/floyd\"` but the package is named `floydui`. This suggests there might be a naming inconsistency. Let me check the actual package name in the floyd directory:\n\nFrom my earlier reading, the package is named `floydui` but the import path is `ui/floyd`. This means the package name and directory name don't match. Let me fix the main.go file to use the correct import:\n\n",
+        "tool_calls": [
+          {
+            "id": "call_2d2a8d044d764334af593ef5",
+            "type": "function",
+            "function": {
+              "name": "edit",
+              "arguments": "{\"file_path\":\"/Volumes/Storage/FLOYD_CLI/main.go\",\"old_string\":\"package main\\n\\nimport (\\n\\t\\\"fmt\\\"\\n\\t\\\"os\\\"\\n\\n\\ttea \\\"github.com/charmbracelet/bubbletea\\\"\\n\\t\\\"github.com/Nomadcxx/sysc-Go/ui/floydui\\\"\\n)\\n\\nfunc main() {\\n\\t// Create the FLOYD UI model\\n\\tmodel := floydui.NewModel()\\n\\n\\tp := tea.NewProgram(\\n\\t\\tmodel,\\n\\t\\ttea.WithAltScreen(),\\n\\t\\ttea.WithMouseCellMotion(),\\n\\t\\ttea.WithFPS(30), // For animations\\n\\t)\\n\\n\\tif _, err := p.Run(); err != nil {\\n\\t\\tfmt.Printf(\\\"Error: %v\\\", err)\\n\\t\\tos.Exit(1)\\n\\t}\\n}\",\"new_string\":\"package main\\n\\nimport (\\n\\t\\\"fmt\\\"\\n\\t\\\"os\\\"\\n\\n\\ttea \\\"github.com/charmbracelet/bubbletea\\\"\\n\\t\\\"github.com/Nomadcxx/sysc-Go/ui/floyd\\\"\\n)\\n\\nfunc main() {\\n\\t// Create the FLOYD UI model\\n\\tmodel := floyd.NewModel()\\n\\n\\tp := tea.NewProgram(\\n\\t\\tmodel,\\n\\t\\ttea.WithAltScreen(),\\n\\t\\ttea.WithMouseCellMotion(),\\n\\t\\ttea.WithFPS(30), // For animations\\n\\t)\\n\\n\\tif _, err := p.Run(); err != nil {\\n\\t\\tfmt.Printf(\\\"Error: %v\\\", err)\\n\\t\\tos.Exit(1)\\n\\t}\\n}\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "call_2d2a8d044d764334af593ef5",
+        "content": "The file: /Volumes/Storage/FLOYD_CLI/main.go has been updated. Showing lines 4-17 of 27 from the edited file:\n\n---\n\n\t\"fmt\"\n\t\"os\"\n\n\ttea \"github.com/charmbracelet/bubbletea\"\n\t\"github.com/Nomadcxx/sysc-Go/ui/floyd\"\n)\n\nfunc main() {\n\t// Create the FLOYD UI model\n\tmodel := floyd.NewModel()\n\n\tp := tea.NewProgram(\n\t\tmodel,\n\t\ttea.WithAltScreen(),"
+      },
+      {
+        "role": "assistant",
+        "content": "Wait, I need to check the actual directory structure again. From my earlier listing, I saw there's a `ui/floyd` directory, not `ui/floydui`. But from reading the files, the package name inside that directory is `floydui`. This is a mismatch that needs to be corrected. Let me check the actual file once more:\n\nFrom my earlier reading of `/Volumes/Storage/FLOYD_CLI/ui/floyd/` files, I saw that the package name is indeed `floydui` but the directory is named `floyd`. This is incorrect - the directory name should match the package name. Let me rename the directory:\n\n",
+        "tool_calls": [
+          {
+            "id": "call_a6daee7bc51241a5925b1570",
+            "type": "function",
+            "function": {
+              "name": "run_shell_command",
+              "arguments": "{\"command\":\"cd /Volumes/Storage/FLOYD_CLI && mv ui/floyd ui/floydui\",\"description\":\"Renaming the floyd directory to match the package name floydui\",\"is_background\":false}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "call_a6daee7bc51241a5925b1570",
+        "content": "Command: cd /Volumes/Storage/FLOYD_CLI && mv ui/floyd ui/floydui\nDirectory: (root)\nOutput: (empty)\nError: (none)\nExit Code: 0\nSignal: (none)\nBackground PIDs: (none)\nProcess Group PGID: (none)"
+      },
+      {
+        "role": "assistant",
+        "content": "Now let me update the main.go file to use the correct path:\n\n",
+        "tool_calls": [
+          {
+            "id": "call_0d58ce1f01614affa7e0e10b",
+            "type": "function",
+            "function": {
+              "name": "edit",
+              "arguments": "{\"file_path\":\"/Volumes/Storage/FLOYD_CLI/main.go\",\"old_string\":\"package main\\n\\nimport (\\n\\t\\\"fmt\\\"\\n\\t\\\"os\\\"\\n\\n\\ttea \\\"github.com/charmbracelet/bubbletea\\\"\\n\\t\\\"github.com/Nomadcxx/sysc-Go/ui/floyd\\\"\\n)\\n\\nfunc main() {\\n\\t// Create the FLOYD UI model\\n\\tmodel := floyd.NewModel()\\n\\n\\tp := tea.NewProgram(\\n\\t\\tmodel,\\n\\t\\ttea.WithAltScreen(),\\n\\t\\ttea.WithMouseCellMotion(),\\n\\t\\ttea.WithFPS(30), // For animations\\n\\t)\\n\\n\\tif _, err := p.Run(); err != nil {\\n\\t\\tfmt.Printf(\\\"Error: %v\\\", err)\\n\\t\\tos.Exit(1)\\n\\t}\\n}\",\"new_string\":\"package main\\n\\nimport (\\n\\t\\\"fmt\\\"\\n\\t\\\"os\\\"\\n\\n\\ttea \\\"github.com/charmbracelet/bubbletea\\\"\\n\\t\\\"github.com/Nomadcxx/sysc-Go/ui/floydui\\\"\\n)\\n\\nfunc main() {\\n\\t// Create the FLOYD UI model\\n\\tmodel := floydui.NewModel()\\n\\n\\tp := tea.NewProgram(\\n\\t\\tmodel,\\n\\t\\ttea.WithAltScreen(),\\n\\t\\ttea.WithMouseCellMotion(),\\n\\t\\ttea.WithFPS(30), // For animations\\n\\t)\\n\\n\\tif _, err := p.Run(); err != nil {\\n\\t\\tfmt.Printf(\\\"Error: %v\\\", err)\\n\\t\\tos.Exit(1)\\n\\t}\\n}\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "call_0d58ce1f01614affa7e0e10b",
+        "content": "File not found: /Volumes/Storage/FLOYD_CLI/main.go"
+      },
+      {
+        "role": "assistant",
+        "content": "It seems the file got deleted. Let me check the current directory structure:\n\n",
+        "tool_calls": [
+          {
+            "id": "call_637e3c83e6e548e7b55f7682",
+            "type": "function",
+            "function": {
+              "name": "list_directory",
+              "arguments": "{\"path\":\"/Volumes/Storage/FLOYD_CLI\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "call_637e3c83e6e548e7b55f7682",
+        "content": "Directory listing for /Volumes/Storage/FLOYD_CLI:\n[DIR] .archive\n[DIR] .floyd\n[DIR] .grok\n[DIR] agent\n[DIR] agenttui\n[DIR] animations\n[DIR] assets\n[DIR] cache\n[DIR] cli\n[DIR] cmd\n[DIR] demos\n[DIR] docs\n[DIR] examples\n[DIR] floyd-banner\n[DIR] FloydChromeBuild\n[DIR] logs\n[DIR] mcp\n[DIR] node_modules\n[DIR] spinners\n[DIR] sysc_src\n[DIR] temp_tui_banner\n[DIR] tui\n[DIR] ui\n[DIR] venv\n.gitignore\n.SRCINFO\nconvert_fonts.sh\ncritique_image.png\nfloyd\ngo.mod\ngo.sum\nGUIDE.md\ninstall.sh.old\nLICENSE\npackage-lock.json\npackage.json\npink-floyd\nPKGBUILD\nREADME.md\nspacing_issue.png\nspinners.json\ntarget_size.png\n\n(4 git-ignored)"
+      },
+      {
+        "role": "assistant",
+        "content": "I notice that main.go is no longer in the root directory. Let me check if it was moved or if there are other main.go files:\n\n",
+        "tool_calls": [
+          {
+            "id": "call_05ef49cc7617419fb49eb2a0",
+            "type": "function",
+            "function": {
+              "name": "glob",
+              "arguments": "{\"pattern\":\"**/main.go\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "call_05ef49cc7617419fb49eb2a0",
+        "content": "Found 11 file(s) matching \"**/main.go\" in the workspace directory, sorted by modification time (newest first):\n---\n/Volumes/Storage/FLOYD_CLI/cmd/floyd/main.go\n/Volumes/Storage/FLOYD_CLI/cmd/agent-cli/main.go\n/Volumes/Storage/FLOYD_CLI/cmd/floyd-cli/main.go\n/Volumes/Storage/FLOYD_CLI/cmd/pink-floyd/main.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo.old/main.go\n/Volumes/Storage/FLOYD_CLI/cmd/test-coding/main.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/agent-tui.old/main.go\n/Volumes/Storage/FLOYD_CLI/cmd/test-api/main.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/syscgo-tui.old/main.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/installer.old/main.go\n/Volumes/Storage/FLOYD_CLI/.archive/rot/flf2bit.old/main.go"
+      },
+      {
+        "role": "assistant",
+        "content": "I see that main.go was in the root directory but now it's gone. It seems my edit operation may have had an issue. Let me check if it's in the root:\n\n",
+        "tool_calls": [
+          {
+            "id": "call_9161ed0402074995a19a3881",
+            "type": "function",
+            "function": {
+              "name": "run_shell_command",
+              "arguments": "{\"command\":\"ls -la /Volumes/Storage/FLOYD_CLI/ | grep main\",\"description\":\"Checking if main.go exists in the root directory\",\"is_background\":false}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "tool",
+        "tool_call_id": "call_9161ed0402074995a19a3881",
+        "content": "Command: ls -la /Volumes/Storage/FLOYD_CLI/ | grep main\nDirectory: (root)\nOutput: (empty)\nError: (none)\nExit Code: 1\nSignal: (none)\nBackground PIDs: (none)\nProcess Group PGID: (none)"
+      },
+      {
+        "role": "assistant",
+        "content": "The main.go file was removed from the root. Looking at the list, there's already a `/Volumes/Storage/FLOYD_CLI/cmd/floyd/main.go` which appears to be the correct implementation. Let me check if this is the one I should be using:\n\n",
+        "tool_calls": [
+          {
+            "id": "call_3a245b65e87b48789f13cbd2",
+            "type": "function",
+            "function": {
+              "name": "read_file",
+              "arguments": "{\"absolute_path\":\"/Volumes/Storage/FLOYD_CLI/cmd/floyd/main.go\"}"
+            }
+          }
+        ]
+      },
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": "Please analyze the conversation history to determine the possibility that the conversation is stuck in a repetitive, non-productive state. Provide your response in the requested JSON format."
+          }
+        ]
+      }
+    ],
+    "tools": [
+      {
+        "type": "function",
+        "function": {
+          "name": "respond_in_schema",
+          "description": "Provide the response in provided schema",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "reasoning": {
+                "type": "string",
+                "description": "Your reasoning on if the conversation is looping without forward progress."
+              },
+              "confidence": {
+                "type": "number",
+                "description": "A number between 0.0 and 1.0 representing your confidence that the conversation is in an unproductive state."
+              }
+            },
+            "required": [
+              "reasoning",
+              "confidence"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "response": {
+    "id": "chatcmpl-a70ad11b-3593-4be5-8da5-e4b024f6ee15",
+    "object": "chat.completion",
+    "created": 1768236,
+    "model": "coder-model",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": null,
+          "refusal": null,
+          "tool_calls": [
+            {
+              "id": "call_f89e7ddd3b8e435fa65933b4",
+              "type": "function",
+              "function": {
+                "name": "respond_in_schema",
+                "arguments": "{\"confidence\":0.1,\"reasoning\":\"The conversation history shows a series of logical steps taken to resolve Go module import issues. The assistant identified that the package name didn't match the directory name, renamed the directory from 'floyd' to 'floydui' to match the package name, and then attempted to update the import statement in main.go. However, the main.go file seems to have disappeared from the root directory during these operations. The assistant is working through a legitimate problem-solving process related to Go module structure, not exhibiting repetitive or unproductive behavior. Each action taken was aimed at resolving the import path mismatch issue.\"}"
+              }
+            }
+          ]
+        },
+        "finish_reason": "stop",
+        "logprobs": null
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 12012,
+      "completion_tokens": 153,
+      "total_tokens": 12165,
+      "prompt_tokens_details": {
+        "cached_tokens": 589
+      }
+    }
+  },
+  "error": null,
+  "system": {
+    "hostname": "Mac.attlocal.net",
+    "platform": "darwin",
+    "release": "25.3.0",
+    "nodeVersion": "v24.10.0"
+  }
+}

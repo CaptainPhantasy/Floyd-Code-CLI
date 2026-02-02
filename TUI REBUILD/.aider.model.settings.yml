@@ -1,0 +1,12 @@
+- name: openrouter/anthropic/claude-opus-4.5
+  extra_params:
+    extra_body:
+      provider:
+        order: ["Anthropic"]
+        allow_fallbacks: false
+- name: openrouter/anthropic/claude-sonnet-4.5
+  extra_params:
+    extra_body:
+      provider:
+        order: ["Anthropic"]
+        allow_fallbacks: false

@@ -1,0 +1,13 @@
+{
+  "key": "smoke-test-pattern",
+  "value": "test-.*",
+  "timestamp": 1769143659080,
+  "ttl": 604800000,
+  "tier": "vault",
+  "metadata": {
+    "tags": [
+      "smoke",
+      "test"
+    ]
+  }
+}

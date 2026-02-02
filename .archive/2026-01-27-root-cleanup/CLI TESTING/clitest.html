@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>TUI Layout Debugger</title>
+<style>
+  body { 
+    background: #09090b; 
+    color: #eee; 
+    font-family: 'Courier New', monospace; 
+    height: 100vh; 
+    margin: 0; 
+    overflow: hidden; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #root { 
+    position: relative; 
+    /* Scaling the preview to fit the screen */
+    width: 1440px; 
+    height: 810px; 
+    background: #000;
+    border: 1px solid #333;
+  }
+  .node { 
+    position: absolute; 
+    box-sizing: border-box; 
+    font-size: 11px; 
+    overflow: hidden; 
+    line-height: 1.2;
+  }
+  /* Floating Title Label */
+  .title-label { 
+    position: absolute; 
+    top: -8px; 
+    left: 10px; 
+    background: #000; 
+    padding: 0 5px; 
+    font-weight: bold; 
+    font-size: 10px;
+    z-index: 10;
+  }
+  /* Content inside the box */
+  .node-content {
+    padding: 12px;
+    white-space: pre-wrap;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+  }
+  
+  /* Border Styles */
+  .style-round { border-radius: 8px; }
+  .style-double { border-style: double; border-width: 4px; }
+  .style-bold { border-width: 3px; }
+  .style-dashed { border-style: dashed; }
+  .style-single { border-style: solid; }
+  
+  /* Color Mapping (Approximation for HTML) */
+  .c-magenta { border-color: #d946ef; color: #d946ef; }
+  .c-cyan { border-color: #06b6d4; color: #06b6d4; }
+  .c-green { border-color: #22c55e; color: #22c55e; }
+  .c-yellow { border-color: #eab308; color: #eab308; }
+  .c-blue { border-color: #3b82f6; color: #3b82f6; }
+  .c-gray { border-color: #71717a; color: #71717a; }
+  .c-white { border-color: #fff; color: #fff; }
+  .c-black { border-color: #333; color: #888; } /* Visible on black bg */
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script>
+// ------------------------------------------------------------------
+// DATA: The FULL "CRUSH" Payload
+// ------------------------------------------------------------------
+const DATA = {
+  "meta": { "name": "CRUSH-MainLayout-P01", "cols": 160, "rows": 45 },
+  "nodes": [
+    {
+      "id": "header", "rect": { "x": 0, "y": 0, "w": 160, "h": 3 },
+      "style": { "borderStyle": "round", "color": "magenta" },
+      "content": { "body": " CRUSH TERMINAL v2.4.0  │  WORKSPACE: ALPHA-GEN  │  USER: ADMIN  │  STATUS: ONLINE ● ", "title": "SYSTEM" }
+    },
+    {
+      "id": "sidebar-left", "rect": { "x": 0, "y": 3, "w": 32, "h": 39 },
+      "style": { "borderStyle": "double", "color": "gray" },
+      "content": { "body": "", "title": "EXPLORER" },
+      "children": [
+        {
+          "id": "file-tree", "rect": { "x": 0, "y": 0, "w": 30, "h": 20 },
+          "style": { "borderStyle": "single", "color": "white" },
+          "content": { "body": "▼ PROJECT-ROOT\n  ▶ .config\n  ▼ src\n    ▶ agents\n    ▶ core\n    ▶ utils", "title": "FILES" }
+        },
+        {
+          "id": "session-list", "rect": { "x": 0, "y": 21, "w": 30, "h": 16 },
+          "style": { "borderStyle": "single", "color": "blue" },
+          "content": { "body": "● Main-Thread [ID:091]\n○ Worker-A    [ID:092]\n○ Worker-B    [ID:093]", "title": "SESSIONS" }
+        }
+      ]
+    },
+    {
+      "id": "main-workspace", "rect": { "x": 32, "y": 3, "w": 88, "h": 39 },
+      "style": { "borderStyle": "bold", "color": "white" },
+      "content": { "body": "", "title": "TERMINAL" },
+      "children": [
+        {
+          "id": "chat-log", "rect": { "x": 1, "y": 0, "w": 84, "h": 30 },
+          "style": { "borderStyle": "single", "color": "gray" },
+          "content": { "body": "[10:42:01] SYSTEM  │ Initializing swarm...\n[10:42:02] AGENT-1 │ Loaded config...", "title": "" }
+        },
+        {
+          "id": "prompt-input", "rect": { "x": 1, "y": 32, "w": 84, "h": 5 },
+          "style": { "borderStyle": "round", "color": "cyan" },
+          "content": { "body": "Generate a visualization for the outlier data points using Chart.js format_ █", "title": "INPUT" }
+        }
+      ]
+    },
+    {
+      "id": "sidebar-right", "rect": { "x": 120, "y": 3, "w": 40, "h": 39 },
+      "style": { "borderStyle": "double", "color": "gray" },
+      "content": { "body": "", "title": "MONITOR" },
+      "children": [
+        {
+          "id": "resource-monitor", "rect": { "x": 0, "y": 0, "w": 36, "h": 10 },
+          "style": { "borderStyle": "single", "color": "green" },
+          "content": { "body": "CPU Load:  [|||||||...] 34%\nMem Usage: [||||||||||] 52%", "title": "RESOURCES" }
+        },
+        {
+          "id": "agent-status", "rect": { "x": 0, "y": 11, "w": 36, "h": 14 },
+          "style": { "borderStyle": "single", "color": "yellow" },
+          "content": { "body": "AGENT-1  [RUNNING]\nAGENT-2  [SLEEPING]", "title": "SWARM HEALTH" }
+        },
+        {
+          "id": "todo-list", "rect": { "x": 0, "y": 26, "w": 36, "h": 11 },
+          "style": { "borderStyle": "dashed", "color": "blue" },
+          "content": { "body": "[x] Init Repo\n[x] Load Config", "title": "QUEUE" }
+        }
+      ]
+    },
+    {
+      "id": "footer", "rect": { "x": 0, "y": 42, "w": 160, "h": 3 },
+      "style": { "borderStyle": "single", "color": "black" },
+      "content": { "body": " ℹ NORMAL MODE │ ⌨ ^C: Cancel  ^D: Detach  F1: Help", "title": "" }
+    }
+  ]
+};
+
+// ------------------------------------------------------------------
+// RENDERER
+// ------------------------------------------------------------------
+function render(node, parentX, parentY) {
+  const el = document.createElement('div');
+  
+  // Calculate absolute position based on parent
+  const x = parentX + node.rect.x;
+  const y = parentY + node.rect.y;
+  
+  // SCALE FACTOR: 9px width per char, 18px height per row
+  const CHAR_W = 9;
+  const CHAR_H = 18;
+
+  el.style.left = (x * CHAR_W) + 'px';
+  el.style.top = (y * CHAR_H) + 'px';
+  el.style.width = (node.rect.w * CHAR_W) + 'px';
+  el.style.height = (node.rect.h * CHAR_H) + 'px';
+  
+  el.style.borderWidth = '1px'; // Default Base
+  
+  // Apply Classes
+  el.className = `node style-${node.style.borderStyle} c-${node.style.color}`;
+  
+  // Add Title if exists
+  const titleHtml = node.content.title ? `<span class="title-label c-${node.style.color}">${node.content.title}</span>` : '';
+  
+  // Add Body
+  el.innerHTML = `${titleHtml}<div class="node-content">${node.content.body || ''}</div>`;
+  
+  document.getElementById('root').appendChild(el);
+  
+  // Recurse
+  if (node.children) {
+    node.children.forEach(c => render(c, x, y));
+  }
+}
+
+// Start Rendering
+DATA.nodes.forEach(n => render(n, 0, 0));
+
+</script>
+</body>
+</html>

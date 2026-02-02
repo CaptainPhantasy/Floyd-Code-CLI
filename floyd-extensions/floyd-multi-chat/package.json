@@ -1,0 +1,106 @@
+{
+  "name": "floyd-multi-chat",
+  "displayName": "FLOYD Multi-Chat Panels",
+  "description": "Multiple simultaneous AI chat panels for FLOYD CURSE'M",
+  "version": "1.0.0",
+  "publisher": "floyd-cursem",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "floyd.multiChat.new",
+        "title": "New AI Chat Panel",
+        "category": "FLOYD Multi-Chat",
+        "icon": "$(add)"
+      },
+      {
+        "command": "floyd.multiChat.closeAll",
+        "title": "Close All Chat Panels",
+        "category": "FLOYD Multi-Chat"
+      },
+      {
+        "command": "floyd.multiChat.rename",
+        "title": "Rename Chat Panel",
+        "category": "FLOYD Multi-Chat"
+      },
+      {
+        "command": "floyd.multiChat.duplicate",
+        "title": "Duplicate Chat Panel",
+        "category": "FLOYD Multi-Chat"
+      },
+      {
+        "command": "floyd.multiChat.export",
+        "title": "Export Chat History",
+        "category": "FLOYD Multi-Chat"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "floydMultiChat",
+          "title": "FLOYD Chats",
+          "icon": "assets/multi-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "floydMultiChat": [
+        {
+          "id": "floydMultiChatList",
+          "name": "Chat Sessions"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "FLOYD Multi-Chat",
+      "properties": {
+        "floyd.multiChat.maxPanels": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Maximum number of simultaneous chat panels"
+        },
+        "floyd.multiChat.defaultPosition": {
+          "type": "string",
+          "enum": ["beside", "right", "left", "bottom"],
+          "default": "beside",
+          "description": "Default position for new chat panels"
+        },
+        "floyd.multiChat.preserveHistory": {
+          "type": "boolean",
+          "default": true,
+          "description": "Preserve chat history between sessions"
+        },
+        "floyd.multiChat.autoSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically save chat conversations"
+        }
+      }
+    }
+  },
+  "icon": "extension.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/douglastalley/floyd-extensions"
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}

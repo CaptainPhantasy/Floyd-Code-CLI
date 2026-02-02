@@ -1,0 +1,74 @@
+{
+  "name": "@floyd/agent-core",
+  "version": "0.1.0",
+  "description": "Floyd Agent Core - Unified implementations for permissions, config, LLM abstraction, and state management",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./permissions": {
+      "types": "./dist/permissions/unified-permission.d.ts",
+      "import": "./dist/permissions/unified-permission.js"
+    },
+    "./config": {
+      "types": "./dist/config/floyd-config.d.ts",
+      "import": "./dist/config/floyd-config.js"
+    },
+    "./state": {
+      "types": "./dist/state/floyd-state.d.ts",
+      "import": "./dist/state/floyd-state.js"
+    },
+    "./llm": {
+      "types": "./dist/llm/index.d.ts",
+      "import": "./dist/llm/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js"
+    },
+    "./container": {
+      "types": "./dist/container/index.d.ts",
+      "import": "./dist/container/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "dev": "tsc -b --watch",
+    "lint": "eslint src --ext .ts",
+    "test": "node --test --experimental-test-coverage src/__tests__/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.27.0",
+    "openai": "^4.67.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "keywords": [
+    "floyd",
+    "agent",
+    "llm",
+    "permissions",
+    "state-management",
+    "config"
+  ],
+  "author": "Floyd Team",
+  "license": "MIT"
+}

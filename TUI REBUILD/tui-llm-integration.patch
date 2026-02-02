@@ -1,0 +1,128 @@
+--- a/src/store/tui-store.ts
++++ b/src/store/tui-store.ts
+@@ -36,6 +36,7 @@
+ export type FloydMode = 'yolo' | 'ask' | 'plan' | 'auto' | 'dialogue' | 'fuckit';
+ 
+ export type ConnectionStatus = 'online' | 'offline' | 'connecting';
+ 
+ interface BackgroundTask {
+   id: string;
+   command: string;
+   status: 'running' | 'done' | 'failed';
+   startTime: number;
+   endTime?: number;
+   exitCode?: number;
+   output?: string;
+ }
+ 
+ export interface ChatMessage {
+   id: string;
+   role: 'user' | 'assistant' | 'system' | 'tool';
+   content: string;
+   timestamp: number;
+   streaming?: boolean;
+   toolCalls?: ToolCall[];
+ }
+ 
+ interface ToolCall {
+   name: string;
+   status: 'pending' | 'running' | 'success' | 'error';
+   result?: string;
+   error?: string;
+ }
+ 
++export interface LLMClient {
++  sendMessage: (content: string, onChunk?: (chunk: string) => void) => Promise<string>;
++}
++
+ export interface TuiStore {
+   mode: FloydMode;
+   model: string;
+   provider: string;
+   connectionStatus: ConnectionStatus;
+   isThinking: boolean;
+   thinkingEnabled: boolean;
+   whimsicalPhrase: string | null;
+   messages: ChatMessage[];
+   streamingContent: string;
+   overlayMode: OverlayMode;
+   backgroundTasks: BackgroundTask[];
+   _initialized: boolean;
++  llmClient?: LLMClient;
+ 
+   setMode: (mode: FloydMode) => void;
+   cycleMode: () => void;
+   setModel: (model: string) => void;
+   setProvider: (provider: string) => void;
+   setConnectionStatus: (status: ConnectionStatus) => void;
+   setThinking: (thinking: boolean, phrase?: string) => void;
+   toggleThinking: () => void;
+   addMessage: (message: ChatMessage) => void;
+   clearMessages: () => void;
+   exportTranscript: () => void;
+   setStreamingContent: (content: string) => void;
+   setOverlayMode: (mode: OverlayMode) => void;
+   closeOverlay: () => void;
+   addBackgroundTask: (task: Omit<BackgroundTask, 'id'>) => string;
+   updateBackgroundTask: (id: string, updates: Partial<BackgroundTask>) => void;
+-  sendMessage: (content: string) => void;
++  sendMessage: async (content) => Promise<string> {
++    const userMessage: ChatMessage = {
++      id: Math.random().toString(36).substring(7),
++      role: 'user',
++      content,
++      timestamp: Date.now(),
++    };
++    const phrase = getRandomPhraseUnique(get().whimsicalPhrase ?? undefined);
++    
++    // Add user message immediately
++    set({
++      messages: [...get().messages, userMessage],
++      isThinking: true,
++      whimsicalPhrase: phrase,
++    });
++    
++    // Get LLM client and send message
++    const { createLLMClient } = await import('../llm/factory.js');
++    const client = createLLMClient('glm', {
++      apiKey: process.env.GLM_API_KEY || 'demo-key',
++      stream: true,
++    });
++    
++    try {
++      const response = await client.sendMessage(content);
++      
++      // Add assistant response
++      set({
++        messages: [...get().messages, {
++          id: Math.random().toString(36).substring(7),
++          role: 'assistant',
++          content: response,
++          timestamp: Date.now(),
++        }],
++        isThinking: false,
++      });
++      
++      return response;
++    } catch (error) {
++      console.error('Failed to send message:', error);
++      set({ isThinking: false });
++      throw error;
++    }
++  };
+   undoLastExchange: () => void;
+ 
+   // Persistence actions
+@@ -141,11 +138,12 @@
+   cycleMode: () => {
+     const modes: FloydMode[] = ['yolo', 'ask', 'plan', 'auto', 'dialogue', 'fuckit'];
+     const currentIdx = modes.indexOf(get().mode);
+     const nextMode = modes[(currentIdx + 1) % modes.length];
+     set({ mode: nextMode });
+     saveState({ mode: nextMode }).catch(() => {});
+-  },
+- 
+-  setModel: (model) => {
+-    set({ model });
+-    saveState({ model }).catch(() => {});
+-  },

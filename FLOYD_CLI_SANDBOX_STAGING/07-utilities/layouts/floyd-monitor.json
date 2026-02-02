@@ -1,0 +1,411 @@
+{
+  "meta": {
+    "name": "Floyd Monitor Interface",
+    "cols": 240,
+    "rows": 67
+  },
+  "theme": {
+    "preset": "synthwave",
+    "custom": {
+      "background": "#1a1b26",
+      "primary": "#c0caf5",
+      "secondary": "#7aa2f7"
+    },
+    "animation": "none",
+    "dualMode": "blend",
+    "secondaryPreset": "floyd-neon"
+  },
+  "nodes": [
+    {
+      "id": "header-logo",
+      "name": "Logo",
+      "type": "header",
+      "rect": {
+        "x": 2,
+        "y": 1,
+        "w": 60,
+        "h": 8
+      },
+      "style": {
+        "border": false,
+        "borderStyle": "single",
+        "padding": 0,
+        "color": "gray",
+        "flexDirection": "row",
+        "flexGrow": 0,
+        "minHeight": 8,
+        "minWidth": 60
+      },
+      "content": {
+        "body": "",
+        "title": ""
+      }
+    },
+    {
+      "id": "header-badge",
+      "name": "Version Badge",
+      "type": "header",
+      "rect": {
+        "x": 200,
+        "y": 1,
+        "w": 38,
+        "h": 8
+      },
+      "style": {
+        "border": true,
+        "borderStyle": "single",
+        "padding": 1,
+        "color": "cyan",
+        "flexDirection": "column",
+        "flexGrow": 0,
+        "minHeight": 8,
+        "minWidth": 30
+      },
+      "content": {
+        "body": "",
+        "title": ""
+      }
+    },
+    {
+      "id": "status-bar",
+      "name": "Status Bar",
+      "type": "status",
+      "rect": {
+        "x": 2,
+        "y": 9,
+        "w": 236,
+        "h": 1
+      },
+      "style": {
+        "border": false,
+        "borderStyle": "single",
+        "padding": 0,
+        "color": "white",
+        "flexDirection": "row",
+        "flexGrow": 0,
+        "minHeight": 1,
+        "minWidth": 100
+      },
+      "content": {
+        "body": "",
+        "title": ""
+      }
+    },
+    {
+      "id": "main-container",
+      "name": "Main Container",
+      "type": "frame",
+      "rect": {
+        "x": 0,
+        "y": 11,
+        "w": 240,
+        "h": 56
+      },
+      "style": {
+        "border": false,
+        "borderStyle": "single",
+        "padding": 0,
+        "color": "white",
+        "flexDirection": "row",
+        "flexGrow": 1,
+        "minHeight": 0,
+        "minWidth": 0
+      },
+      "content": {
+        "body": "",
+        "title": ""
+      },
+      "children": [
+        {
+          "id": "col-left",
+          "name": "Left Column",
+          "type": "frame",
+          "rect": {
+            "x": 0,
+            "y": 0,
+            "w": 160,
+            "h": 56
+          },
+          "style": {
+            "border": false,
+            "borderStyle": "single",
+            "padding": 0,
+            "color": "white",
+            "flexDirection": "column",
+            "flexGrow": 2,
+            "minHeight": 0,
+            "minWidth": 100
+          },
+          "content": {
+            "body": "",
+            "title": ""
+          },
+          "children": [
+            {
+              "id": "panel-system",
+              "name": "System Panel",
+              "type": "main",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "w": 158,
+                "h": 6
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "white",
+                "flexDirection": "column",
+                "flexGrow": 0,
+                "minHeight": 6,
+                "minWidth": 50
+              },
+              "content": {
+                "body": "",
+                "title": "SYSTEM"
+              }
+            },
+            {
+              "id": "panel-events",
+              "name": "Events Log",
+              "type": "dataTable",
+              "rect": {
+                "x": 0,
+                "y": 7,
+                "w": 158,
+                "h": 32
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "blue",
+                "flexDirection": "column",
+                "flexGrow": 1,
+                "minHeight": 20,
+                "minWidth": 50
+              },
+              "content": {
+                "body": "",
+                "title": "EVENTS"
+              },
+              "focusOrder": 1,
+              "isFocusable": true
+            },
+            {
+              "id": "row-bottom-left",
+              "name": "Bottom Row Container",
+              "type": "frame",
+              "rect": {
+                "x": 0,
+                "y": 40,
+                "w": 158,
+                "h": 15
+              },
+              "style": {
+                "border": false,
+                "borderStyle": "single",
+                "padding": 0,
+                "color": "white",
+                "flexDirection": "row",
+                "flexGrow": 0,
+                "minHeight": 15,
+                "minWidth": 100
+              },
+              "content": {
+                "body": "",
+                "title": ""
+              }
+            },
+            {
+              "id": "panel-git",
+              "name": "Git/FS Panel",
+              "type": "main",
+              "rect": {
+                "x": 1,
+                "y": 41,
+                "w": 78,
+                "h": 14
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "green",
+                "flexDirection": "column",
+                "flexGrow": 0,
+                "minHeight": 10,
+                "minWidth": 40
+              },
+              "content": {
+                "body": "",
+                "title": "GIT/FS"
+              }
+            },
+            {
+              "id": "panel-browser",
+              "name": "Browser Panel",
+              "type": "main",
+              "rect": {
+                "x": 81,
+                "y": 41,
+                "w": 78,
+                "h": 14
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "blue",
+                "flexDirection": "column",
+                "flexGrow": 0,
+                "minHeight": 10,
+                "minWidth": 40
+              },
+              "content": {
+                "body": "",
+                "title": "BROWSER"
+              }
+            }
+          ]
+        },
+        {
+          "id": "col-right",
+          "name": "Right Column",
+          "type": "frame",
+          "rect": {
+            "x": 160,
+            "y": 0,
+            "w": 80,
+            "h": 56
+          },
+          "style": {
+            "border": false,
+            "borderStyle": "single",
+            "padding": 0,
+            "color": "white",
+            "flexDirection": "column",
+            "flexGrow": 1,
+            "minHeight": 0,
+            "minWidth": 40
+          },
+          "content": {
+            "body": "",
+            "title": ""
+          },
+          "children": [
+            {
+              "id": "panel-errors",
+              "name": "Errors Panel",
+              "type": "list",
+              "rect": {
+                "x": 0,
+                "y": 0,
+                "w": 79,
+                "h": 12
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "red",
+                "flexDirection": "column",
+                "flexGrow": 0,
+                "minHeight": 10,
+                "minWidth": 30
+              },
+              "content": {
+                "body": "",
+                "title": "ERRORS"
+              },
+              "focusOrder": 2,
+              "isFocusable": true
+            },
+            {
+              "id": "panel-workers",
+              "name": "Workers Status",
+              "type": "dataTable",
+              "rect": {
+                "x": 0,
+                "y": 13,
+                "w": 79,
+                "h": 20
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "yellow",
+                "flexDirection": "column",
+                "flexGrow": 1,
+                "minHeight": 15,
+                "minWidth": 30
+              },
+              "content": {
+                "body": "",
+                "title": "WORKERS"
+              },
+              "focusOrder": 3,
+              "isFocusable": true
+            },
+            {
+              "id": "panel-alerts",
+              "name": "Alerts Panel",
+              "type": "list",
+              "rect": {
+                "x": 0,
+                "y": 34,
+                "w": 79,
+                "h": 9
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "red",
+                "flexDirection": "column",
+                "flexGrow": 0,
+                "minHeight": 8,
+                "minWidth": 30
+              },
+              "content": {
+                "body": "",
+                "title": "ALERTS"
+              },
+              "focusOrder": 4,
+              "isFocusable": true
+            },
+            {
+              "id": "panel-controls",
+              "name": "Controls Panel",
+              "type": "main",
+              "rect": {
+                "x": 0,
+                "y": 44,
+                "w": 79,
+                "h": 11
+              },
+              "style": {
+                "border": true,
+                "borderStyle": "round",
+                "padding": 1,
+                "color": "white",
+                "flexDirection": "column",
+                "flexGrow": 0,
+                "minHeight": 8,
+                "minWidth": 30
+              },
+              "content": {
+                "body": "",
+                "title": "CONTROLS"
+              },
+              "focusOrder": 5,
+              "isFocusable": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
