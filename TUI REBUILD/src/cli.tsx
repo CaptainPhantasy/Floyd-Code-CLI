@@ -4,6 +4,19 @@ import { App } from './app.js';
 import { TuiErrorBoundary } from './components/TuiErrorBoundary.js';
 
 async function main() {
+  // Check for interactive terminal support
+  const isTTY = process.stdin.isTTY && process.stdout.isTTY;
+  const hasSetRawMode = typeof process.stdin.setRawMode === 'function';
+  
+  if (!isTTY || !hasSetRawMode) {
+    console.error('Error: FLOYD TUI requires an interactive terminal.');
+    console.error('Run directly in a terminal (not via pipe, background, or non-TTY).');
+    console.error('');
+    console.error('Try: npm start');
+    console.error('Or:  node dist/cli.js');
+    process.exit(1);
+  }
+
   const { waitUntilExit } = render(
     <TuiErrorBoundary>
       <App />

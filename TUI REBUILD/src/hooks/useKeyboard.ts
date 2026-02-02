@@ -26,9 +26,13 @@ export function useKeyboard(options: KeyboardOptions = {}) {
 
 		const now = Date.now();
 
-		// Ctrl+Q / Ctrl+C: Quit
-		if (key.ctrl && (input === 'q' || input === 'c')) {
-			// Add 500ms debounce to prevent accidental exits, but allow fast double-tap
+		// Ctrl+Q: Immediate quit
+		if (key.ctrl && input === 'q') {
+			process.exit(0);
+		}
+
+		// Ctrl+C: Double-tap to quit (prevent accidental)
+		if (key.ctrl && input === 'c') {
 			if (now - lastKeyPress.current < 500) {
 				process.exit(0);
 			}
@@ -118,9 +122,17 @@ export function useKeyboard(options: KeyboardOptions = {}) {
 			return;
 		}
 
-		// Esc: Close overlay
+		// Esc: Close overlay or double-tap to quit
 		if (key.escape) {
-			closeOverlay();
+			if (overlayMode !== 'none') {
+				closeOverlay();
+			} else {
+				// Double-Esc to quit when no overlay open
+				if (now - lastKeyPress.current < 500) {
+					process.exit(0);
+				}
+				lastKeyPress.current = now;
+			}
 			return;
 		}
 
