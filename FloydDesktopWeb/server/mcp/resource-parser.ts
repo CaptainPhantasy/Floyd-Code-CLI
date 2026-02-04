@@ -471,13 +471,3 @@ export function getMCPResourceParser(options?: {
 	}
 	return globalParser;
 }
-
-export {
-	MCPResourceParser,
-	ResourceMention,
-	ResourceValue,
-	ResourceResolver,
-	ParseOptions,
-	ParseResult,
-};
-export default MCPResourceParser;

@@ -1167,12 +1167,12 @@ app.post('/api/tools/execute', async (req, res) => {
 });
 
 // Convert built-in tools to Anthropic format
-function getAnthropicTools() {
+function getAnthropicTools(): Anthropic.Tool[] {
   return BUILTIN_TOOLS.map(tool => ({
     name: tool.name,
     description: tool.description,
     input_schema: tool.inputSchema as { type: 'object'; properties: Record<string, unknown>; required?: string[] },
-  }));
+  })) as Anthropic.Tool[];
 }
 
 // Convert tools to OpenAI format
@@ -1444,7 +1444,7 @@ initDataDir().then(async () => {
   // Start WebSocket MCP server for Chrome extension
   try {
     wsMcpServer = new WebSocketMCPServer(3005);
-    wsMcpServer.registerTools(BUILTIN_TOOLS);
+    wsMcpServer.registerTools([...BUILTIN_TOOLS]);
     await wsMcpServer.start();
     console.log('[Floyd Web Server] WebSocket MCP server started on port 3005 for Chrome extension');
   } catch (error: any) {
