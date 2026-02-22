@@ -146,6 +146,16 @@
         "args": ["--loader", "tsx", "/Volumes/Storage/MCP/floyd-devtools-server/src/index.ts"],
         "env": {}
       }
+    },
+    {
+      "name": "floyd-http",
+      "enabled": true,
+      "transport": {
+        "type": "stdio",
+        "command": "node",
+        "args": ["--import", "tsx", "/Volumes/Storage/MCP/floyd-http-server/dist/index.js"],
+        "env": {}
+      }
     }
   ]
 }
