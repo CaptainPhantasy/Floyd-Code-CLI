@@ -1,0 +1,30 @@
+[
+  {
+    "timestamp": "2026-02-04T16:08:38.847832",
+    "session_id": "fb9e524b-22a5-4acb-bf13-1d21040ff77e",
+    "transcript_path": "/Users/douglastalley/.claude/projects/-Volumes-Storage-FLOYD-CLI/fb9e524b-22a5-4acb-bf13-1d21040ff77e.jsonl",
+    "cwd": "/Volumes/Storage/FLOYD_CLI/TUI REBUILD/src",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cat > /tmp/floyd_salvage_strategy.md << 'EOF'\n# FLOYD SUITE - Salvage Strategy for Independent Applications\n\n## OPTION 1: Copy to Separate Repositories (Recommended)\n\n### FloydDesktopWeb\n```bash\n# Create independent repo\ncd /Volumes/Storage\nmkdir FloydDesktopWeb-Standalone\ncd FloydDesktopWeb-Standalone\ngit init\n\n# Copy source (exclude node_modules, dist)\nrsync -av \\\n  --exclude=node_modules \\\n  --exclude=dist \\\n  --exclude=dist-server \\\n  --exclude=.git \\\n  /Volumes/Storage/FLOYD_CLI/FloydDesktopWeb/ .\n\ngit add .\ngit commit -m \"Initial commit: FloydDesktopWeb standalone\"\n```\n\n### TUI REBUILD\n```bash\ncd /Volumes/Storage\nmkdir TUI-Rebuild-Standalone\ncd TUI-Rebuild-Standalone\ngit init\n\nrsync -av \\\n  --exclude=node_modules \\\n  --exclude=dist \\\n  --exclude=.git \\\n  /Volumes/Storage/FLOYD_CLI/TUI\\ REBUILD/ .\n\ngit add .\ngit commit -m \"Initial commit: TUI REBUILD standalone\"\n```\n\n## OPTION 2: Git Subtree Split (Cleaner History)\n\n```bash\n# Split FloydDesktopWeb into its own repo\ncd /Volumes/Storage/FLOYD_CLI\ngit subtree split --prefix=FloydDesktopWeb --branch=floyd-desktop-web-branch\n\n# Create new repo from that branch\nmkdir /Volumes/Storage/FloydDesktopWeb-Standalone\ncd /Volumes/Storage/FloydDesktopWeb-Standalone\ngit init\ngit pull /Volumes/Storage/FLOYD_CLI floyd-desktop-web-branch\n\n# Same for TUI\ncd /Volumes/Storage/FLOYD_CLI\ngit subtree split --prefix=TUI\\ REBUILD --branch=tui-rebuild-branch\n\nmkdir /Volumes/Storage/TUI-Rebuild-Standalone\ncd /Volumes/Storage/TUI-Rebuild-Standalone\ngit init\ngit pull /Volumes/Storage/FLOYD_CLI tui-rebuild-branch\n```\n\n## OPTION 3: Symlink Farm (Keep in Place, Isolate Builds)\n\nCreate a symlink-based structure pointing to the working dirs:\n\n```bash\nmkdir -p ~/FloydApps\ncd ~/FloydApps\n\n# Symlink to working directories\nln -s /Volumes/Storage/FLOYD_CLI/FloydDesktopWeb ./DesktopWeb\nln -s \"/Volumes/Storage/FLOYD_CLI/TUI REBUILD\" ./TUI\n\n# Now you have:\n# ~/FloydApps/DesktopWeb -> independent\n# ~/FloydApps/TUI -> independent\n```\n\n## RECOMMENDED: Option 3 (Symlinks)\n\n**Why?**\n- \u2705 No copying/moving files\n- \u2705 Changes in original = changes in symlink\n- \u2705 Easy to add to PATH\n- \u2705 Can snapshot/backup anytime\n\n## Verification Commands\n\nAfter extracting, verify they still work:\n\n```bash\n# DesktopWeb\ncd ~/FloydApps/DesktopWeb  # or /Volumes/Storage/FloydDesktopWeb-Standalone\nnpm install\nnpm run build\nnpm run dev  # Should work identically\n\n# TUI\ncd ~/FloydApps/TUI  # or /Volumes/Storage/TUI-Rebuild-Standalone\nnpm install\nnpm run build\nnpm start  # Should work identically\n```\n\n## Dependency Check (Both Use Only npm Packages)\n\nFloydDesktopWeb needs:\n- @anthropic-ai/sdk\n- express\n- react\n- vite\n- All from npm registry \u2705\n\nTUI REBUILD needs:\n- ink\n- react\n- zustand\n- All from npm registry \u2705\n\n**No local dependencies = 100% portable**\nEOF\ncat /tmp/floyd_salvage_strategy.md\n",
+      "description": "Create salvage strategy document"
+    },
+    "tool_use_id": "call_245e9f7f5e8f4dec8d491783"
+  },
+  {
+    "timestamp": "2026-02-04T16:13:32.043351",
+    "session_id": "fb9e524b-22a5-4acb-bf13-1d21040ff77e",
+    "transcript_path": "/Users/douglastalley/.claude/projects/-Volumes-Storage-FLOYD-CLI/fb9e524b-22a5-4acb-bf13-1d21040ff77e.jsonl",
+    "cwd": "/Volumes/Storage/FLOYD_CLI/TUI REBUILD/src",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd \"/Volumes/Storage/FLOYD_CLI/FloydDesktopWeb\" && npx tsc --showConfig 2>/dev/null | head -40",
+      "description": "Get FloydDesktopWeb TypeScript config"
+    },
+    "tool_use_id": "call_3655e239cf774a449b3fedfe"
+  }
+]

@@ -1,7 +1,0 @@
-{
-  "key": "prefix_parser_build_fix",
-  "value": "{\"issue\": \"Type error with 'executing' status\", \"analysis\": \"agentStatus is ThinkingStatus type, 'executing' not in union. AgentStoreStatus also needs valid value.\", \"fix\": \"Changed 'executing' to 'working' which exists in both ThinkingStatus and AgentStatus\", \"verification\": \"Will run build after fix\", \"context\": \"Prefix mode parser implementation for bash commands\"}",
-  "timestamp": 1770037337389,
-  "ttl": 300000,
-  "tier": "reasoning"
-}

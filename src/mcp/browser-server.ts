@@ -64,7 +64,7 @@ export class MCPBrowserServer {
   private maxReconnectAttempts = 10;
   private reconnectInterval = 3000;
 
-  private extensionUrl = 'ws://localhost:3000';
+  private extensionUrl = 'ws://localhost:3005';
 
   constructor() {
     this.server = new Server(

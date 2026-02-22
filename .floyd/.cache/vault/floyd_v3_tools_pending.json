@@ -1,7 +1,0 @@
-{
-  "key": "floyd:v3_tools_pending",
-  "value": "V3 SuperTools Status: READY FOR DOWNLOAD (as of 2026-02-02)\n\nV2 Locations (current):\n- /Volumes/Storage/MCP/pattern-crystallizer-v2/\n- /Volumes/Storage/MCP/context-singularity-v2/\n- /Volumes/Storage/MCP/hivemind-v2/\n- /Volumes/Storage/MCP/omega-v2/\n\nV3 Expected (not yet present):\n- Check /Volumes/Storage/MCP/ for v3 directories\n- If missing, ask user for download location\n- Build: cd [dir] && npm install && npm run build\n- Update configs to point to V3 dist/index.js\n\nConfigs to Update:\n1. ~/.config/claude-code/mcp.json\n2. ~/.gemini/antigravity/mcp_config.json\n3. ~/.claude/mcp.json (if exists)\n4. ~/.cursor/mcp.json (if exists)\n\nAfter V3 installed: TEST TOOLS, then COMPLETE FLOYD.",
-  "timestamp": 1770029701186,
-  "ttl": 604800000,
-  "tier": "vault"
-}

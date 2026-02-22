@@ -1,0 +1,34 @@
+{
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"target": "ES2022",
+		"lib": ["ES2022"],
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"strict": false,
+		"skipLibCheck": true,
+		"resolveJsonModule": true
+	},
+	"include": [
+		"src/cli.ts",
+		"src/agent/floyd-agent.ts",
+		"src/config/config-manager.ts",
+		"src/throughput/*.ts",
+		"src/utils/*.ts",
+		"src/browser/*.ts",
+		"src/prompts/engine/engine.ts",
+		"src/prompts/engine/system-prompt.ts",
+		"src/stubs/*.ts",
+		"src/store/session-store.ts"
+	],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"**/*.test.ts",
+		"**/*.spec.ts",
+		"**/*.tsx"
+	]
+}

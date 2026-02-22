@@ -342,5 +342,4 @@ export function getHistorySearchManager(maxHistory?: number): HistorySearchManag
 	return globalHistorySearch;
 }
 
-export { HistoryEntry, SearchState };
 export default HistorySearchManager;

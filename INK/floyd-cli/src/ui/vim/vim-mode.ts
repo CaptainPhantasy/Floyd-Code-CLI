@@ -5,7 +5,7 @@
  * Supports: motions, editing, marks, search, visual mode.
  */
 
-import { subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 /**
  * Vim mode states
@@ -67,7 +67,7 @@ export interface VimState {
 export class VimModeManager {
 	private state: VimState;
 	private buffer: string[];
-	private state$: subject<VimState>;
+	private state$: Subject<VimState>;
 
 	constructor() {
 		this.buffer = [''];
@@ -82,7 +82,7 @@ export class VimModeManager {
 			historyIndex: -1,
 		};
 
-		this.state$ = new subject<VimState>();
+		this.state$ = new Subject<VimState>();
 	}
 
 	/**
@@ -196,8 +196,8 @@ export class VimModeManager {
 	 * Handle normal mode keys
 	 */
 	private handleNormalModeKey(key: string, ctrl?: boolean): boolean {
-		const { line, column } = this.state.position;
-		const currentLine = this.buffer[line];
+		const { line: lineIndex, column } = this.state.position;
+		const currentLine = this.buffer[lineIndex];
 
 		// Motions
 		switch (key) {
@@ -508,63 +508,72 @@ export class VimModeManager {
 	// Editing methods
 
 	private deleteChar(): void {
-		const { line, column } = this.state.position;
-		const line = this.buffer[line];
+		const { line: lineIndex, column } = this.state.position;
+		const lineContent = this.buffer[lineIndex];
 
-		if (column < line.length) {
-			this.buffer[line] = line.slice(0, column) + line.slice(column + 1);
+		if (column < lineContent.length) {
+			this.buffer[lineIndex] = lineContent.slice(0, column) + lineContent.slice(column + 1);
 		}
 		this.notifyState();
 	}
 
 	private deleteLine(): void {
-		const { line } = this.state.position;
-		this.state.register = this.buffer[line];
-		this.buffer.splice(line, 1);
+		const { line: lineIndex } = this.state.position;
+		this.state.register = this.buffer[lineIndex];
+		this.buffer.splice(lineIndex, 1);
 		this.ensurePositionValid();
 		this.notifyState();
 	}
 
 	private deleteWord(): void {
-		const { line, column } = this.state.position;
-		const line = this.buffer[line];
+		const { line: lineIndex, column } = this.state.position;
+		const lineContent = this.buffer[lineIndex];
 
 		let endCol = column;
-		while (endCol < line.length && /\S/.test(line[endCol])) endCol++;
+		while (endCol < lineContent.length && /\S/.test(lineContent[endCol])) endCol++;
 
-		this.state.register = line.slice(column, endCol);
-		this.buffer[line] = line.slice(0, column) + line.slice(endCol);
+		this.state.register = lineContent.slice(column, endCol);
+		this.buffer[lineIndex] = lineContent.slice(0, column) + lineContent.slice(endCol);
 		this.state.position.column = Math.max(0, column - 1);
 		this.notifyState();
 	}
 
 	private deleteToEndOfLine(): void {
-		const { line, column } = this.state.position;
-		const line = this.buffer[line];
+		const { line: lineIndex, column } = this.state.position;
+		const lineContent = this.buffer[lineIndex];
 
-		this.state.register = line.slice(column);
-		this.buffer[line] = line.slice(0, column);
+		this.state.register = lineContent.slice(column);
+		this.buffer[lineIndex] = lineContent.slice(0, column);
 		this.state.position.column = Math.max(0, column - 1);
 		this.notifyState();
 	}
 
 	private deleteToStartOfLine(): void {
-		const { line, column } = this.state.position;
-		const line = this.buffer[line];
+		const { line: lineIndex, column } = this.state.position;
+		const lineContent = this.buffer[lineIndex];
 
-		this.state.register = line.slice(0, column);
-		this.buffer[line] = line.slice(column);
+		this.state.register = lineContent.slice(0, column);
+		this.buffer[lineIndex] = lineContent.slice(column);
 		this.state.position.column = 0;
 		this.notifyState();
 	}
 
 	private deleteSelection(): void {
+		if (!this.state.anchor) return;
+
+		let start = this.state.anchor;
+		let end = this.state.position;
+
+		// Normalize
+		if (start.line > end.line || (start.line === end.line && start.column > end.column)) {
+			[start, end] = [end, start];
+		}
+
 		const selection = this.getSelection();
 		if (selection) {
 			this.state.register = selection;
-			// Delete selection
-			this.deleteRange(selection.start, selection.end);
-			this.state.position = selection.start;
+			this.deleteRange(start, end);
+			this.state.position = start;
 			this.exitToNormalMode();
 		}
 	}
@@ -574,8 +583,8 @@ export class VimModeManager {
 		const endLine = end.line;
 
 		if (startLine === endLine) {
-			const line = this.buffer[startLine];
-			this.buffer[startLine] = line.slice(0, start.column) + line.slice(end.column + 1);
+			const lineContent = this.buffer[startLine];
+			this.buffer[startLine] = lineContent.slice(0, start.column) + lineContent.slice(end.column + 1);
 		} else {
 			const firstLine = this.buffer[startLine];
 			const lastLine = this.buffer[endLine];
@@ -598,13 +607,13 @@ export class VimModeManager {
 	}
 
 	private yankWord(): void {
-		const { line, column } = this.state.position;
-		const line = this.getCurrentLine();
+		const { line: lineIndex, column } = this.state.position;
+		const lineContent = this.getCurrentLine();
 
 		let endCol = column;
-		while (endCol < line.length && /\S/.test(line[endCol])) endCol++;
+		while (endCol < lineContent.length && /\S/.test(lineContent[endCol])) endCol++;
 
-		this.state.register = line.slice(column, endCol);
+		this.state.register = lineContent.slice(column, endCol);
 	}
 
 	private yankSelection(): void {
@@ -618,21 +627,21 @@ export class VimModeManager {
 	// Paste methods
 
 	private pasteAfter(): void {
-		const { line, column } = this.state.position;
-		const line = this.buffer[line];
+		const { line: lineIndex, column } = this.state.position;
+		const lineContent = this.buffer[lineIndex];
 		const register = this.state.register;
 
-		this.buffer[line] = line.slice(0, column + 1) + register + line.slice(column + 1);
+		this.buffer[lineIndex] = lineContent.slice(0, column + 1) + register + lineContent.slice(column + 1);
 		this.state.position.column += register.length;
 		this.notifyState();
 	}
 
 	private pasteBefore(): void {
-		const { line, column } = this.state.position;
-		const line = this.buffer[line];
+		const { line: lineIndex, column } = this.state.position;
+		const lineContent = this.buffer[lineIndex];
 		const register = this.state.register;
 
-		this.buffer[line] = line.slice(0, column) + register + line.slice(column);
+		this.buffer[lineIndex] = lineContent.slice(0, column) + register + lineContent.slice(column);
 		this.state.position.column += register.length;
 		this.notifyState();
 	}
@@ -731,5 +740,4 @@ export class VimModeManager {
 	}
 }
 
-export { VimModeManager, VimState, VimMode };
 export default VimModeManager;

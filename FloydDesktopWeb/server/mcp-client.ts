@@ -646,4 +646,4 @@ export const BUILTIN_TOOLS = [
       properties: {},
     },
   },
-];
+] as const;

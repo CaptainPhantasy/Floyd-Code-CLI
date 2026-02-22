@@ -88,7 +88,7 @@ export class ProcessManager extends EventEmitter {
         // Capture stderr
         proc.stderr?.on('data', (data) => {
           const lines = data.toString().split('\n');
-          session.output.push(...lines.map(l => `[stderr] ${l}`));
+          session.output.push(...lines.map((l: string) => `[stderr] ${l}`));
           if (session.output.length > this.maxOutputLines) {
             session.output = session.output.slice(-this.maxOutputLines);
           }

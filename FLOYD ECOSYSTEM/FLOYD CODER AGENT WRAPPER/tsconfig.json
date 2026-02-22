@@ -1,0 +1,53 @@
+{
+	"compilerOptions": {
+		// Build target
+		"outDir": "./dist",
+		"rootDir": "./src",
+
+		// Language and environment
+		"target": "ES2022",
+		"lib": ["ES2022"],
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+
+		// JSX support (for .tsx files)
+		"jsx": "react",
+		"jsxFactory": "React.createElement",
+
+		// Type checking
+		"strict": true,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": false,
+		"allowUnreachableCode": false,
+		"allowUnusedLabels": false,
+		"skipLibCheck": true,
+
+		// Emit
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"removeComments": false,
+		"importHelpers": false,
+		"newLine": "lf",
+
+		// Interop constraints
+		"forceConsistentCasingInFileNames": true,
+		"isolatedModules": true,
+		"resolveJsonModule": true
+	},
+	"include": [
+		"src/**/*"
+	],
+	"exclude": [
+		"node_modules",
+		"dist",
+		"**/*.test.ts",
+		"**/*.spec.ts",
+		"**/*.tsx"
+	]
+}

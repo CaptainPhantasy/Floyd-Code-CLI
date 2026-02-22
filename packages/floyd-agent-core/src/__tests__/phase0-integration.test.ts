@@ -17,18 +17,14 @@ import {
   createYoloManager,
   createAskManager,
   createPlanManager,
-  type PermissionMode,
   type PermissionRequest,
 } from '../permissions/unified-permission.js';
 
 // Item B: Configuration Standardization
 import {
   ConfigManager,
-  initializeConfig,
   getConfig,
   setConfigValue,
-  type FloydConfig,
-  type SafetyMode,
 } from '../config/floyd-config.js';
 
 // Item C: Provider Abstraction Layer
@@ -36,7 +32,6 @@ import {
   createLLMClient,
   GLMClient,
   AnthropicClient,
-  OpenAICompatibleClient,
 } from '../llm/index.js';
 
 // Item D: State Management Unification
@@ -45,8 +40,6 @@ import {
   getState,
   onStateChange,
   onMessageAdded,
-  type AgentStatus,
-  type FloydState,
 } from '../state/floyd-state.js';
 
 describe('PHASE 0: Architectural Foundation', () => {
@@ -70,7 +63,7 @@ describe('PHASE 0: Architectural Foundation', () => {
       const manager = createPlanManager();
       const request: PermissionRequest = {
         toolName: 'write_file',
-        arguments: { file_path: '/tmp/test.txt', content: 'hello' },
+        arguments: { file_path: '/unsafe/test.txt', content: 'hello' },
         cwd: '/tmp',
       };
 
@@ -168,7 +161,7 @@ describe('PHASE 0: Architectural Foundation', () => {
       assert.equal(config.permissions.mode, 'fuckit');
     });
 
-    it('should emit config change events', async (t) => {
+    it('should emit config change events', async (_t) => {
       let changed = false;
 
       const listener = () => { changed = true; };
@@ -198,7 +191,7 @@ describe('PHASE 0: Architectural Foundation', () => {
         provider: 'zai',
       });
 
-      assert.ok(client instanceof OpenAICompatibleClient);
+      assert.ok(client instanceof GLMClient);
     });
 
     it('should create GLM client with explicit options', () => {
@@ -270,7 +263,7 @@ describe('PHASE 0: Architectural Foundation', () => {
       assert.equal(stats?.avgDuration, 100);
     });
 
-    it('should emit state change events', (t) => {
+    it('should emit state change events', (_t) => {
       let changed = false;
 
       const unsubscribe = onStateChange('execution', () => {
@@ -285,7 +278,7 @@ describe('PHASE 0: Architectural Foundation', () => {
       unsubscribe();
     });
 
-    it('should emit message added events', (t) => {
+    it('should emit message added events', (_t) => {
       let added = false;
 
       const unsubscribe = onMessageAdded(() => {

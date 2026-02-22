@@ -5,3 +5,9 @@ dist
 .backup
 *.backup
 .DS_Store
+.floyd/
+*.db
+.claude/data/logs/
+*.log
+FloydDesktopWeb/dist-server/
+FloydDesktopWeb/.cache/

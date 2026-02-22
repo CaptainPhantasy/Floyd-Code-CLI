@@ -1,7 +1,0 @@
-{
-  "key": "prefix_parser_type_errors_analysis",
-  "value": "{\"error\": \"Type 'executing' not assignable to ThinkingStatus and AgentStatus\", \"location\": \"src/app.tsx:285-286\", \"root_cause\": \"Added 'executing' status for bash commands but type definitions don't include it\", \"fix_strategy\": \"1) Find ThinkingStatus and AgentStatus type definitions, 2) Add 'executing' to union types, 3) Verify all status handlers support it\", \"impact\": \"Blocks build\", \"priority\": \"critical\"}",
-  "timestamp": 1770037308947,
-  "ttl": 300000,
-  "tier": "reasoning"
-}

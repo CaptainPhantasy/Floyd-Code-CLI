@@ -1,29 +1,158 @@
-# FLOYD TUI REBUILD - STRICT BUILD PROTOCOL
+# CLAUDE.md - Persistent Agent Protocol v2.0
+
+## I. CORE INITIALIZATION (The "Wake Up" Routine)
+**Before answering ANY prompt, you MUST:**
+1.  **Check Date/Location:** Verify current system date (e.g., `date -u`). Use this for all timestamping.
+2.  **Mount SUPERCACHE:** Call `cache_retrieve(key="system:project_registry")` to identify the active project context.
+3.  **Load Project State:** Retrieve the specific project's status key (e.g., `dsa:status` or `stat:gap_analysis`) to understand the last known state.
+
+---
+
+## II. EXECUTION WORKFLOW: "The Subagent Protocol"
+You strictly adhere to the **LLM Subagent Workflow**. You are the Orchestrator.
+
+### Phase 1: Initialization & Planning
+* [ ] **Task Map:** Break user request into clear, auditable sub-tasks (max 8 parallel).
+* [ ] **Audit Strategy:** Define *how* you will verify success (e.g., "Must pass build", "Must match diff").
+* [ ] **Environment:** Verify build pipeline/tests are green *before* touching code.
+
+### Phase 2: Execution (The Loop)
+1.  **Spawn & Assign:** Log which logical "subagent" (e.g., "UI-Agent", "DB-Agent") is handling a task.
+2.  **Monitor:** Update the **Real-Time Task Dashboard** (see Output Standards).
+3.  **Refactor:** Apply changes using `edit_range` or `write_file`.
+4.  **Verify:** Run builds/tests immediately after *every* significant change.
+
+### Phase 3: Auditing & Verification
+* [ ] **Self-Audit:** Review your own diffs. Did you break the build? Did you leave orphaned brackets?
+* [ ] **Cross-Audit:** (Simulated) Verify the integration points between modules.
+* [ ] **Receipts:** Generate a "Completion Receipt" containing:
+    * List of modified files.
+    * Build success logs.
+    * Test pass rates.
+
+### Phase 4: Reporting & Handoff
+* **Generate Final Report:** A comprehensive markdown summary.
+* **System Shutdown:**
+    1.  Update the project status in SUPERCACHE (e.g., `dsa:status`).
+    2.  Archive old verification logs to `./archive/logs/`.
+    3.  Confirm "Agents Retired" status.
+
+---
+
+## III. DOCUMENTATION & VISUAL STANDARDS
+**You must optimize for human readability on-screen.**
+
+### 1. Code Block Tables (Box-Drawing Characters)
+**CRITICAL:** All tables MUST be in code blocks using box-drawing characters for perfect alignment. Standard markdown tables are PROHIBITED.
+
+* **Use box-drawing characters:** `│ ─ ┌ ├ ┐ └ ┬ ┴ ┤ ├ ┼`
+* **Alignment:** Always align columns logically (Text=Left, Numbers=Right)
+* **Density:** Avoid empty cells; use "-" or "N/A"
+* **No emoji in tables** - Use text: DONE, WARN, FAIL, WIP, PEND
+
+**Table Generation:**
+
+Use the Python box table generator from SUPERCACHE (key: `pattern:box_table_generator`). This ensures perfect alignment by programmatically calculating column widths.
+
+```python
+def generate_box_table(headers, rows):
+    col_widths = []
+    for i in range(len(headers)):
+        max_w = len(headers[i])
+        for row in rows:
+            max_w = max(max_w, len(str(row[i])))
+        col_widths.append(max_w)
+    def get_sep(left, mid, right, line_char='─'):
+        return left + mid.join([line_char * w for w in col_widths]) + right
+    top, mid, bot = get_sep('┌', '┬', '┐'), get_sep('├', '┼', '┤'), get_sep('└', '┴', '┘')
+    def format_row(data):
+        formatted = []
+        for i, item in enumerate(data):
+            val = str(item)
+            formatted.append(val.rjust(col_widths[i]) if val.isdigit() else val.ljust(col_widths[i]))
+        return '│' + '│'.join(formatted) + '│'
+    print(top); print(format_row(headers)); print(mid)
+    for row in rows: print(format_row(row))
+    print(bot)
+```
+
+### 2. Two-Column Asset Lists
+For listing assets, patterns, or modules, use the two-column code block format:
+
+```text
+┌─────────┬─────────────────────────────────┐
+│  Type   │               Key               │
+├─────────┼─────────────────────────────────┤
+│ Pattern │ floyd:pattern:safe_refactor     │
+│ Pattern │ floyd:pattern:edit_range        │
+├─────────┼─────────────────────────────────┤
+│ Module  │ floyd:module:patch_server       │
+│ Module  │ floyd:module:supercache         │
+└─────────┴─────────────────────────────────┘
+```
+
+### 3. Graphics & Diagrams
+* Use **Mermaid** for workflows, state machines, and dependency graphs.
+* **Trigger Rule:** If a process has >3 steps or >2 branching paths, **you must render a diagram**.
+
+```mermaid
+graph TD
+    A[Start Session] --> B{Check Registry};
+    B -->|Found| C[Load Context];
+    B -->|Missing| D[Initialize New];
+    C --> E[Execute Phase 1];
+```
+
+### 4. Document Management Hygiene
+Rotation: Log files >1MB must be rotated/archived.
+
+Naming: YYYY-MM-DD_Topic.md (e.g., 2026-02-09_Floyd_Audit_Log.md).
+
+Archiving: Never delete valid work. Move to ./archive/ or store in SUPERCACHE vault tier if critical.
+
+---
+
+## IV. MEMORY & CONTINUITY
+Never assume a blank slate. Always assume you are continuing a multi-day effort.
+
+Write Back: Before ending a turn, store any new patterns or reusable logic to SUPERCACHE using the pattern: namespace.
+
+---
+
+---
+
+# PROJECT-SPECIFIC PROTOCOLS
+
+**Add project-specific rules below this line.**
+
+---
+
+## Floyd CLI - TUI Rebuild - STRICT BUILD PROTOCOL
 
 This protocol is MANDATORY. You MUST follow these steps in order. Skipping any step is a CRITICAL FAILURE.
 
 ---
 
-## Project Context
+### Project Context
 
 Working Directory: /Volumes/Storage/FLOYD_CLI/TUI REBUILD
-Phase: Phase 3 Complete → Phase 4 Ready
+Phase: Phase 3 Complete -> Phase 4 Ready
 Last Updated: 2026-02-01
 Project Type: Node.js/TypeScript with Ink TUI
 Isolation: Separate node_modules/, no impact on parent FLOYD_CLI projects
 
 ---
 
-## MCP Tools Available (46 tools across 6 servers)
+### MCP Tools Available (46 tools across 6 servers)
 
-### Floyd Patch Server (5 tools)
+#### Floyd Patch Server (5 tools)
 - apply_unified_diff - Apply patches (dry-run, risk assessment)
 - edit_range - Edit specific line range
 - insert_at - Insert at line number
 - delete_range - Delete line range
 - assess_patch_risk - Risk assessment before patching
 
-### Floyd Runner Server (6 tools)
+#### Floyd Runner Server (6 tools)
 - detect_project - Auto-detect project type and commands
 - run_tests - Run test suite
 - format - Format code
@@ -31,12 +160,10 @@ Isolation: Separate node_modules/, no impact on parent FLOYD_CLI projects
 - build - Build project
 - check_permission - Check if permission granted
 
-### Floyd Supercache Server (12 tools)
+#### Floyd Supercache Server (12 tools)
 - cache_store, cache_retrieve, cache_delete, cache_clear, cache_list, cache_search, cache_stats, cache_prune
 - cache_store_pattern - Store code patterns
 - cache_store_reasoning, cache_load_reasoning, cache_archive_reasoning - Reasoning persistence
-
-**Full SUPERCACHE Usage Guide:** See `SUPERCACHE/EFFECTIVE_USAGE_GUIDE.md`
 
 **Quick SUPERCACHE Reference:**
 - `cache_store` - Save any data with optional TTL
@@ -55,17 +182,17 @@ Isolation: Separate node_modules/, no impact on parent FLOYD_CLI projects
 - Tier 2 (project): Project state/phases, TTL: days-weeks
 - Tier 3 (vault): Reusable patterns, TTL: permanent
 
-### Floyd Safe Ops Server (3 tools)
+#### Floyd Safe Ops Server (3 tools)
 - safe_refactor - Refactoring with rollback
 - impact_simulate - Simulate change impact
 - verify - Verify changes didn't break functionality
 
-### Floyd Terminal Server (10 tools)
+#### Floyd Terminal Server (10 tools)
 - start_process, interact_with_process, read_process_output, force_terminate
 - list_sessions, list_processes, kill_process
 - execute_code, create_directory, get_file_info
 
-### Novel Concepts Server (10 tools)
+#### Novel Concepts Server (10 tools)
 - compute_budget_allocator - Allocate reasoning across tasks
 - concept_web_weaver - Knowledge graph weaving
 - episodic_memory_bank - Cross-session memory
@@ -77,132 +204,19 @@ Isolation: Separate node_modules/, no impact on parent FLOYD_CLI projects
 - adaptive_context_compressor - Compress context intelligently
 - execution_trace_synthesizer - Debugging trace synthesis
 
---- Use when: Complex planning, multi-file changes, decision making, or debugging
-
-7. Web Reader (1 tool) - Web Content
-
-- mcp__web_reader__webReader - Fetch web pages and convert to markdown
-
-Use when: Reading documentation, API docs, or web content
-
-8. Vision Analysis (1 tool) - Image Understanding
-
-- mcp__4_5v_mcp__analyze_image - Analyze images with AI vision
-
-Use when: Analyzing screenshots, diagrams, or visual content
+#### Additional Tools
+- Web Reader (1 tool) - Fetch web pages and convert to markdown
+- Vision Analysis (1 tool) - Analyze images with AI vision
 
 ---
-HOW TO USE THESE TOOLS
 
-These are ALREADY LOADED in your session. Call them directly using the tool syntax.
+### STRICT BUILD PROTOCOL - MANDATORY EXECUTION FLOW
 
-Examples:
-
-# Store reasoning about STAT architecture
-mcp__floyd_supercache__cache_store_reasoning(
-context="stat_architecture_decision",
-reasoning="Chose Axum 0.7 over Actix-web for better async trait support",
-conclusion="Axum selected for STAT backend"
-)
-
-# Simulate impact before changing attestation flow
-mcp__floyd_safe_ops__impact_simulate(
-operations=[{"type": "edit", "path": "backend/src/api/attestation.rs"}],
-projectPath="/Volumes/Storage/STAT"
-)
-
-# Run backend tests
-mcp__floyd_runner__run_tests(projectPath="/Volumes/Storage/STAT/backend")
-
-# Check if build permission granted
-mcp__floyd_runner__check_permission(
-toolName="build",
-projectPath="/Volumes/Storage/STAT/backend"
-)
-
----
-MANDATORY USAGE PATTERNS
-
-1. Before Code Changes
-
-# Always simulate first
-mcp__floyd_safe_ops__impact_simulate(operations=[...], projectPath="/Volumes/Storage/STAT")
-
-# Then verify after
-mcp__floyd_safe_ops__verify(strategy="command", command="cargo test")
-
-2. Complex Decisions
-
-# Store reasoning for future sessions
-mcp__floyd_supercache__cache_store_reasoning(
-context="phase4_implementation",
-reasoning="Implemented exception execution system with rollback capability",
-conclusion="Phase 4 complete with 2,134 lines added"
-)
-
-3. Multi-File Changes
-
-# Use orchestrator for coordinated changes
-mcp__novel_concepts__refactoring_orchestrator(
-refactoring_type="extract_interface",
-target="AttestationService",
-files=["backend/src/api/attestation.rs", "backend/src/services/attestation.rs"]
-)
-
-4. Debugging
-
-# Generate execution traces before fixing bugs
-mcp__novel_concepts__execution_trace_synthesizer(
-code="function processAttestation(id) { ... }",
-language="javascript",
-input_scenarios=[{"name": "valid id", "inputs": {"id": 123}}]
-)
-
----
-VERIFIED WORKING (2026-02-01)
-
-All 44 tools confirmed loaded in your session via /context:
-┌───────────────────┬────────────┬───────────┐
-│      Server       │ Tool Count │  Status   │
-├───────────────────┼────────────┼───────────┤
-│ floyd-patch       │ 5          │ ✅ Loaded │
-├───────────────────┼────────────┼───────────┤
-│ floyd-runner      │ 6          │ ✅ Loaded │
-├───────────────────┼────────────┼───────────┤
-│ floyd-supercache  │ 12         │ ✅ Loaded │
-├───────────────────┼────────────┼───────────┤
-│ floyd-safe-ops    │ 3          │ ✅ Loaded │
-├───────────────────┼────────────┼───────────┤
-│ floyd-terminal    │ 10         │ ✅ Loaded │
-├───────────────────┼────────────┼───────────┤
-│ novel-concepts    │ 10         │ ✅ Loaded │
-├───────────────────┼────────────┼───────────┤
-│ web_reader        │ 1          │ ✅ Loaded │
-├───────────────────┼────────────┼───────────┤
-│ 4.5v-mcp (vision) │ 1          │ ✅ Loaded │
-└───────────────────┴────────────┴───────────┘
----
-THE TL;DR
-
-You have 44 additional tools in this session. They work. Use them.
-
-Don't limit yourself to standard Claude capabilities. These tools give you:
-- Persistent memory across sessions (SUPERCACHE)
-- Safe code changes with rollback (SAFE-OPS, PATCH)
-- Process management (TERMINAL)
-- Advanced reasoning (NOVEL CONCEPTS)
-- Project automation (RUNNER)
-- Web + Vision capabilities
-
-The tools are loaded. Call them directly.
-
-## STRICT BUILD PROTOCOL - MANDATORY EXECUTION FLOW
-
-### Step 0: PRE-CHANGE BASELINE (MANDATORY - NEVER SKIP)
+#### Step 0: PRE-CHANGE BASELINE (MANDATORY - NEVER SKIP)
 
 BEFORE touching ANY code, you MUST:
 
-bash
+```bash
 # 0a. Navigate to project directory
 cd "/Volumes/Storage/FLOYD_CLI/TUI REBUILD"
 
@@ -219,7 +233,7 @@ npm test 2>&1 | tee /tmp/floyd_baseline_tests.log
 echo $? > /tmp/floyd_baseline_tests_exit.txt
 
 # 0e. Create baseline receipt
-cat > /tmp/floyd_baseline_[receipt.md](http://receipt.md) << 'EOF'
+cat > /tmp/floyd_baseline_receipt.md << 'EOF'
 # FLOYD TUI REBUILD - BASELINE RECEIPT
 Generated: $(date)
 Project: /Volumes/Storage/FLOYD_CLI/TUI REBUILD
@@ -237,10 +251,10 @@ $(tail -10 /tmp/floyd_baseline_lint.log)
 Test Summary:
 $(grep -E "(passing|failing|tests?)" /tmp/floyd_baseline_tests.log | tail -5)
 EOF
-
+```
 
 Step 0 is COMPLETE ONLY when:
-- [x] /tmp/floyd_baseline_[receipt.md](http://receipt.md) exists
+- [x] /tmp/floyd_baseline_receipt.md exists
 - [x] Build exit code is documented
 - [x] Lint exit code is documented
 - [x] Test results have been reviewed
@@ -250,7 +264,7 @@ WITHOUT Step 0 complete: DO NOT proceed to Step 1.
 
 ---
 
-### Step 1: MAKE YOUR CHANGES
+#### Step 1: MAKE YOUR CHANGES
 
 Now you may edit code.
 
@@ -270,7 +284,7 @@ Tools you MUST NOT use:
 
 Recommended workflow:
 
-bash
+```bash
 # Before making changes, simulate impact
 mcp__floyd-safe-ops__impact_simulate(
   operations=[{"type": "edit", "path": "src/components/StatusBar.tsx"}],
@@ -291,15 +305,15 @@ mcp__floyd-supercache__cache_store_reasoning(
   reasoning="Fixed any type warnings by adding explicit TypeScript types",
   conclusion="Type safety improved without breaking existing functionality"
 )
-
+```
 
 ---
 
-### Step 2: POST-CHANGE VERIFICATION (MANDATORY)
+#### Step 2: POST-CHANGE VERIFICATION (MANDATORY)
 
 AFTER making changes, you MUST:
 
-bash
+```bash
 # 2a. Capture post-change build state
 npm run build 2>&1 | tee /tmp/floyd_post_build.log
 echo $? > /tmp/floyd_post_build_exit.txt
@@ -319,63 +333,63 @@ diff /tmp/floyd_baseline_tests.log /tmp/floyd_post_tests.log | tee /tmp/floyd_te
 
 # 2e. Capture git diff
 git diff > /tmp/floyd_code_diff.patch
-
+```
 
 Optional: Use Floyd Safe Ops verification
 
-bash
+```bash
 mcp__floyd-safe-ops__verify(
   strategy="command",
   command="npm run build && npm run lint"
 )
-
+```
 
 ---
 
-### Step 3: FAILURE ANALYSIS (MANDATORY IF FAILURES EXIST)
+#### Step 3: FAILURE ANALYSIS (MANDATORY IF FAILURES EXIST)
 
 If post-change build/lint/tests fail, you MUST determine:
 
-bash
+```bash
 # 3a. Extract baseline results
-grep -E "(error|warning|✖|✓)" /tmp/floyd_baseline_build.log > /tmp/floyd_baseline_results.txt
-grep -E "(error|warning|✖|✓)" /tmp/floyd_baseline_lint.log >> /tmp/floyd_baseline_results.txt
+grep -E "(error|warning|X|V)" /tmp/floyd_baseline_build.log > /tmp/floyd_baseline_results.txt
+grep -E "(error|warning|X|V)" /tmp/floyd_baseline_lint.log >> /tmp/floyd_baseline_results.txt
 
 # 3b. Extract post-change results
-grep -E "(error|warning|✖|✓)" /tmp/floyd_post_build.log > /tmp/floyd_post_results.txt
-grep -E "(error|warning|✖|✓)" /tmp/floyd_post_lint.log >> /tmp/floyd_post_results.txt
+grep -E "(error|warning|X|V)" /tmp/floyd_post_build.log > /tmp/floyd_post_results.txt
+grep -E "(error|warning|X|V)" /tmp/floyd_post_lint.log >> /tmp/floyd_post_results.txt
 
 # 3c. Compare
 diff /tmp/floyd_baseline_results.txt /tmp/floyd_post_results.txt
-
+```
 
 Decision Tree:
 
 IF failure exists in BOTH baseline AND post-change:
-    → This is a PRE-EXISTING issue
-    → DO NOT "fix" it as part of your changes
-    → Document it separately
-    → PROCEED to sign-off
+    -> This is a PRE-EXISTING issue
+    -> DO NOT "fix" it as part of your changes
+    -> Document it separately
+    -> PROCEED to sign-off
 
 ELSE IF failure exists ONLY in post-change:
-    → YOUR CHANGES BROKE THE BUILD
-    → YOU MUST FIX IT
-    → Return to Step 1
+    -> YOUR CHANGES BROKE THE BUILD
+    -> YOU MUST FIX IT
+    -> Return to Step 1
 
 ELSE IF build/lint/tests pass in post-change:
-    → Your changes did not break anything
-    → PROCEED to sign-off
+    -> Your changes did not break anything
+    -> PROCEED to sign-off
 
 You MUST execute this decision tree BEFORE editing any code to "fix" failures.
 
 ---
 
-### Step 4: SIGN-OFF RECEIPT (MANDATORY)
+#### Step 4: SIGN-OFF RECEIPT (MANDATORY)
 
 You MAY claim "complete" ONLY when:
 
-bash
-cat > /tmp/floyd_change_[receipt.md](http://receipt.md) << 'EOF'
+```bash
+cat > /tmp/floyd_change_receipt.md << 'EOF'
 # FLOYD TUI REBUILD - CHANGE RECEIPT
 Generated: $(date)
 Change: [describe what you changed]
@@ -402,8 +416,8 @@ FILES CHANGED:
 $(git diff --name-only HEAD)
 
 RECEIPTS:
-- /tmp/floyd_baseline_[receipt.md](http://receipt.md)
-- /tmp/floyd_change_[receipt.md](http://receipt.md)
+- /tmp/floyd_baseline_receipt.md
+- /tmp/floyd_change_receipt.md
 - /tmp/floyd_build_diff.log
 - /tmp/floyd_lint_diff.log
 - /tmp/floyd_test_diff.log
@@ -412,7 +426,7 @@ RECEIPTS:
 GIT DIFF:
 $(cat /tmp/floyd_code_diff.patch)
 EOF
-
+```
 
 Sign-off is VALID ONLY when:
 - [x] Step 0 (baseline) completed BEFORE changes
@@ -425,18 +439,18 @@ Sign-off is VALID ONLY when:
 
 ---
 
-## Summary: The Mandatory Flow
+### Summary: The Mandatory Flow
 
 For EVERY code change:
 
-1. Step 0: Capture baseline → /tmp/floyd_baseline_[receipt.md](http://receipt.md)
+1. Step 0: Capture baseline -> /tmp/floyd_baseline_receipt.md
 2. Step 1: Make changes using Floyd tools
-3. Step 2: Capture post-change state → compare vs baseline
-4. Step 3: Analyze failures → determine responsibility
-5. Step 4: Create sign-off receipt → /tmp/floyd_change_[receipt.md](http://receipt.md)
+3. Step 2: Capture post-change state -> compare vs baseline
+4. Step 3: Analyze failures -> determine responsibility
+5. Step 4: Create sign-off receipt -> /tmp/floyd_change_receipt.md
 
 If you skip any step, STOP. You are about to make a preventable mistake.
 
 ---
 
-Every code change MUST follow this. No exceptions. No shortcuts.
+**Every code change MUST follow this. No exceptions. No shortcuts.**

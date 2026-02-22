@@ -1,7 +1,0 @@
-{
-  "key": "pattern:prefix_mode_parser:v1",
-  "value": "{\"name\": \"Prefix Mode Parser Pattern\", \"type\": \"input_parser\", \"language\": \"typescript\", \"quality_score\": 81, \"verdict\": \"silver\", \"test_coverage\": \"30 tests passing\", \"safety_features\": [\"dangerous command detection\", \"input sanitization\", \"mode validation\"], \"usage\": \"Parse user input for Claude Code-style prefix commands (!, /, @, &)\", \"integration_points\": [\"app.tsx handleSubmit\", \"InputArea component\", \"CLI parser\"], \"performance\": \"O(1) regex matching per prefix pattern\", \"maintained_by\": \"floyd-cli core team\", \"last_validated\": \"2026-02-02T13:01:13Z\"}",
-  "timestamp": 1770037282971,
-  "ttl": 604800000,
-  "tier": "vault"
-}

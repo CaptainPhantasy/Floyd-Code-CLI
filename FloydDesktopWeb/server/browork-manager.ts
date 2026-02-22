@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ToolExecutor } from './tool-executor.js';
 import { BUILTIN_TOOLS } from './mcp-client.js';
 
-type Provider = 'anthropic' | 'openai' | 'glm';
+export type Provider = 'anthropic' | 'openai' | 'glm' | 'anthropic-compatible';
 
 export type AgentStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
 
@@ -65,6 +65,7 @@ export class BroworkManager {
   }
 
   setApiKey(key: string) { this.apiKey = key; }
+  setBaseURL(url: string | undefined) { /* no-op for now unless we add support */ }
   setModel(model: string) { this.model = model; }
   setProvider(provider: Provider) { this.provider = provider; }
   setConfig(config: Partial<BroworkConfig>) { this.config = { ...this.config, ...config }; }
@@ -205,7 +206,7 @@ Work step by step and complete the task.`;
     const tools = BUILTIN_TOOLS.map(tool => ({
       name: tool.name,
       description: tool.description,
-      input_schema: tool.inputSchema,
+      input_schema: tool.inputSchema as { type: 'object'; properties: Record<string, unknown>; required?: string[] },
     }));
 
     const messages: any[] = [
@@ -255,7 +256,7 @@ Work step by step and complete the task.`;
             type: 'tool_result',
             tool_use_id: block.id,
             content: JSON.stringify(result.success ? result.result : { error: result.error }),
-          });
+          } as any);
 
           task.progress = Math.min(90, 10 + (toolCallCount / this.config.maxToolCallsPerAgent) * 80);
           this.notifyUpdate(task);
@@ -327,8 +328,8 @@ Work step by step and complete the task.`;
           toolCallCount++;
           if (toolCallCount > this.config.maxToolCallsPerAgent) throw new Error('Max tool calls exceeded');
 
-          const toolName = toolCall.function.name;
-          const toolArgs = JSON.parse(toolCall.function.arguments);
+          const toolName = (toolCall as any).function.name;
+          const toolArgs = JSON.parse((toolCall as any).function.arguments);
 
           this.log(task, 'tool', `Using ${toolName}`);
           const result = await this.toolExecutor.execute(toolName, toolArgs);

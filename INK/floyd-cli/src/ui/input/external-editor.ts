@@ -6,7 +6,7 @@
  */
 
 import { spawnSync } from 'child_process';
-import { promises as fs } from 'fs';
+import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
@@ -94,7 +94,7 @@ function getEditorArgs(editor: string, filePath: string): string[] {
 	const editorCommand = editor.toLowerCase().split('/').pop() || editor;
 
 	// Common editor argument patterns
-	const editorArgs: Record<string, (file: string) => string[]> = {
+	const editorArgs: Record<string, string[]> = {
 		vi: [filePath],
 		vim: [filePath],
 		nvim: [filePath],
@@ -211,7 +211,7 @@ export async function editInExternalEditorAsync(
 
 	try {
 		// Write current input to temp file
-		await fs.writeFile(tempFile, input, 'utf-8');
+		await fs.promises.writeFile(tempFile, input, 'utf-8');
 
 		// Determine editor args
 		const args = getEditorArgs(editor, tempFile);
@@ -230,7 +230,7 @@ export async function editInExternalEditorAsync(
 		}
 
 		// Read edited content
-		const edited = await fs.readFile(tempFile, 'utf-8');
+		const edited = await fs.promises.readFile(tempFile, 'utf-8');
 
 		return {
 			success: true,
@@ -245,7 +245,7 @@ export async function editInExternalEditorAsync(
 	} finally {
 		// Cleanup temp file
 		try {
-			await fs.unlink(tempFile);
+			await fs.promises.unlink(tempFile);
 		} catch {
 			// Ignore cleanup errors
 		}

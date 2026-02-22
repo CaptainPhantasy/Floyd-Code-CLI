@@ -116,7 +116,7 @@ class VoiceInputPanel {
       background-color: var(--vscode-editor-background);
       padding: 20px;
       display: flex;
-      flex-direction: column;
+      flex-direction: column-reverse;
       align-items: center;
       min-height: 100vh;
       margin: 0;

@@ -83,7 +83,7 @@ You are in extended reasoning mode. For each significant action:
  * Thinking mode manager
  */
 export class ThinkingModeManager {
-	private state: ThinkingModeState;
+	public state: ThinkingModeState;
 	private config: ThinkingModeConfig;
 	private statePath: string;
 
@@ -364,5 +364,4 @@ export const thinkingCommand = {
 	handler: handleThinkingCommand,
 };
 
-export { ThinkingModeManager };
 export default thinkingCommand;

@@ -1,7 +1,0 @@
-{
-  "key": "v1",
-  "value": "vault data (7day TTL)",
-  "timestamp": 1768665334346,
-  "ttl": 604800000,
-  "tier": "vault"
-}

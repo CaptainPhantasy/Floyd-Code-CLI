@@ -1,7 +1,0 @@
-{
-  "key": "snapshot",
-  "value": "{\"snapshot_time\":\"2026-01-17T15:55:34.350Z\",\"project_root\":\"/test\",\"active_branch\":\"main\",\"last_commit\":\"abc123\",\"recent_commands\":[\"npm test\",\"npm build\"]}",
-  "timestamp": 1768665334350,
-  "ttl": 86400000,
-  "tier": "project"
-}

@@ -1,0 +1,44 @@
+[
+  {
+    "timestamp": "2026-02-04T16:05:10.081099",
+    "session_id": "fb9e524b-22a5-4acb-bf13-1d21040ff77e",
+    "transcript_path": "/Users/douglastalley/.claude/projects/-Volumes-Storage-FLOYD-CLI/fb9e524b-22a5-4acb-bf13-1d21040ff77e.jsonl",
+    "cwd": "/Volumes/Storage/FLOYD_CLI/INK/floyd-cli",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd \"/Volumes/Storage/FLOYD_CLI/INK/floyd-cli\" && find src -type f \\( -name \"*.ts\" -o -name \"*.tsx\" \\) 2>/dev/null",
+      "description": "Find all TypeScript files in INK/floyd-cli"
+    },
+    "tool_use_id": "call_d4a99778f6ac451e8c0a5ff0"
+  },
+  {
+    "timestamp": "2026-02-04T16:05:52.663178",
+    "session_id": "fb9e524b-22a5-4acb-bf13-1d21040ff77e",
+    "transcript_path": "/Users/douglastalley/.claude/projects/-Volumes-Storage-FLOYD-CLI/fb9e524b-22a5-4acb-bf13-1d21040ff77e.jsonl",
+    "cwd": "/Volumes/Storage/FLOYD_CLI/INK/floyd-cli",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cat > /tmp/floyd_locked_components.md << 'EOF'\n# FLOYD SUITE - LOCKED WORKING COMPONENTS\nDate: 2026-02-04\nStatus: LOCKED - DO NOT MODIFY WITHOUT REVIEW\n\n## LOCKED (Verified Working) \u2705\n\n### 1. TUI REBUILD - PRIMARY CLI\n```\nLocation: /Volumes/Storage/FLOYD_CLI/TUI REBUILD\nStatus: \u2705 VERIFIED WORKING\nBuild: npm run build \u2705\nRun: npm start \u2705\nFramework: Ink 6.6.0, React 19.2.4\n```\n\n**LOCK COMMAND:**\n```bash\ncd \"/Volumes/Storage/FLOYD_CLI/TUI REBUILD\"\ngit add dist/ package.json package-lock.json tsconfig.json\ngit commit -m \"lock: TUI REBUILD verified working\"\n```\n\n### 2. FloydDesktopWeb - DESKTOP APP\n```\nLocation: /Volumes/Storage/FLOYD_CLI/FloydDesktopWeb\nStatus: \u2705 VERIFIED WORKING\nBuild: npm run build \u2705\nRun: npm run dev \u2705\nFeatures: Browork \u2705, Browser automation \u2705\n```\n\n**LOCK COMMAND:**\n```bash\ncd \"/Volumes/Storage/FLOYD_CLI/FloydDesktopWeb\"\ngit add dist/ dist-server/ package.json package-lock.json\ngit commit -m \"lock: FloydDesktopWeb verified working\"\n```\n\n## NOT LOCKED (In Development)\n\n### INK/floyd-cli\n```\nStatus: \u26a0\ufe0f INCOMPLETE\nIssue: Missing cli.tsx and app.tsx entry points\nHas: Component modules only\nAction: Either complete or deprecate in favor of TUI REBUILD\n```\n\n### FLOYD CODER AGENT WRAPPER\n```\nStatus: \u26a0\ufe0f MINIMAL BUILD ONLY\nLocation: FLOYD ECOSYSTEM/FLOYD CODER AGENT WRAPPER\nBuild: Uses tsconfig.minimal.json (excludes .tsx files)\nAction: Not ready for production use\n```\n\n## VERIFICATION HASH\n\nTo verify locked components haven't changed:\n\n```bash\n# TUI REBUILD\ncd \"/Volumes/Storage/FLOYD_CLI/TUI REBUILD\"\nshasum dist/cli.js > .floyd-lock-sha\n\n# FloydDesktopWeb\ncd /Volumes/Storage/FLOYD_CLI/FloydDesktopWeb\nshasum dist/index.html dist-server/index.js > .floyd-lock-sha\n```\n\n## RESTORE IF BROKEN\n\n```bash\n# TUI REBUILD\ncd \"/Volumes/Storage/FLOYD_CLI/TUI REBUILD\"\ngit checkout HEAD -- dist/ package.json tsconfig.json\nnpm run build\n\n# FloydDesktopWeb\ncd /Volumes/Storage/FLOYD_CLI/FloydDesktopWeb\ngit checkout HEAD -- dist/ dist-server/ package.json\nnpm run build\n```\n\nEOF\ncat /tmp/floyd_locked_components.md\n",
+      "description": "Create lock documentation"
+    },
+    "tool_use_id": "call_88d52c48ec4c45698a1ce5bc"
+  },
+  {
+    "timestamp": "2026-02-04T16:06:06.476717",
+    "session_id": "fb9e524b-22a5-4acb-bf13-1d21040ff77e",
+    "transcript_path": "/Users/douglastalley/.claude/projects/-Volumes-Storage-FLOYD-CLI/fb9e524b-22a5-4acb-bf13-1d21040ff77e.jsonl",
+    "cwd": "/Volumes/Storage/FLOYD_CLI/INK/floyd-cli",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd \"/Volumes/Storage/FLOYD_CLI/TUI REBUILD\" && shasum dist/cli.js dist/app.js > .floyd-lock-sha 2>/dev/null && cat .floyd-lock-sha",
+      "description": "Create lock hash for TUI REBUILD"
+    },
+    "tool_use_id": "call_b2ee0a2e446a4aa68dc57b7c"
+  }
+]
